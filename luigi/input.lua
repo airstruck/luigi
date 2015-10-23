@@ -72,7 +72,7 @@ end
 
 function Input:handlePressedMotion (x, y)
     local widget = self.layout:getWidgetAt(x, y)
-    for button = 0, 2 do
+    for button = 1, 3 do
         local originWidget = self.pressedWidgets[button]
         local passedWidget = self.passedWidgets[button]
         if originWidget then
@@ -124,7 +124,7 @@ function Input:handlePressStart (button, x, y)
     self.passedWidgets[button] = widget
     self:bubbleEvent('PressStart', widget, {
         target = widget,
-        buton = button, x = x, y = y
+        button = button, x = x, y = y
     })
 end
 
@@ -137,12 +137,12 @@ function Input:handlePressEnd (button, x, y)
     self:bubbleEvent('PressEnd', widget, {
         target = widget,
         origin = originWidget,
-        buton = button, x = x, y = y
+        button = button, x = x, y = y
     })
     if (widget == originWidget) then
         self:bubbleEvent('Press', widget, {
             target = widget,
-            buton = button, x = x, y = y
+            button = button, x = x, y = y
         })
     end
     self.pressedWidgets[button] = nil
