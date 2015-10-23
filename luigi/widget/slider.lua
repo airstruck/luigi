@@ -22,27 +22,36 @@ function Slider:constructor(layout, data)
     self:onDisplay(function(event)
         local x1, y1, x2, y2 = self:getRectangle(true, true)
         local padding = self.padding or 0
-        self.layout.window:fill(
+
+        love.graphics.push('all')
+
+        love.graphics.setColor(self.outline)
+
+        love.graphics.rectangle('fill',
             x1,
-            y1 + (y2 - y1) / 2 - padding / 2,
-            x2,
-            y1 + (y2 - y1) / 2 + padding / 2,
-            self.outline
+            y1 + ((y2 - y1) / 2) - padding / 2,
+            x2 - x1,
+            padding
         )
-        self.layout.window:fill(
+
+        love.graphics.rectangle('line',
             x1 + position * (x2 - x1) - padding,
             y1 + padding,
-            x1 + position * (x2 - x1) + padding,
-            y2 - padding,
-            self.background
+            padding * 2,
+            y2 - y1 - padding
         )
-        self.layout.window:outline(
+
+        love.graphics.setColor(self.background)
+
+        love.graphics.rectangle('fill',
             x1 + position * (x2 - x1) - padding,
             y1 + padding,
-            x1 + position * (x2 - x1) + padding,
-            y2 - padding,
-            self.outline
+            padding * 2,
+            y2 - y1 - padding
         )
+
+        love.graphics.pop()
+
         return false
     end)
 

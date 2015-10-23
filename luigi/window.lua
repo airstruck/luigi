@@ -75,30 +75,6 @@ function Window:hide ()
     self:unhook()
 end
 
-function Window:fill (x1, y1, x2, y2, color)
-    love.graphics.push('all')
-    love.graphics.setColor(color)
-    love.graphics.rectangle('fill', x1, y1, x2 - x1, y2 - y1)
-    love.graphics.pop()
-end
-
-function Window:outline (x1, y1, x2, y2, color)
-    love.graphics.push('all')
-    love.graphics.setColor(color)
-    love.graphics.rectangle('line', x1, y1, x2 - x1, y2 - y1)
-    love.graphics.pop()
-end
-
-function Window:write (x, y, x1, y1, x2, y2, text, font)
-    local layout = font.layout
-
-    love.graphics.push('all')
-    love.graphics.setFont(font.font)
-    love.graphics.setColor(font.color)
-    love.graphics.printf(text, x, y, layout.width or x2 - x1, layout.align)
-    love.graphics.pop()
-end
-
 function Window:update (reshape)
     if reshape then
         for i, widget in ipairs(self.input.layout.widgets) do

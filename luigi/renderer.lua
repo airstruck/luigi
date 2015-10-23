@@ -17,17 +17,23 @@ function Renderer:loadImage (path)
 end
 
 function Renderer:renderBackground (widget, window)
-    local bg = widget.background
-    if not bg then return end
-    local bend = widget.bend
+    if not widget.background then return end
     local x1, y1, x2, y2 = widget:getRectangle(true)
-    window:fill(x1, y1, x2, y2, bg)
+
+    love.graphics.push('all')
+    love.graphics.setColor(widget.background)
+    love.graphics.rectangle('fill', x1, y1, x2 - x1, y2 - y1)
+    love.graphics.pop()
 end
 
 function Renderer:renderOutline (widget, window)
     if not widget.outline then return end
     local x1, y1, x2, y2 = widget:getRectangle(true)
-    window:outline(x1, y1, x2, y2, widget.outline)
+
+    love.graphics.push('all')
+    love.graphics.setColor(widget.outline)
+    love.graphics.rectangle('line', x1, y1, x2 - x1, y2 - y1)
+    love.graphics.pop()
 end
 
 -- returns icon coordinates and rectangle with remaining space
