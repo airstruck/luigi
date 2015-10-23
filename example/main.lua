@@ -17,8 +17,8 @@ local style = {
         margin = 4,
     },
     toolButton_not_hovered = {
-        outline = false,
-        bend = 0,
+        background = false,
+        outline =  { 200, 200, 200 },
     },
     statusbar = {
         style = 'panel',
@@ -28,10 +28,9 @@ local style = {
         style = { 'short', 'panel' },
         align = 'left middle',
         outline = { 200, 200, 200 },
-        height = 80,
+        height = 120,
         padding = 8,
         background = { 255, 255, 255 },
-        bend = 0.2,
         icon = 'icon/emblem-system.png',
     },
 }
@@ -47,8 +46,12 @@ local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
     },
     { flow = 'x',
         { id = 'leftSideBox',    width = 200,
-            { text = 'Hi, I\'m some centered text. ', style = 'listThing',
-              align = 'middle center' },
+            { text = 'Hi, I\'m centered middle. ', style = 'listThing',
+                align = 'middle center' },
+            { text = 'Hi, I\'m centered bottom. ', style = 'listThing',
+                align = 'bottom center' },
+            { text = 'Hi, I\'m centered top. ', style = 'listThing',
+                align = 'top center' },
             { text = 'A man, a plan, a canal: Panama!', style = 'listThing' },
         },
         { type = 'sash', width = 4, },
@@ -71,7 +74,7 @@ local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
 local layout = Layout(mainForm)
 
 layout:setStyle(style)
-layout:setTheme(require 'luigi.theme.light')
+layout:setTheme(require 'luigi.theme.light' { highlight = { 150, 255, 150 } })
 
 layout.leftSideBox:addChild {
     text = 'Alright man this is a great song\nwith a really long title...',

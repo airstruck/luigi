@@ -20,7 +20,6 @@ function Slider:constructor(layout, data)
     end)
 
     self:onDisplay(function(event)
-        -- event:yield()
         local x1, y1, x2, y2 = self:getRectangle(true, true)
         local padding = self.padding or 0
         self.layout.window:fill(
@@ -28,14 +27,14 @@ function Slider:constructor(layout, data)
             y1 + (y2 - y1) / 2 - padding / 2,
             x2,
             y1 + (y2 - y1) / 2 + padding / 2,
-            self.background, -(self.bend or 0)
+            self.outline
         )
         self.layout.window:fill(
             x1 + position * (x2 - x1) - padding,
             y1 + padding,
             x1 + position * (x2 - x1) + padding,
             y2 - padding,
-            self.background, self.bend
+            self.background
         )
         self.layout.window:outline(
             x1 + position * (x2 - x1) - padding,

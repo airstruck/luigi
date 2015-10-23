@@ -19,10 +19,16 @@ function Layout:constructor (data)
 end
 
 function Layout:setStyle (rules)
+    if type(rules) == 'function' then
+        rules = rules()
+    end
     self.style = Style(rules or {}, 'id', 'style')
 end
 
 function Layout:setTheme (rules)
+    if type(rules) == 'function' then
+        rules = rules()
+    end
     self.theme = Style(rules or {}, 'type')
 end
 

@@ -75,41 +75,28 @@ function Window:hide ()
     self:unhook()
 end
 
-local function setColor (color)
-    love.graphics.setColor(color)
-end
-
 function Window:fill (x1, y1, x2, y2, color)
-    setColor(color)
+    love.graphics.push('all')
+    love.graphics.setColor(color)
     love.graphics.rectangle('fill', x1, y1, x2 - x1, y2 - y1)
+    love.graphics.pop()
 end
 
 function Window:outline (x1, y1, x2, y2, color)
-    setColor(color)
+    love.graphics.push('all')
+    love.graphics.setColor(color)
     love.graphics.rectangle('line', x1, y1, x2 - x1, y2 - y1)
+    love.graphics.pop()
 end
 
 function Window:write (x, y, x1, y1, x2, y2, text, font)
-
-    local width, height = x2 - x1, y2 - y1
-
-    if width < 1 or height < 1 then
-        return
-    end
-
-    local sx, sy, sw, sh = love.graphics.getScissor()
-
-    love.graphics.setScissor(x1, y1, width, height)
-    local oldFont = love.graphics.getFont()
-    love.graphics.setFont(font.font)
-
-    setColor(font.color)
-
     local layout = font.layout
-    love.graphics.printf(text, x, y, layout.width or width, layout.align)
 
-    love.graphics.setScissor(sx, sy, sw, sh)
-    love.graphics.setFont(oldFont)
+    love.graphics.push('all')
+    love.graphics.setFont(font.font)
+    love.graphics.setColor(font.color)
+    love.graphics.printf(text, x, y, layout.width or x2 - x1, layout.align)
+    love.graphics.pop()
 end
 
 function Window:update (reshape)
