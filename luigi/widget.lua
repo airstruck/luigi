@@ -46,15 +46,12 @@ function Widget:constructor (layout, data)
 end
 
 function Widget:extract (data)
-    function toWidget(t)
-        if t.isWidget then return t end
-        return Widget.create(self.layout, t)
-    end
-
+    local children = self.children
+    -- TODO: get rid of pairs somehow
     for k, v in pairs(data) do
         if type(k) == 'number' then
-            self.children[k] = toWidget(v)
-            self.children[k].parent = self
+            children[k] = v.isWidget and v or Widget.create(self.layout, v)
+            children[k].parent = self
         else
             self[k] = v
         end
@@ -238,8 +235,6 @@ end
 function Widget:update ()
     self.layout:update()
 end
-
--- event binders
 
 Event.injectBinders(Widget)
 
