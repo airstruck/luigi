@@ -141,17 +141,18 @@ function Renderer:renderIconAndText (widget, window)
     -- reposition icon and text for proper vertical alignment
     if icon and text and align:find('center') then
         local iconHeight = icon:getHeight()
-        local textHeight = font:getWrappedHeight(text)
-        local contentHeight = textHeight + padding + iconHeight
-        local offset = ((y2 - y1) - contentHeight) / 2
 
         if align:find('middle') then
+            local textHeight = font:getWrappedHeight(text)
+            local contentHeight = textHeight + padding + iconHeight
+            local offset = ((y2 - y1) - contentHeight) / 2
             iconY = y1 + offset
             textY = y1 + offset + padding + iconHeight
         elseif align:find('top') then
             iconY = y1
             textY = y1 + padding + iconHeight
         else -- if align:find('bottom')
+            local textHeight = font:getWrappedHeight(text)
             textY = y2 - textHeight
             iconY = textY - padding - iconHeight
         end

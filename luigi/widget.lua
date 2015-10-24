@@ -232,8 +232,13 @@ function Widget:getAncestors (includeSelf)
     end
 end
 
-function Widget:update ()
-    self.layout:update()
+function Widget:reflow ()
+    self.position = {}
+    self.dimensions = {}
+    for i, widget in ipairs(self.children) do
+        widget.position = {}
+        widget.dimensions = {}
+    end
 end
 
 Event.injectBinders(Widget)

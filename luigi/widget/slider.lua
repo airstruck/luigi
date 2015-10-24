@@ -16,7 +16,6 @@ function Slider:constructor(layout, data)
         position = (event.x - x1) / (x2 - x1)
         if position < 0 then position = 0 end
         if position > 1 then position = 1 end
-        self:update()
     end)
 
     self:onDisplay(function(event)

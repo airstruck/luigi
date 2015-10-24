@@ -45,8 +45,6 @@ function Input:handleMotion (x, y)
             previousWidget.hovered = nil
         end
         widget.hovered = true
-        -- self.layout:update()
-        widget:update()
     end
     self:bubbleEvent('Motion', widget, {
         target = widget,
@@ -91,8 +89,6 @@ function Input:handlePressedMotion (x, y)
                 })
             else
                 originWidget.pressed = (widget == originWidget) or nil
-                originWidget:update()
-                -- self.layout:update()
                 if passedWidget then
                     self:bubbleEvent('PressLeave', passedWidget, {
                         target = passedWidget,
@@ -118,8 +114,6 @@ end
 function Input:handlePressStart (button, x, y)
     local widget = self.layout:getWidgetAt(x, y)
     widget.pressed = true
-    -- self.layout:update()
-    widget:update()
     self.pressedWidgets[button] = widget
     self.passedWidgets[button] = widget
     self:bubbleEvent('PressStart', widget, {
@@ -132,8 +126,6 @@ function Input:handlePressEnd (button, x, y)
     local widget = self.layout:getWidgetAt(x, y)
     local originWidget = self.pressedWidgets[button]
     originWidget.pressed = nil
-    -- self.layout:update()
-    originWidget:update()
     self:bubbleEvent('PressEnd', widget, {
         target = widget,
         origin = originWidget,

@@ -104,12 +104,10 @@ layout:onMotion(function(event)
     layout.statusbar.text = (w.id or '(unnamed)') .. ' ' ..
         w:getX() .. ', ' .. w:getY() .. ' | ' ..
         w:getWidth() .. 'x' .. w:getHeight()
-    layout.statusbar:update()
 end)
 
 layout.newButton:onMotion(function(event)
     layout.statusbar.text = 'Create a new thing'
-    layout.statusbar:update()
     return false
 end)
 

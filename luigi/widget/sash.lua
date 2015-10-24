@@ -27,7 +27,9 @@ function Sash:constructor(layout, data)
                     nextSibling[dimension] - event[axis])
         end
 
-        layout:update(true)
+        prevSibling:reflow()
+        nextSibling:reflow()
+        self:reflow()
     end)
 
 end
