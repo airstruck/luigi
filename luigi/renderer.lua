@@ -32,7 +32,7 @@ function Renderer:renderOutline (widget, window)
 
     love.graphics.push('all')
     love.graphics.setColor(widget.outline)
-    love.graphics.rectangle('line', x1, y1, x2 - x1, y2 - y1)
+    love.graphics.rectangle('line', x1 - 0.5, y1 - 0.5, x2 - x1, y2 - y1)
     love.graphics.pop()
 end
 

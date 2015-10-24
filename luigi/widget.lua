@@ -214,7 +214,7 @@ function Widget:getRectangle (useMargin, usePadding)
     if usePadding then
         shrink(self.padding or 0)
     end
-    return x1, y1, x2, y2
+    return math.floor(x1), math.floor(y1), math.floor(x2), math.floor(y2)
 end
 
 function Widget:isAt (x, y)

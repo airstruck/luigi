@@ -22,6 +22,12 @@ function Slider:constructor(layout, data)
         local x1, y1, x2, y2 = self:getRectangle(true, true)
         local padding = self.padding or 0
 
+
+        local sx1 = math.floor(x1 + position * (x2 - x1) - padding) - 0.5
+        local sy1 = math.floor(y1 + padding) - 0.5
+        local sx2 = padding * 2
+        local sy2 = y2 - y1 - padding
+
         love.graphics.push('all')
 
         love.graphics.setColor(self.outline)
@@ -33,21 +39,13 @@ function Slider:constructor(layout, data)
             padding
         )
 
-        love.graphics.rectangle('line',
-            x1 + position * (x2 - x1) - padding,
-            y1 + padding,
-            padding * 2,
-            y2 - y1 - padding
-        )
-
         love.graphics.setColor(self.background)
 
-        love.graphics.rectangle('fill',
-            x1 + position * (x2 - x1) - padding,
-            y1 + padding,
-            padding * 2,
-            y2 - y1 - padding
-        )
+        love.graphics.rectangle('fill', sx1, sy1, sx2, sy2)
+
+        love.graphics.setColor(self.outline)
+
+        love.graphics.rectangle('line', sx1, sy1, sx2, sy2)
 
         love.graphics.pop()
 
