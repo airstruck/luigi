@@ -61,14 +61,6 @@ function Layout:hide ()
     self:unhook()
 end
 
--- Reflow the layout. Call this after you change widget positions/dimensions.
-function Layout:reflow (reshape)
-    for i, widget in ipairs(self.widgets) do
-        widget.position = {}
-        widget.dimensions = {}
-    end
-end
-
 -- Get the innermost widget at a position, within a root widget.
 -- Should always return a widget since all positions are within
 -- the layout's root widget.

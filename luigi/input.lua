@@ -144,10 +144,7 @@ end
 function Input:handleReshape (width, height)
     local layout = self.layout
     local root = layout.root
-    for i, widget in ipairs(layout.widgets) do
-        widget.position = {}
-        widget.dimensions = {}
-    end
+    layout.root:reflow()
     root.width = width
     root.height = height
     Event.Reshape:emit(root, {

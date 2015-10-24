@@ -232,12 +232,12 @@ function Widget:getAncestors (includeSelf)
     end
 end
 
+-- Reflow the widget. Call this after changing position/dimensions.
 function Widget:reflow ()
     self.position = {}
     self.dimensions = {}
     for i, widget in ipairs(self.children) do
-        widget.position = {}
-        widget.dimensions = {}
+        widget:reflow()
     end
 end
 
