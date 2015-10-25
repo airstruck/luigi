@@ -1,6 +1,7 @@
 local ROOT = (...):gsub('[^.]*$', '')
 
 local Base = require(ROOT .. 'base')
+local Hooker = require(ROOT .. 'hooker')
 
 local Event = Base:extend({ name = 'Event' })
 
@@ -10,19 +11,14 @@ function Event:emit (observer, data, defaultAction)
         if defaultAction then defaultAction() end
         return
     end
-    for i, callback in ipairs(callbacks) do
-        local result = callback(data or {})
-        if result ~= nil then return result end
-    end
+    local result = callbacks(data or {})
+    if result ~= nil then return result end
     if defaultAction then defaultAction() end
 end
 
 function Event:bind (observer, callback)
     local registry = self.registry
-    if not registry[observer] then
-        registry[observer] = {}
-    end
-    table.insert(registry[observer], callback)
+    return Hooker.hook(registry, observer, callback)
 end
 
 local eventNames = {

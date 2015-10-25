@@ -1,25 +1,8 @@
 local Hooker = {}
 
-local wrapped = {}
+local wrapped = setmetatable({}, { __mode = 'k' })
 
-local hooks = {}
-
-local function hook (key, func)
-    if not func then
-        return
-    end
-
-    local next = hooks[key]
-    local item = { next = next, unhook = unhook, key = key, func = func }
-
-    if next then
-        next.prev = item
-    end
-
-    hooks[key] = item
-
-    return item
-end
+local hooks = setmetatable({}, { __mode = 'k' })
 
 local function unhook (item)
     if item.prev then
@@ -30,36 +13,71 @@ local function unhook (item)
         item.next.prev = item.prev
     end
 
-    if hooks[item.key] == item then
-        hooks[item.key] = item.next
+    if hooks[item.host][item.key] == item then
+        hooks[item.host][item.key] = item.next
     end
 
+    item.host = nil
     item.prev = nil
     item.next = nil
     item.func = nil
 end
 
-function Hooker.hook (key, func)
-    if not wrapped[key] then
-        wrapped[key] = true
+local function hook (host, key, func)
+    if not func then
+        return
+    end
 
-        hook(key, love[key])
+    if not hooks[host] then
+        hooks[host] = {}
+    end
 
-        love[key] = function (...)
-            local item = hooks[key]
+    local next = hooks[host][key]
+    local item = {
+        next = next,
+        unhook = unhook,
+        host = host,
+        key = key,
+        func = func,
+    }
+
+    if next then
+        next.prev = item
+    end
+
+    hooks[host][key] = item
+
+    return item
+end
+
+function Hooker.unhook (item)
+    return unhook(item)
+end
+
+function Hooker.hook (host, key, func)
+    if not wrapped[host] then
+        wrapped[host] = {}
+    end
+
+    if not wrapped[host][key] then
+        wrapped[host][key] = true
+
+        hook(host, key, host[key])
+
+        host[key] = function (...)
+            local item = hooks[host][key]
 
             while item do
-                item.func(...)
+                local result = item.func(...)
+                if result ~= nil then
+                    return result
+                end
                 item = item.next
             end
         end
     end
 
-    return hook(key, func)
-end
-
-function Hooker.unhook (item)
-    return unhook(item)
+    return hook(host, key, func)
 end
 
 return Hooker

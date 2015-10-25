@@ -9,14 +9,13 @@ return function (config)
     return {
         panel = {
             background = backColor,
-            padding = 4,
         },
         button = {
             type = 'panel',
             align = 'center middle',
             outline = lineColor,
             bend = 0.1,
-            margin = 4,
+            margin = 2,
         },
         button_hovered = {
             background = white,
@@ -30,9 +29,8 @@ return function (config)
             align = 'left middle',
             background = { 255, 255, 255 },
             outline = lineColor,
-            bend = -0.1,
-            margin = 4,
-            padding = 4,
+            margin = 2,
+            padding = 2,
         },
         sash = {
             background = lineColor
@@ -44,6 +42,9 @@ return function (config)
             type = 'panel',
             outline = lineColor,
             background = white,
+        },
+        stepper = {
+            type = 'panel',
         },
         slider_hovered = {
             outline = highlight,

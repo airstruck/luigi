@@ -6,19 +6,23 @@ local style = {
         height = 400,
     },
     short = {
-        height = 36,
+        height = 48,
     },
     toolbar = {
         style = { 'short' },
     },
     toolButton = {
         align = 'center middle',
-        width = 36,
+        width = 48,
         margin = 4,
+        padding = 0,
     },
     toolButton_not_hovered = {
         background = false,
-        outline =  { 200, 200, 200 },
+        outline = false,
+    },
+    toolButton_hovered = {
+        tint = { 200, 255, 200 },
     },
     statusbar = {
         style = 'panel',
@@ -58,17 +62,19 @@ local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
         { id = 'mainCanvas' },
         { type = 'sash', width = 4, },
         { type = 'panel', id = 'rightSideBox', width = 200,
-            { type = 'panel', text = 'A slider', align = 'bottom', height = 24 },
-            { type = 'slider', height = 48, },
+            { type = 'panel', text = 'A slider', align = 'bottom', height = 24, padding = 4 },
+            { type = 'slider', height = 32, padding = 4 },
+            { type = 'panel', text = 'A stepper', align = 'bottom', height = 24, padding = 4 },
+            { type = 'stepper', height = 32, padding = 4 },
         },
     },
     { type = 'sash', height = 4, },
-    { type = 'panel', flow = 'x', height = 48,
+    { type = 'panel', flow = 'x', height = 48, padding = 2,
         { type = 'text', id = 'aTextField', text = 'a text field',
             font = 'font/liberation/LiberationMono-Regular.ttf' },
         { type = 'button', width = 80, id = 'aButton', text = 'Styling!' },
     },
-    { type = 'panel', height = 24, id = 'statusbar', textColor = { 255, 0, 0 } },
+    { type = 'panel', id = 'statusbar', height = 24, padding = 4, textColor = { 255, 0, 0 } },
 }
 
 local layout = Layout(mainForm)
@@ -99,19 +105,19 @@ layout:onKeyboard(function(event)
 end)
 ]]
 
-layout:onMotion(function(event)
+layout:onMotion(function (event)
     local w = event.target
     layout.statusbar.text = (w.id or '(unnamed)') .. ' ' ..
         w:getX() .. ', ' .. w:getY() .. ' | ' ..
         w:getWidth() .. 'x' .. w:getHeight()
 end)
 
-layout.newButton:onMotion(function(event)
+layout.newButton:onMotion(function (event)
     layout.statusbar.text = 'Create a new thing'
     return false
 end)
 
-layout.newButton:onPress(function(event)
+layout.newButton:onPress(function (event)
     print('creating a new thing!')
 end)
 

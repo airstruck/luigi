@@ -32,7 +32,7 @@ function Renderer:renderOutline (widget, window)
 
     love.graphics.push('all')
     love.graphics.setColor(widget.outline)
-    love.graphics.rectangle('line', x1 - 0.5, y1 - 0.5, x2 - x1, y2 - y1)
+    love.graphics.rectangle('line', x1 + 0.5, y1 + 0.5, x2 - x1, y2 - y1)
     love.graphics.pop()
 end
 
@@ -162,6 +162,7 @@ function Renderer:renderIconAndText (widget, window)
     if icon then
         iconX, iconY = math.floor(iconX), math.floor(iconY)
         if widget.tint then
+            love.graphics.setBlendMode('alpha', true)
             love.graphics.setColor(widget.tint)
         end
         love.graphics.draw(icon, iconX, iconY)

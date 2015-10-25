@@ -10,6 +10,7 @@ Widget.isWidget = true
 Widget.registeredTypes = {
     sash = ROOT .. 'widget.sash',
     slider = ROOT .. 'widget.slider',
+    stepper = ROOT .. 'widget.stepper',
     text = ROOT .. 'widget.text',
 }
 
@@ -79,6 +80,8 @@ function Widget:addChild (data)
     table.insert(self.children, child)
     child.parent = self
     layout:addWidget(child)
+
+    return child
 end
 
 function Widget:calculateDimension (name)
@@ -101,6 +104,8 @@ function Widget:calculateDimension (name)
         return self.layout
     end
     local parentDimension = parent:calculateDimension(name)
+    parentDimension = parentDimension - (parent.margin or 0) * 2
+    parentDimension = parentDimension - (parent.padding or 0) * 2
     local parentFlow = parent.flow or 'y'
     if (parentFlow == 'y' and name == 'width') or
         (parentFlow == 'x' and name == 'height')
@@ -121,7 +126,7 @@ function Widget:calculateDimension (name)
             end
         end
     end
-    local size = (self.parent:calculateDimension(name) - claimed) / unsized
+    local size = (parentDimension - claimed) / unsized
     self.dimensions[name] = clamp(size, 0, self.layout.root[name])
     return size
 end
@@ -137,6 +142,8 @@ function Widget:calculatePosition (axis)
     end
     local parentPos = parent:calculatePosition(axis)
     local p = parentPos
+    p = p + (parent.margin or 0)
+    p = p + (parent.padding or 0)
     local parentFlow = parent.flow or 'y'
     for i, widget in ipairs(parent.children) do
         if widget == self then
@@ -236,6 +243,9 @@ end
 function Widget:reflow ()
     self.position = {}
     self.dimensions = {}
+    Event.Reshape:emit(self, {
+        target = self
+    })
     for i, widget in ipairs(self.children) do
         widget:reflow()
     end

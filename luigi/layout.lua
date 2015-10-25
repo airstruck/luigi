@@ -51,6 +51,7 @@ function Layout:show ()
         love.window.setTitle(title)
     end
     self:manageInput(self.input)
+    root:reflow()
 end
 
 function Layout:hide ()
@@ -90,7 +91,7 @@ end
 -- event stuff
 
 function Layout:hook (key, method)
-    self.hooks[#self.hooks + 1] = Hooker.hook(key, method)
+    self.hooks[#self.hooks + 1] = Hooker.hook(love, key, method)
 end
 
 function Layout:unhook ()

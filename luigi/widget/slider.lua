@@ -2,29 +2,24 @@ local Widget = require((...):gsub('%.[^.]*$', ''))
 
 local Slider = Widget:extend()
 
-function Slider:constructor(layout, data)
+function Slider:constructor (layout, data)
     Widget.constructor(self, layout, data)
 
-    local function getCenter()
-        return self:getX() + self:getWidth() / 2
-    end
+    self.value = 0.5
 
-    local position = 0.5
-
-    self:onPressDrag(function(event)
+    self:onPressDrag(function (event)
         local x1, y1, x2, y2 = self:getRectangle(true, true)
-        position = (event.x - x1) / (x2 - x1)
-        if position < 0 then position = 0 end
-        if position > 1 then position = 1 end
+        self.value = (event.x - x1) / (x2 - x1)
+        if self.value < 0 then self.value = 0 end
+        if self.value > 1 then self.value = 1 end
     end)
 
-    self:onDisplay(function(event)
+    self:onDisplay(function (event)
         local x1, y1, x2, y2 = self:getRectangle(true, true)
         local padding = self.padding or 0
 
-
-        local sx1 = math.floor(x1 + position * (x2 - x1) - padding) - 0.5
-        local sy1 = math.floor(y1 + padding) - 0.5
+        local sx1 = math.floor(x1 + self.value * (x2 - x1) - padding) + 0.5
+        local sy1 = math.floor(y1 + padding) + 0.5
         local sx2 = padding * 2
         local sy2 = y2 - y1 - padding
 
@@ -34,7 +29,7 @@ function Slider:constructor(layout, data)
 
         love.graphics.rectangle('fill',
             x1,
-            y1 + ((y2 - y1) / 2) - padding / 2,
+            y1 + ((y2 - y1) / 2),
             x2 - x1,
             padding
         )

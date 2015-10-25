@@ -147,10 +147,6 @@ function Input:handleReshape (width, height)
     layout.root:reflow()
     root.width = width
     root.height = height
-    Event.Reshape:emit(root, {
-        target = root,
-        width = width, height = height
-    })
 end
 
 return Input

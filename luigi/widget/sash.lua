@@ -2,10 +2,10 @@ local Widget = require((...):gsub('%.[^.]*$', ''))
 
 local Sash = Widget:extend()
 
-function Sash:constructor(layout, data)
+function Sash:constructor (layout, data)
     Widget.constructor(self, layout, data)
 
-    self:onPressDrag(function(event)
+    self:onPressDrag(function (event)
         local axis = self.parent.flow
         if axis == 'x' then
             dimension = 'width'
