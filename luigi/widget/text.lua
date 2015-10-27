@@ -1,9 +1,3 @@
-local Widget = require((...):gsub('%.[^.]*$', ''))
+return function (self)
 
-local Text = Widget:extend()
-
-function Text:constructor (layout, data)
-    Widget.constructor(self, layout, data)
 end
-
-return Text

@@ -7,21 +7,15 @@ local Widget = Base:extend()
 
 Widget.isWidget = true
 
-Widget.registeredTypes = {
-    sash = ROOT .. 'widget.sash',
-    slider = ROOT .. 'widget.slider',
-    stepper = ROOT .. 'widget.stepper',
-    text = ROOT .. 'widget.text',
+Widget.typeDecorators = {
+    sash = require(ROOT .. 'widget.sash'),
+    slider = require(ROOT .. 'widget.slider'),
+    stepper = require(ROOT .. 'widget.stepper'),
+    text = require(ROOT .. 'widget.text'),
 }
 
-function Widget.create (layout, data)
-    local path = data.type and Widget.registeredTypes[data.type]
-
-    if path then
-        return require(path)(layout, data)
-    end
-
-    return Widget(layout, data)
+function Widget.register (name, decorator)
+    Widget.typeDecorators[name] = decorator
 end
 
 function Widget:constructor (layout, data)
@@ -45,6 +39,12 @@ function Widget:constructor (layout, data)
         local theme = widget.layout.theme
         return theme and theme:getProperty(self, property)
     end
+
+    local decorate = self.type and Widget.typeDecorators[self.type]
+
+    if decorate then
+        decorate(widget)
+    end
 end
 
 function Widget:extract (data)
@@ -52,7 +52,7 @@ function Widget:extract (data)
     -- TODO: get rid of pairs somehow
     for k, v in pairs(data) do
         if type(k) == 'number' then
-            children[k] = v.isWidget and v or Widget.create(self.layout, v)
+            children[k] = v.isWidget and v or Widget(self.layout, v)
             children[k].parent = self
         else
             self[k] = v
@@ -76,7 +76,7 @@ end
 
 function Widget:addChild (data)
     local layout = self.layout
-    local child = Widget.create(layout, data)
+    local child = Widget(layout, data)
 
     table.insert(self.children, child)
     child.parent = self

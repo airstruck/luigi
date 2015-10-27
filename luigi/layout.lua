@@ -13,7 +13,7 @@ local weakValueMeta = { __mode = 'v' }
 
 function Layout:constructor (data)
     self.widgets = setmetatable({}, weakValueMeta)
-    self.root = Widget.create(self, data or {})
+    self.root = Widget(self, data or {})
     self:setStyle()
     self:setTheme()
 

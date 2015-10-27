@@ -1,9 +1,4 @@
-local Widget = require((...):gsub('%.[^.]*$', ''))
-
-local Stepper = Widget:extend()
-
-function Stepper:constructor (layout, data)
-    Widget.constructor(self, layout, data)
+return function (self)
 
     self.flow = 'x'
     self.index = 1
@@ -58,6 +53,5 @@ function Stepper:constructor (layout, data)
     end)
 
     updateValue()
-end
 
-return Stepper
+end
