@@ -3,22 +3,26 @@ local ROOT = (...):gsub('[^.]*$', '')
 local Base = require(ROOT .. 'base')
 local Hooker = require(ROOT .. 'hooker')
 
-local Event = Base:extend({ name = 'Event' })
+local Event = Base:extend { name = 'Event' }
 
-function Event:emit (observer, data, defaultAction)
-    local callbacks = self.registry[observer]
-    if not callbacks then
-        if defaultAction then defaultAction() end
-        return
+function Event:emit (target, data, defaultAction)
+    while target do
+        local handlers = rawget(target, 'eventHandlers')
+        local callbacks = handlers and handlers[self.name]
+        if callbacks then
+            local result = callbacks(data or {})
+            if result ~= nil then return result end
+        end
+        target = target.widgetClass
     end
-    local result = callbacks(data or {})
-    if result ~= nil then return result end
     if defaultAction then defaultAction() end
 end
 
-function Event:bind (observer, callback)
-    local registry = self.registry
-    return Hooker.hook(registry, observer, callback)
+function Event:bind (target, callback)
+    if not rawget(target, 'eventHandlers') then
+        target.eventHandlers = {}
+    end
+    return Hooker.hook(target.eventHandlers, self.name, callback)
 end
 
 local eventNames = {
@@ -30,10 +34,7 @@ local eventNames = {
 local weakKeyMeta = { __mode = 'k' }
 
 for i, name in ipairs(eventNames) do
-    Event[name] = Event:extend({
-        name = name,
-        registry = setmetatable({}, weakKeyMeta),
-    })
+    Event[name] = Event:extend { name = name }
 end
 
 function Event.injectBinders (t)

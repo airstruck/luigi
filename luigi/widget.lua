@@ -25,6 +25,9 @@ function Widget.create (layout, data)
 end
 
 function Widget:constructor (layout, data)
+    local meta = getmetatable(self)
+    local metaIndex = meta.__index
+    self.widgetClass = metaIndex
     self.type = 'generic'
     self.layout = layout
     self.children = {}
@@ -33,15 +36,13 @@ function Widget:constructor (layout, data)
     self:extract(data)
     layout:addWidget(self)
     local widget = self
-    local meta = getmetatable(self)
-    local metaIndex = meta.__index
     function meta:__index(property)
         local value = metaIndex[property]
-        local style = widget.layout.style
-        local theme = widget.layout.theme
         if value ~= nil then return value end
+        local style = widget.layout.style
         value = style and style:getProperty(self, property)
         if value ~= nil then return value end
+        local theme = widget.layout.theme
         return theme and theme:getProperty(self, property)
     end
 end

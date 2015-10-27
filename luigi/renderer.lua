@@ -252,7 +252,7 @@ function Renderer:renderChildren (widget)
 end
 
 function Renderer:render (widget)
-    Event.Display:emit(widget, {}, function()
+    Event.Display:emit(widget, { target = widget }, function()
         self:renderBackground(widget)
         self:renderOutline(widget)
         self:renderSlices(widget)
