@@ -7,6 +7,7 @@ local Font = require(ROOT .. 'font')
 local Renderer = Base:extend()
 
 local imageCache = {}
+local sliceCache = {}
 
 function Renderer:loadImage (path)
     if not imageCache[path] then
@@ -16,7 +17,72 @@ function Renderer:loadImage (path)
     return imageCache[path]
 end
 
-function Renderer:renderBackground (widget, window)
+function Renderer:loadSlices (path)
+    local slices = sliceCache[path]
+
+    if not slices then
+        slices = {}
+        sliceCache[path] = slices
+        local image = self:loadImage(path)
+        local iw, ih = image:getWidth(), image:getHeight()
+        local w, h = math.floor(iw / 3), math.floor(ih / 3)
+        local Quad = love.graphics.newQuad
+
+        slices.image = image
+        slices.width = w
+        slices.height = h
+
+        slices.topLeft = Quad(0, 0, w, h, iw, ih)
+        slices.topCenter = Quad(w, 0, w, h, iw, ih)
+        slices.topRight = Quad(iw - w, 0, w, h, iw, ih)
+
+        slices.middleLeft = Quad(0, h, w, h, iw, ih)
+        slices.middleCenter = Quad(w, h, w, h, iw, ih)
+        slices.middleRight = Quad(iw - w, h, w, h, iw, ih)
+
+        slices.bottomLeft = Quad(0, ih - h, w, h, iw, ih)
+        slices.bottomCenter = Quad(w, ih - h, w, h, iw, ih)
+        slices.bottomRight = Quad(iw - w, ih - h, w, h, iw, ih)
+    end
+
+    return slices
+end
+
+function Renderer:renderSlices (widget)
+    local path = widget.slices
+    if not path then return end
+
+    local x1, y1, x2, y2 = widget:getRectangle(true)
+
+    local slices = self:loadSlices(path)
+
+    local batch = love.graphics.newSpriteBatch(slices.image)
+
+    local xScale = ((x2 - x1) - slices.width * 2) / slices.width
+    local yScale = ((y2 - y1) - slices.height * 2) / slices.height
+
+    batch:add(slices.middleCenter, x1 + slices.width, y1 + slices.height, 0,
+    xScale, yScale)
+
+    batch:add(slices.topCenter, x1 + slices.width, y1, 0,
+        xScale, 1)
+    batch:add(slices.bottomCenter, x1 + slices.width, y2 - slices.height, 0,
+        xScale, 1)
+
+    batch:add(slices.middleLeft, x1, y1 + slices.height, 0,
+        1, yScale)
+    batch:add(slices.middleRight, x2 - slices.width, y1 + slices.height, 0,
+        1, yScale)
+
+    batch:add(slices.topLeft, x1, y1)
+    batch:add(slices.topRight, x2 - slices.width, y1)
+    batch:add(slices.bottomLeft, x1, y2 - slices.height)
+    batch:add(slices.bottomRight, x2 - slices.width, y2 - slices.height)
+
+    love.graphics.draw(batch)
+end
+
+function Renderer:renderBackground (widget)
     if not widget.background then return end
     local x1, y1, x2, y2 = widget:getRectangle(true)
 
@@ -26,7 +92,7 @@ function Renderer:renderBackground (widget, window)
     love.graphics.pop()
 end
 
-function Renderer:renderOutline (widget, window)
+function Renderer:renderOutline (widget)
     if not widget.outline then return end
     local x1, y1, x2, y2 = widget:getRectangle(true)
 
@@ -114,7 +180,7 @@ function Renderer:positionText (widget, x1, y1, x2, y2)
     return font, x1, y
 end
 
-function Renderer:renderIconAndText (widget, window)
+function Renderer:renderIconAndText (widget)
     local x1, y1, x2, y2 = widget:getRectangle(true, true)
 
     -- if the drawable area has no width or height, don't render
@@ -187,10 +253,10 @@ end
 
 function Renderer:render (widget)
     Event.Display:emit(widget, {}, function()
-        local window = widget.layout.window
-        self:renderBackground(widget, window)
-        self:renderOutline(widget, window)
-        self:renderIconAndText(widget, window)
+        self:renderBackground(widget)
+        self:renderOutline(widget)
+        self:renderSlices(widget)
+        self:renderIconAndText(widget)
         return self:renderChildren(widget)
     end)
 end

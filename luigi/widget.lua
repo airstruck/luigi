@@ -84,25 +84,32 @@ function Widget:addChild (data)
     return child
 end
 
+local function clamp (value, min, max)
+    return value < min and min or value > max and max or value
+end
+
 function Widget:calculateDimension (name)
-    function clamp(value, min, max)
-        if value < min then
-            value = min
-        elseif value > max then
-            value = max
-        end
-        return value
-    end
-    if self[name] then
-        self.dimensions[name] = clamp(self[name], 0, self.layout.root[name])
-    end
     if self.dimensions[name] then
         return self.dimensions[name]
     end
-    local parent = self.parent
-    if not parent then
-        return self.layout
+
+    local min = (name == 'width') and (self.minimumWidth or 0)
+        or (self.minimumHeight or 0)
+
+    local max = self.layout.root[name]
+
+    if self[name] then
+        self.dimensions[name] = clamp(self[name], min, max)
+        return self.dimensions[name]
     end
+
+    local parent = self.parent
+
+    if not parent then
+        self.dimensions[name] = max
+        return self.dimensions[name]
+    end
+
     local parentDimension = parent:calculateDimension(name)
     parentDimension = parentDimension - (parent.margin or 0) * 2
     parentDimension = parentDimension - (parent.padding or 0) * 2
@@ -110,7 +117,8 @@ function Widget:calculateDimension (name)
     if (parentFlow == 'y' and name == 'width') or
         (parentFlow == 'x' and name == 'height')
     then
-        return parentDimension
+        self.dimensions[name] = clamp(parentDimension, min, max)
+        return self.dimensions[name]
     end
     local claimed = 0
     local unsized = 1
@@ -127,7 +135,9 @@ function Widget:calculateDimension (name)
         end
     end
     local size = (parentDimension - claimed) / unsized
-    self.dimensions[name] = clamp(size, 0, self.layout.root[name])
+
+    size = clamp(size, min, max)
+    self.dimensions[name] = size
     return size
 end
 

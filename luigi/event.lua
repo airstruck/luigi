@@ -22,9 +22,9 @@ function Event:bind (observer, callback)
 end
 
 local eventNames = {
-    'Display', 'Keyboard', 'Motion', 'Mouse', 'Reshape', 'Enter', 'Leave',
-    'Press', 'PressStart', 'PressDrag', 'PressMove', 'PressLeave', 'PressEnter',
-    'PressEnd'
+    'Reshape', 'Display', 'Keyboard', 'TextInput', 'Motion',
+    'Enter', 'Leave', 'PressEnter', 'PressLeave',
+    'PressStart', 'PressEnd', 'PressDrag', 'PressMove', 'Press',
 }
 
 local weakKeyMeta = { __mode = 'k' }

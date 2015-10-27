@@ -14,12 +14,9 @@ local style = {
     toolButton = {
         align = 'center middle',
         width = 48,
-        margin = 4,
-        padding = 0,
     },
     toolButton_not_hovered = {
-        background = false,
-        outline = false,
+        slices = false,
     },
     toolButton_hovered = {
         tint = { 200, 255, 200 },

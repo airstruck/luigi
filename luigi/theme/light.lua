@@ -1,3 +1,5 @@
+local RESOURCE = (...):gsub('%.', '/') .. '/'
+
 return function (config)
     config = config or {}
 
@@ -13,24 +15,23 @@ return function (config)
         button = {
             type = 'panel',
             align = 'center middle',
-            outline = lineColor,
-            bend = 0.1,
-            margin = 2,
+            padding = 6,
+            slices = RESOURCE .. 'button.png',
+            minimumWidth = 24,
+            minimumHeight = 24
         },
         button_hovered = {
-            background = white,
-            outline = highlight,
+        slices = RESOURCE .. 'button_hovered.png'
         },
         button_pressed = {
-            background = highlight,
-            outline = highlight,
+            slices = RESOURCE .. 'button_pressed.png',
         },
         text = {
             align = 'left middle',
-            background = { 255, 255, 255 },
-            outline = lineColor,
-            margin = 2,
-            padding = 2,
+            slices = RESOURCE .. 'text.png',
+            padding = 6,
+            minimumWidth = 24,
+            minimumHeight = 24
         },
         sash = {
             background = lineColor

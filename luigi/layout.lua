@@ -131,6 +131,9 @@ function Layout:manageInput (input)
     self:hook('keypressed', function (key, isRepeat)
         return input:handleKeyboard(key, love.mouse.getX(), love.mouse.getY())
     end)
+    self:hook('textinput', function (text)
+        return input:handleTextInput(text, love.mouse.getX(), love.mouse.getY())
+    end)
 end
 
 -- event binders

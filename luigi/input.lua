@@ -37,6 +37,14 @@ function Input:handleKeyboard (key, x, y)
     })
 end
 
+function Input:handleTextInput (text, x, y)
+    local widget = self.layout.focusedWidget or self.layout:getWidgetAt(x, y)
+    self:bubbleEvent('TextInput', widget, {
+        target = widget,
+        text = text, x = x, y = y
+    })
+end
+
 function Input:handleMotion (x, y)
     local widget = self.layout:getWidgetAt(x, y)
     local previousWidget = self.previousMotionWidget
