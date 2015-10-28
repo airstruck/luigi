@@ -41,10 +41,14 @@ return function (config)
         slider = {
             slices = RESOURCE .. 'button_pressed.png',
             padding = 0,
+            minimumWidth = 24,
+            minimumHeight = 24
         },
         progress = {
             slices = RESOURCE .. 'button_pressed.png',
             padding = 0,
+            minimumWidth = 24,
+            minimumHeight = 24
         },
         progressInner = {
             slices = RESOURCE .. 'progress.png',

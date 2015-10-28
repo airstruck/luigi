@@ -1,7 +1,7 @@
 return function (self)
 
-    self.value = 0.5
-    self.flow = 'x' -- TODO: support vertical slider
+    self.value = 0
+    self.flow = 'x' -- TODO: support vertical progress?
 
     local bar = self:addChild {
         type = 'progressInner',
