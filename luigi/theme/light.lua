@@ -13,7 +13,6 @@ return function (config)
             background = backColor,
         },
         button = {
-            type = 'panel',
             align = 'center middle',
             padding = 6,
             slices = RESOURCE .. 'button.png',
@@ -21,7 +20,7 @@ return function (config)
             minimumHeight = 24
         },
         button_hovered = {
-        slices = RESOURCE .. 'button_hovered.png'
+            slices = RESOURCE .. 'button_hovered.png'
         },
         button_pressed = {
             slices = RESOURCE .. 'button_pressed.png',
@@ -40,15 +39,13 @@ return function (config)
             background = highlight
         },
         slider = {
-            type = 'panel',
-            outline = lineColor,
-            background = white,
+            slices = RESOURCE .. 'button_pressed.png',
+            padding = 0,
+        },
+        slider_hovered = {
         },
         stepper = {
             type = 'panel',
-        },
-        slider_hovered = {
-            outline = highlight,
         },
     }
 

@@ -60,9 +60,9 @@ local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
         { type = 'sash', width = 4, },
         { type = 'panel', id = 'rightSideBox', width = 200,
             { type = 'panel', text = 'A slider', align = 'bottom', height = 24, padding = 4 },
-            { type = 'slider', height = 32, padding = 4, id = 'slidey', },
+            { type = 'slider', height = 32, margin = 4, id = 'slidey', },
             { type = 'panel', text = 'A stepper', align = 'bottom', height = 24, padding = 4 },
-            { type = 'stepper', height = 32, padding = 4, options = {
+            { type = 'stepper', height = 32, margin = 4, options = {
                 { value = 1, text = 'Thing One' },
                 { value = 2, text = 'Thing Two' },
                 { value = 3, text = 'Thing Three' },

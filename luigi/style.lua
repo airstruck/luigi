@@ -55,8 +55,8 @@ function Style:eachName (object)
         end
         return true
     end
-    local function getSpecialName (...)
-        for k, name in ipairs({ ... }) do
+    local function getSpecialName (names)
+        for k, name in ipairs(names) do
             if not returnedSpecialName[name] then
                 returnedSpecialName[name] = true
                 if rawget(object, name) then
@@ -69,7 +69,7 @@ function Style:eachName (object)
     end
     return function ()
         if not checkLookupProp() then return end
-        local specialName = getSpecialName('pressed', 'hovered')
+        local specialName = getSpecialName { 'pressed', 'hovered' }
         if specialName then return specialName end
         lookupPropIndex = lookupPropIndex + 1
         return lookupProp[lookupPropIndex]

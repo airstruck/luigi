@@ -76,7 +76,7 @@ end
 
 function Widget:addChild (data)
     local layout = self.layout
-    local child = Widget(layout, data)
+    local child = Widget(layout, data or {})
 
     table.insert(self.children, child)
     child.parent = self

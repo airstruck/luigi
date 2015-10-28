@@ -1,9 +1,9 @@
 return function (self)
 
-    self.flow = 'x'
     self.index = 1
+    self.flow = 'x' -- TODO: support vertical stepper
 
-    local left = self:addChild {
+    local decrement = self:addChild {
         type = 'button',
         text = '<',
         align = 'middle center',
@@ -15,7 +15,7 @@ return function (self)
         margin = 0,
     }
 
-    local right = self:addChild {
+    local increment = self:addChild {
         type = 'button',
         text = '>',
         align = 'middle center',
@@ -23,8 +23,8 @@ return function (self)
     }
 
     self:onReshape(function (event)
-        left.width = left:getHeight()
-        right.width = right:getHeight()
+        decrement.width = decrement:getHeight()
+        increment.width = increment:getHeight()
     end)
 
     local function updateValue ()
@@ -34,7 +34,7 @@ return function (self)
         view.text = option.text
     end
 
-    left:onPress(function (event)
+    decrement:onPress(function (event)
         if not self.options then return end
         self.index = self.index - 1
         if self.index < 1 then
@@ -43,7 +43,7 @@ return function (self)
         updateValue()
     end)
 
-    right:onPress(function (event)
+    increment:onPress(function (event)
         if not self.options then return end
         self.index = self.index + 1
         if self.index > #self.options then
