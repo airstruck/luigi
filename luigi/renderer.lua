@@ -235,7 +235,7 @@ function Renderer:renderIconAndText (widget)
     end
 
     -- draw the text
-    if text then
+    if text and x2 > x1 then
         textX, textY = math.floor(textX), math.floor(textY)
         love.graphics.setFont(font.font)
         love.graphics.setColor(font.color)

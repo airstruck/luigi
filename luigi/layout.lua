@@ -103,9 +103,7 @@ end
 
 local getMouseButtonId
 
-local major, minor, revision, codename = love.getVersion()
-
-if minor < 10 then
+if love._version_minor < 10 then
     getMouseButtonId = function (value)
         return value == 'l' and 1
             or value == 'r' and 2
