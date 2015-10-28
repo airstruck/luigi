@@ -52,9 +52,18 @@ function Font:getAdvance (text)
     return (self.font:getWidth(text))
 end
 
-function Font:getWrappedHeight (text)
-    local _, lines = self.font:getWrap(text, self.layout.width)
-    return #lines * self.font:getHeight()
+local major, minor, revision, codename = love.getVersion()
+
+if minor < 10 then
+    function Font:getWrappedHeight (text)
+        local _, lines = self.font:getWrap(text, self.layout.width)
+        return lines * self.font:getHeight()
+    end
+else
+    function Font:getWrappedHeight (text)
+        local _, lines = self.font:getWrap(text, self.layout.width)
+        return #lines * self.font:getHeight()
+    end
 end
 
 return Font

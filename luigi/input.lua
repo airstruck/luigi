@@ -126,7 +126,8 @@ function Input:handlePressStart (button, x, y)
     self.passedWidgets[button] = widget
     self:bubbleEvent('PressStart', widget, {
         target = widget,
-        button = button, x = x, y = y
+        button = button,
+        x = x, y = y
     })
 end
 

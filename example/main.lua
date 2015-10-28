@@ -1,3 +1,5 @@
+love.filesystem.setSymlinksEnabled(true) -- for older love versions
+
 local Layout = require 'luigi.layout'
 
 local style = {

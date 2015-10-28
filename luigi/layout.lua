@@ -101,6 +101,22 @@ function Layout:unhook ()
     self.hooks = {}
 end
 
+local getMouseButtonId
+
+local major, minor, revision, codename = love.getVersion()
+
+if minor < 10 then
+    getMouseButtonId = function (value)
+        return value == 'l' and 1
+            or value == 'r' and 2
+            or value == 'm' and 3
+    end
+else
+    getMouseButtonId = function (value)
+        return value
+    end
+end
+
 function Layout:manageInput (input)
     if self.isManagingInput then
         return
@@ -115,11 +131,11 @@ function Layout:manageInput (input)
     end)
     self:hook('mousepressed', function (x, y, button)
         self.isMousePressed = true
-        return input:handlePressStart(button, x, y)
+        return input:handlePressStart(getMouseButtonId(button), x, y)
     end)
     self:hook('mousereleased', function (x, y, button)
         self.isMousePressed = false
-        return input:handlePressEnd(button, x, y)
+        return input:handlePressEnd(getMouseButtonId(button), x, y)
     end)
     self:hook('mousemoved', function (x, y, dx, dy)
         if self.isMousePressed then
