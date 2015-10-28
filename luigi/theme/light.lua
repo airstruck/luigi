@@ -42,10 +42,18 @@ return function (config)
             slices = RESOURCE .. 'button_pressed.png',
             padding = 0,
         },
+        progress = {
+            slices = RESOURCE .. 'button_pressed.png',
+            padding = 0,
+        },
+        progressInner = {
+            slices = RESOURCE .. 'progress.png',
+            padding = 0,
+            minimumWidth = 12,
+        },
         slider_hovered = {
         },
         stepper = {
-            type = 'panel',
         },
     }
 

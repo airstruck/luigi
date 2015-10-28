@@ -8,6 +8,7 @@ local Widget = Base:extend()
 Widget.isWidget = true
 
 Widget.typeDecorators = {
+    progress = require(ROOT .. 'widget.progress'),
     sash = require(ROOT .. 'widget.sash'),
     slider = require(ROOT .. 'widget.slider'),
     stepper = require(ROOT .. 'widget.stepper'),

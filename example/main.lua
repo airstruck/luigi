@@ -69,6 +69,8 @@ local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
                 { value = 2, text = 'Thing Two' },
                 { value = 3, text = 'Thing Three' },
             } },
+            { type = 'panel', text = 'A progress bar', align = 'bottom', height = 24, padding = 4 },
+            { type = 'progress', height = 32, margin = 4, id = 'progressBar', },
         },
     },
     { type = 'sash', height = 4, },
@@ -91,9 +93,9 @@ layout.leftSideBox:addChild {
     align = 'middle right'
 }
 
-layout.slidey:onMotion(function (event)
-    layout.statusbar.text = event.x
-    return false
+layout.slidey:onPressDrag(function (event)
+    layout.progressBar.value = layout.slidey.value
+    layout.progressBar:reflow()
 end)
 
 --[[

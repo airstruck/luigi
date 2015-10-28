@@ -19,12 +19,24 @@ return function (self)
     thumb:onPressStart(unpress)
     thumb:onPressEnter(unpress)
 
-    self:onPressDrag(function (event)
+    local function press (event)
         local x1, y1, x2, y2 = self:getRectangle(true, true)
         self.value = (event.x - x1) / (x2 - x1)
         if self.value < 0 then self.value = 0 end
         if self.value > 1 then self.value = 1 end
         self:reflow()
+    end
+
+    self:onPressStart(press)
+
+    self:onPressDrag(press)
+
+    self:onEnter(function (event)
+        thumb.hovered = true
+    end)
+
+    self:onLeave(function (event)
+        thumb.hovered = false
     end)
 
     self:onReshape(function (event)

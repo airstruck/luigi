@@ -11,6 +11,7 @@ return function (self)
     }
 
     local view = self:addChild {
+        type = 'text',
         align = 'middle center',
         margin = 0,
     }
