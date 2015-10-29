@@ -29,12 +29,36 @@ function Input:handleDisplay ()
     Event.Display:emit(self.layout)
 end
 
-function Input:handleKeyboard (key, x, y)
+function Input:handleKeyPress (key, x, y)
     local widget = self.layout.focusedWidget or self.layout:getWidgetAt(x, y)
-    self:bubbleEvent('Keyboard', widget, {
+    local result = self:bubbleEvent('KeyPress', widget, {
         target = widget,
         key = key, x = x, y = y
     })
+    if result ~= nil then return result end
+
+    local acceleratedWidget = self.layout.accelerators[key]
+
+    if acceleratedWidget then
+        acceleratedWidget.hovered = true
+        self:handlePressStart(key, x, y, acceleratedWidget, key)
+    end
+end
+
+function Input:handleKeyRelease (key, x, y)
+    local widget = self.layout.focusedWidget or self.layout:getWidgetAt(x, y)
+    local result = self:bubbleEvent('KeyRelease', widget, {
+        target = widget,
+        key = key, x = x, y = y
+    })
+    if result ~= nil then return result end
+
+    local acceleratedWidget = self.layout.accelerators[key]
+
+    if acceleratedWidget then
+        acceleratedWidget.hovered = false
+        self:handlePressEnd(key, x, y, acceleratedWidget, key)
+    end
 end
 
 function Input:handleTextInput (text, x, y)
@@ -119,31 +143,35 @@ function Input:handlePressedMotion (x, y)
     end
 end
 
-function Input:handlePressStart (button, x, y)
-    local widget = self.layout:getWidgetAt(x, y)
+function Input:handlePressStart (button, x, y, widget, accelerator)
+    local widget = widget or self.layout:getWidgetAt(x, y)
     widget.pressed = true
     self.pressedWidgets[button] = widget
     self.passedWidgets[button] = widget
     self:bubbleEvent('PressStart', widget, {
         target = widget,
         button = button,
+        accelerator = accelerator,
         x = x, y = y
     })
 end
 
-function Input:handlePressEnd (button, x, y)
-    local widget = self.layout:getWidgetAt(x, y)
+function Input:handlePressEnd (button, x, y, widget, accelerator)
+    local widget = widget or self.layout:getWidgetAt(x, y)
     local originWidget = self.pressedWidgets[button]
     originWidget.pressed = nil
     self:bubbleEvent('PressEnd', widget, {
         target = widget,
         origin = originWidget,
+        accelerator = accelerator,
         button = button, x = x, y = y
     })
     if (widget == originWidget) then
         self:bubbleEvent('Press', widget, {
             target = widget,
-            button = button, x = x, y = y
+            button = button,
+            accelerator = accelerator,
+            x = x, y = y
         })
     end
     self.pressedWidgets[button] = nil
@@ -151,11 +179,11 @@ function Input:handlePressEnd (button, x, y)
 end
 
 function Input:handleReshape (width, height)
-    local layout = self.layout
-    local root = layout.root
-    layout.root:reflow()
+    local root = self.layout.root
+
     root.width = width
     root.height = height
+    root:reflow()
 end
 
 return Input

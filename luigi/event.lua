@@ -7,11 +7,7 @@ local Event = Base:extend({ name = 'Event' })
 
 function Event:emit (target, data, defaultAction)
     local callbacks = self.registry[target]
-    if not callbacks then
-        if defaultAction then defaultAction() end
-        return
-    end
-    local result = callbacks(data or {})
+    local result = callbacks and callbacks(data or {})
     if result ~= nil then return result end
     if defaultAction then defaultAction() end
 end
@@ -22,7 +18,7 @@ function Event:bind (target, callback)
 end
 
 local eventNames = {
-    'Reshape', 'Display', 'Keyboard', 'TextInput', 'Motion',
+    'Reshape', 'Display', 'KeyPress', 'KeyRelease', 'TextInput', 'Motion',
     'Enter', 'Leave', 'PressEnter', 'PressLeave',
     'PressStart', 'PressEnd', 'PressDrag', 'PressMove', 'Press',
 }

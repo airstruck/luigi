@@ -40,7 +40,7 @@ local style = {
 
 local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
     { type = 'panel', id = 'toolbar', flow = 'x',
-        { type = 'button', id = 'newButton', style = 'toolButton',
+        { type = 'button', id = 'newButton', style = 'toolButton', key = 'z',
             icon = 'icon/emblem-default.png' },
         { type = 'button', id = 'loadButton', style = 'toolButton',
             icon = 'icon/emblem-documents.png' },
@@ -77,7 +77,7 @@ local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
     { type = 'panel', flow = 'x', height = 48, padding = 2,
         { type = 'text', id = 'aTextField', text = 'a text field',
             font = 'font/liberation/LiberationMono-Regular.ttf' },
-        { type = 'button', width = 80, id = 'aButton', text = 'Styling!' },
+        { type = 'button', key='return', width = 80, id = 'aButton', text = 'Styling!' },
     },
     { type = 'panel', id = 'statusbar', height = 24, padding = 4, textColor = { 255, 0, 0 } },
 }

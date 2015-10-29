@@ -13,13 +13,14 @@ local weakValueMeta = { __mode = 'v' }
 
 function Layout:constructor (data)
     self.widgets = setmetatable({}, weakValueMeta)
-    self.root = Widget(self, data or {})
+    self.accelerators = {}
     self:setStyle()
     self:setTheme()
 
     self.isMousePressed = false
     self.isManagingInput = false
     self.hooks = {}
+    self.root = Widget(self, data or {})
 end
 
 function Layout:setStyle (rules)
@@ -85,6 +86,9 @@ function Layout:addWidget (widget)
     if widget.id then
         self[widget.id] = widget
     end
+    if widget.key then
+        self.accelerators[widget.key] = widget
+    end
     table.insert(self.widgets, widget)
 end
 
@@ -143,7 +147,10 @@ function Layout:manageInput (input)
         end
     end)
     self:hook('keypressed', function (key, isRepeat)
-        return input:handleKeyboard(key, love.mouse.getX(), love.mouse.getY())
+        return input:handleKeyPress(key, love.mouse.getX(), love.mouse.getY())
+    end)
+    self:hook('keyreleased', function (key)
+        return input:handleKeyRelease(key, love.mouse.getX(), love.mouse.getY())
     end)
     self:hook('textinput', function (text)
         return input:handleTextInput(text, love.mouse.getX(), love.mouse.getY())
