@@ -4,9 +4,9 @@ local Base = require(ROOT .. 'base')
 
 local Style = Base:extend()
 
-function Style:constructor (rules, ...)
+function Style:constructor (rules, lookupNames)
     self.rules = rules
-    self.lookupNames = { ... }
+    self.lookupNames = lookupNames
 end
 
 function Style:getProperty (object, property)
