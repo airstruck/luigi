@@ -18,7 +18,7 @@ function Event:bind (target, callback)
 end
 
 local eventNames = {
-    'Reshape', 'Display', 'KeyPress', 'KeyRelease', 'TextInput', 'Motion',
+    'Reshape', 'Display', 'KeyPress', 'KeyRelease', 'TextInput', 'Move',
     'Enter', 'Leave', 'PressEnter', 'PressLeave',
     'PressStart', 'PressEnd', 'PressDrag', 'PressMove', 'Press',
 }

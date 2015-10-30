@@ -24,7 +24,7 @@ return function (self)
         self.value = (event.x - x1) / (x2 - x1)
         if self.value < 0 then self.value = 0 end
         if self.value > 1 then self.value = 1 end
-        self:reflow()
+        self:reshape()
     end
 
     self:onPressStart(press)

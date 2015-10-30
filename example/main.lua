@@ -95,7 +95,7 @@ layout.leftSideBox:addChild {
 
 layout.slidey:onPressDrag(function (event)
     layout.progressBar.value = layout.slidey.value
-    layout.progressBar:reflow()
+    layout.progressBar:reshape()
 end)
 
 --[[
@@ -115,14 +115,14 @@ layout:onKeyboard(function(event)
 end)
 ]]
 
-layout:onMotion(function (event)
+layout:onMove(function (event)
     local w = event.target
     layout.statusbar.text = (w.id or '(unnamed)') .. ' ' ..
         w:getX() .. ', ' .. w:getY() .. ' | ' ..
         w:getWidth() .. 'x' .. w:getHeight()
 end)
 
-layout.newButton:onMotion(function (event)
+layout.newButton:onMove(function (event)
     layout.statusbar.text = 'Create a new thing'
     return false
 end)

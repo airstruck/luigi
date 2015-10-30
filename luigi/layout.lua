@@ -52,7 +52,7 @@ function Layout:show ()
         love.window.setTitle(title)
     end
     self:manageInput(self.input)
-    root:reflow()
+    root:reshape()
 end
 
 function Layout:hide ()
@@ -141,9 +141,9 @@ function Layout:manageInput (input)
     end)
     self:hook('mousemoved', function (x, y, dx, dy)
         if self.isMousePressed then
-            return input:handlePressedMotion(x, y)
+            return input:handlePressedMove(x, y)
         else
-            return input:handleMotion(x, y)
+            return input:handleMove(x, y)
         end
     end)
     self:hook('keypressed', function (key, isRepeat)

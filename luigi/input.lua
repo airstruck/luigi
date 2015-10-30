@@ -69,16 +69,16 @@ function Input:handleTextInput (text, x, y)
     })
 end
 
-function Input:handleMotion (x, y)
+function Input:handleMove (x, y)
     local widget = self.layout:getWidgetAt(x, y)
-    local previousWidget = self.previousMotionWidget
+    local previousWidget = self.previousMoveWidget
     if not widget.hovered then
         if previousWidget then
             previousWidget.hovered = nil
         end
         widget.hovered = true
     end
-    self:bubbleEvent('Motion', widget, {
+    self:bubbleEvent('Move', widget, {
         target = widget,
         oldTarget = previousWidget,
         x = x, y = y
@@ -96,11 +96,11 @@ function Input:handleMotion (x, y)
             oldTarget = previousWidget,
             x = x, y = y
         })
-        self.previousMotionWidget = widget
+        self.previousMoveWidget = widget
     end
 end
 
-function Input:handlePressedMotion (x, y)
+function Input:handlePressedMove (x, y)
     local widget = self.layout:getWidgetAt(x, y)
     for button = 1, 3 do
         local originWidget = self.pressedWidgets[button]
@@ -183,7 +183,7 @@ function Input:handleReshape (width, height)
 
     root.width = width
     root.height = height
-    root:reflow()
+    root:reshape()
 end
 
 return Input

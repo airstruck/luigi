@@ -1,9 +1,10 @@
 local ROOT = (...):gsub('[^.]*$', '')
 
-local Base = require(ROOT .. 'base')
 local Event = require(ROOT .. 'event')
 
-local Widget = Base:extend()
+local Widget = {}
+
+Event.injectBinders(Widget)
 
 Widget.isWidget = true
 
@@ -19,46 +20,40 @@ function Widget.register (name, decorator)
     Widget.typeDecorators[name] = decorator
 end
 
-function Widget:constructor (layout, data)
-    local meta = getmetatable(self)
-    local metaIndex = meta.__index
-    self.widgetClass = metaIndex
-    self.type = 'generic'
+local function new (Widget, layout, self)
+    self = self or {}
+    self.type = self.type or 'generic'
     self.layout = layout
     self.children = {}
     self.position = { x = nil, y = nil }
     self.dimensions = { width = nil, height = nil }
-    self:extract(data)
+
+    local meta = setmetatable(self, {
+        __index = function (self, property)
+            local value = Widget[property]
+            if value ~= nil then return value end
+            local style = self.layout.style
+            value = style and style:getProperty(self, property)
+            if value ~= nil then return value end
+            local theme = self.layout.theme
+            return theme and theme:getProperty(self, property)
+        end
+    })
+
     layout:addWidget(self)
-    local widget = self
-    function meta:__index(property)
-        local value = metaIndex[property]
-        if value ~= nil then return value end
-        local style = widget.layout.style
-        value = style and style:getProperty(self, property)
-        if value ~= nil then return value end
-        local theme = widget.layout.theme
-        return theme and theme:getProperty(self, property)
+
+    for k, v in ipairs(self) do
+        self.children[k] = v.isWidget and v or new(Widget, self.layout, v)
+        self.children[k].parent = self
     end
 
-    local decorate = self.type and Widget.typeDecorators[self.type]
+    local decorate = Widget.typeDecorators[self.type]
 
     if decorate then
-        decorate(widget)
+        decorate(self)
     end
-end
 
-function Widget:extract (data)
-    local children = self.children
-    -- TODO: get rid of pairs somehow
-    for k, v in pairs(data) do
-        if type(k) == 'number' then
-            children[k] = v.isWidget and v or Widget(self.layout, v)
-            children[k].parent = self
-        else
-            self[k] = v
-        end
-    end
+    return self
 end
 
 function Widget:getPrevious ()
@@ -251,18 +246,16 @@ function Widget:getAncestors (includeSelf)
     end
 end
 
--- Reflow the widget. Call this after changing position/dimensions.
-function Widget:reflow ()
+-- reshape the widget. Call this after changing position/dimensions.
+function Widget:reshape ()
     self.position = {}
     self.dimensions = {}
     Event.Reshape:emit(self, {
         target = self
     })
     for i, widget in ipairs(self.children) do
-        widget:reflow()
+        widget:reshape()
     end
 end
 
-Event.injectBinders(Widget)
-
-return Widget
+return setmetatable(Widget, { __call = new })

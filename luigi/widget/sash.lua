@@ -22,9 +22,9 @@ return function (self)
                     nextSibling[dimension] - event[axis])
         end
 
-        prevSibling:reflow()
-        nextSibling:reflow()
-        self:reflow()
+        prevSibling:reshape()
+        nextSibling:reshape()
+        self:reshape()
     end)
 
 end
