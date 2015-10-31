@@ -1,5 +1,14 @@
 return function (self)
 
+    self:onEnter(function (event)
+        local axis = self.parent.flow
+        if axis == 'x' then
+            self.cursor = 'sizewe'
+        else
+            self.cursor = 'sizens'
+        end
+    end)
+
     self:onPressDrag(function (event)
         local axis = self.parent.flow
         if axis == 'x' then

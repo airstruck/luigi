@@ -63,6 +63,7 @@ return function (config)
             minimumWidth = 24,
             minimumHeight = 24,
             canFocus = true,
+            cursor = 'ibeam',
         },
         text_focused = {
             slices = RESOURCE .. 'text_focused.png',

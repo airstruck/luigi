@@ -67,6 +67,11 @@ function Input:handleMove (x, y)
             oldTarget = previousWidget,
             x = x, y = y
         })
+        if widget.cursor then
+            love.mouse.setCursor(love.mouse.getSystemCursor(widget.cursor))
+        else
+            love.mouse.setCursor()
+        end
         self.previousMoveWidget = widget
     end
 end
