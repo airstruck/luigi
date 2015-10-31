@@ -23,9 +23,6 @@ local style = {
     toolButton_not_hovered = {
         slices = false,
     },
-    toolButton_hovered = {
-        tint = { 200, 255, 200 },
-    },
     statusbar = {
         style = 'panel',
         align = 'left middle',
@@ -88,7 +85,7 @@ local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
 local layout = Layout(mainForm)
 
 layout:setStyle(style)
-layout:setTheme(require 'luigi.theme.light' { highlight = { 150, 255, 150 } })
+-- layout:setTheme(require 'luigi.theme.light')
 
 layout.leftSideBox:addChild {
     text = 'Alright man this is a great song\nwith a really long title...',

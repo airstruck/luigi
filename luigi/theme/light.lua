@@ -6,7 +6,7 @@ return function (config)
     local backColor = config.backColor or { 240, 240, 240 }
     local lineColor = config.lineColor or { 220, 220, 220 }
     local white = config.white or { 255, 255, 255 }
-    local highlight = config.highlight or { 180, 180, 255 }
+    local highlight = config.highlight or { 0x19, 0xAE, 0xFF }
 
     return {
         button = {

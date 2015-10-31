@@ -14,7 +14,7 @@ local weakValueMeta = { __mode = 'v' }
 function Layout:constructor (data)
     self.accelerators = {}
     self:setStyle()
-    self:setTheme()
+    self:setTheme(require(ROOT .. 'theme.light'))
 
     self.isMousePressed = false
     self.isManagingInput = false

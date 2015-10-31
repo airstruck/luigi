@@ -38,6 +38,8 @@ return function (self)
 
     local function press (event)
         local x1, y1, x2, y2 = self:getRectangle(true, true)
+        local halfThumb = thumb:getWidth() / 2
+        x1, x2 = x1 + halfThumb, x2 - halfThumb
         self:setValue(clamp((event.x - x1) / (x2 - x1)))
         self:reshape()
         self.layout:tryFocus(thumb)
@@ -56,6 +58,8 @@ return function (self)
 
     self:onReshape(function (event)
         local x1, y1, x2, y2 = self:getRectangle(true, true)
-        spacer.width = self.value * (x2 - x1 - thumb:getWidth())
+        local halfThumb = thumb:getWidth() / 2
+        x1, x2 = x1 + halfThumb, x2 - halfThumb
+        spacer.width = self.value * (x2 - x1)
     end)
 end
