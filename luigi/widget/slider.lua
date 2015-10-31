@@ -1,6 +1,11 @@
 return function (self)
 
-    self.value = 0.5
+    local function clamp (value)
+        return value < 0 and 0 or value > 1 and 1 or value
+    end
+
+    self:setValue(clamp(self.value or 0.5))
+    self.step = self.step or 0.01
     self.flow = 'x' -- TODO: support vertical slider
 
     local spacer = self:addChild()
@@ -13,22 +18,32 @@ return function (self)
     }
 
     local function unpress ()
-        thumb.pressed = false
+        thumb.pressed = false -- don't make the thumb appear pushed in
+        return false -- don't press thumb on focused keyboard activation
     end
 
     thumb:onPressStart(unpress)
     thumb:onPressEnter(unpress)
 
+    thumb:onKeyPress(function (event)
+        local key = event.key
+        if key == 'left' or key == 'down' then
+            self:setValue(clamp(self.value - self.step))
+            self:reshape()
+        elseif event.key == 'right' or key == 'up' then
+            self:setValue(clamp(self.value + self.step))
+            self:reshape()
+        end
+    end)
+
     local function press (event)
         local x1, y1, x2, y2 = self:getRectangle(true, true)
-        self.value = (event.x - x1) / (x2 - x1)
-        if self.value < 0 then self.value = 0 end
-        if self.value > 1 then self.value = 1 end
+        self:setValue(clamp((event.x - x1) / (x2 - x1)))
         self:reshape()
+        self.layout:tryFocus(thumb)
     end
 
     self:onPressStart(press)
-
     self:onPressDrag(press)
 
     self:onEnter(function (event)

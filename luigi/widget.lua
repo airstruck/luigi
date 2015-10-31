@@ -9,6 +9,7 @@ Event.injectBinders(Widget)
 Widget.isWidget = true
 
 Widget.typeDecorators = {
+    button = require(ROOT .. 'widget.button'),
     progress = require(ROOT .. 'widget.progress'),
     sash = require(ROOT .. 'widget.sash'),
     slider = require(ROOT .. 'widget.slider'),
@@ -34,7 +35,7 @@ local function new (Widget, layout, self)
             if value ~= nil then return value end
             local style = self.layout.style
             value = style and style:getProperty(self, property)
-            if value ~= nil then return value end
+            if value ~= nil and value ~= 'defer' then return value end
             local theme = self.layout.theme
             return theme and theme:getProperty(self, property)
         end
@@ -56,7 +57,29 @@ local function new (Widget, layout, self)
     return self
 end
 
+function Widget:bubbleEvent (eventName, data)
+    local event = Event[eventName]
+    data = data or {}
+    data.target = self
+    for ancestor in self:eachAncestor(true) do
+        local result = event:emit(ancestor, data)
+        if result ~= nil then return result end
+    end
+    return event:emit(self.layout, data)
+end
+
+function Widget:setValue (value)
+    local oldValue = self.value
+    self.value = value
+
+    self:bubbleEvent('Change', {
+        value = value,
+        oldValue = oldValue,
+    })
+end
+
 function Widget:getPrevious ()
+    if not self.parent then return end
     local siblings = self.parent.children
     for i, widget in ipairs(siblings) do
         if widget == self then return siblings[i - 1] end
@@ -64,6 +87,7 @@ function Widget:getPrevious ()
 end
 
 function Widget:getNext ()
+    if not self.parent then return end
     local siblings = self.parent.children
     for i, widget in ipairs(siblings) do
         if widget == self then return siblings[i + 1] end
@@ -76,7 +100,6 @@ function Widget:addChild (data)
 
     table.insert(self.children, child)
     child.parent = self
-    layout:addWidget(child)
 
     return child
 end
@@ -236,7 +259,7 @@ function Widget:isAt (x, y)
     return (x1 < x) and (x2 > x) and (y1 < y) and (y2 > y)
 end
 
-function Widget:getAncestors (includeSelf)
+function Widget:eachAncestor (includeSelf)
     local instance = includeSelf and self or self.parent
     return function()
         local widget = instance

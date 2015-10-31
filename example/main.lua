@@ -17,6 +17,9 @@ local style = {
         align = 'center middle',
         width = 48,
     },
+    toolButton_focused = {
+        slices = 'defer',
+    },
     toolButton_not_hovered = {
         slices = false,
     },
@@ -62,7 +65,7 @@ local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
         { type = 'sash', width = 4, },
         { type = 'panel', id = 'rightSideBox', width = 200,
             { type = 'panel', text = 'A slider', align = 'bottom', height = 24, padding = 4 },
-            { type = 'slider', height = 32, margin = 4, id = 'slidey', },
+            { type = 'slider', height = 32, margin = 4, id = 'slidey', value = 0 },
             { type = 'panel', text = 'A stepper', align = 'bottom', height = 24, padding = 4 },
             { type = 'stepper', height = 32, margin = 4, options = {
                 { value = 1, text = 'Thing One' },
@@ -93,8 +96,8 @@ layout.leftSideBox:addChild {
     align = 'middle right'
 }
 
-layout.slidey:onPressDrag(function (event)
-    layout.progressBar.value = layout.slidey.value
+layout.slidey:onChange(function (event)
+    layout.progressBar:setValue(event.value)
     layout.progressBar:reshape()
 end)
 

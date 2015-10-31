@@ -18,9 +18,18 @@ function Event:bind (target, callback)
 end
 
 local eventNames = {
-    'Reshape', 'Display', 'KeyPress', 'KeyRelease', 'TextInput', 'Move',
-    'Enter', 'Leave', 'PressEnter', 'PressLeave',
-    'PressStart', 'PressEnd', 'PressDrag', 'PressMove', 'Press',
+    'Reshape', -- widget's dimensions changed
+    'Display', -- widget is being drawn
+    'KeyPress', 'KeyRelease', -- keyboard key pressed/released
+    'TextInput', -- text is entered
+    'Move', -- cursor moves, no button pressed
+    'Enter', 'Leave', -- cursor enters/leaves widget, no button pressed
+    'PressEnter', 'PressLeave', -- cursor enters/leaves widget, button pressed
+    'PressStart', 'PressEnd', -- cursor or accelerator key press starts/ends
+    'PressDrag', -- pressed cursor moves, targets originating widget
+    'PressMove', -- pressed cursor moves, targets widget at cursor position
+    'Press', -- cursor is pressed and released on same widget
+    'Change', -- widget's value changed via Widget:setValue 
 }
 
 local weakKeyMeta = { __mode = 'k' }

@@ -9,28 +9,22 @@ return function (config)
     local highlight = config.highlight or { 180, 180, 255 }
 
     return {
-        panel = {
-            background = backColor,
-        },
         button = {
             align = 'center middle',
             padding = 6,
             slices = RESOURCE .. 'button.png',
             minimumWidth = 24,
-            minimumHeight = 24
+            minimumHeight = 24,
+            canFocus = true
         },
         button_hovered = {
             slices = RESOURCE .. 'button_hovered.png'
         },
+        button_focused = {
+            slices = RESOURCE .. 'button_focused.png',
+        },
         button_pressed = {
             slices = RESOURCE .. 'button_pressed.png',
-        },
-        text = {
-            align = 'left middle',
-            slices = RESOURCE .. 'text.png',
-            padding = 6,
-            minimumWidth = 24,
-            minimumHeight = 24
         },
         sash = {
             background = lineColor
@@ -43,6 +37,9 @@ return function (config)
             padding = 0,
             minimumWidth = 24,
             minimumHeight = 24
+        },
+        panel = {
+            background = backColor,
         },
         progress = {
             slices = RESOURCE .. 'button_pressed.png',
@@ -58,6 +55,17 @@ return function (config)
         slider_hovered = {
         },
         stepper = {
+        },
+        text = {
+            align = 'left middle',
+            slices = RESOURCE .. 'text.png',
+            padding = 6,
+            minimumWidth = 24,
+            minimumHeight = 24,
+            canFocus = true,
+        },
+        text_focused = {
+            slices = RESOURCE .. 'text_focused.png',
         },
     }
 

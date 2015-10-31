@@ -14,6 +14,7 @@ return function (self)
         type = 'text',
         align = 'middle center',
         margin = 0,
+        canFocus = false,
     }
 
     local increment = self:addChild {
@@ -31,7 +32,7 @@ return function (self)
     local function updateValue ()
         if not self.options then return end
         local option = self.options[self.index]
-        self.value = option.value
+        self:setValue(option.value)
         view.text = option.text
     end
 

@@ -69,7 +69,7 @@ function Style:eachName (object)
     end
     return function ()
         if not checkLookupProp() then return end
-        local specialName = getSpecialName { 'pressed', 'hovered' }
+        local specialName = getSpecialName { 'pressed', 'focused', 'hovered' }
         if specialName then return specialName end
         lookupPropIndex = lookupPropIndex + 1
         return lookupProp[lookupPropIndex]

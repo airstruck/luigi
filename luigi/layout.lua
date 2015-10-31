@@ -12,7 +12,6 @@ local Layout = Base:extend()
 local weakValueMeta = { __mode = 'v' }
 
 function Layout:constructor (data)
-    self.widgets = setmetatable({}, weakValueMeta)
     self.accelerators = {}
     self:setStyle()
     self:setTheme()
@@ -21,8 +20,134 @@ function Layout:constructor (data)
     self.isManagingInput = false
     self.hooks = {}
     self.root = Widget(self, data or {})
+
+    self:addDefaultHandlers ()
 end
 
+-- focus a widget if it's focusable, and return success
+function Layout:tryFocus (widget)
+    if widget.canFocus then
+        if self.focusedWidget then
+            self.focusedWidget.focused = false
+        end
+        widget.focused = true
+        self.focusedWidget = widget
+        return true
+    end
+end
+
+-- get the next widget, cycling back around to root (depth first)
+function Layout:getNextWidget (widget)
+    if #widget.children > 0 then
+        return widget.children[1]
+    end
+    for ancestor in widget:eachAncestor(true) do
+        local nextWidget = ancestor:getNext()
+        if nextWidget then return nextWidget end
+    end
+    return self.root
+end
+
+-- get the last child of the last child of the last child of the...
+local function getGreatestDescendant (widget)
+    while #widget.children > 0 do
+        local children = widget.children
+        widget = children[#children]
+    end
+    return widget
+end
+
+-- get the previous widget, cycling back around to root (depth first)
+function Layout:getPreviousWidget (widget)
+    if widget == self.root then
+        return getGreatestDescendant(widget)
+    end
+    for ancestor in widget:eachAncestor(true) do
+        local previousWidget = ancestor:getPrevious()
+        if previousWidget then
+            return getGreatestDescendant(previousWidget)
+        end
+        if ancestor ~= widget then return ancestor end
+    end
+    return self.root
+end
+
+-- focus next focusable widget (depth first)
+function Layout:focusNextWidget ()
+    local widget = self.focusedWidget or self.root
+    local nextWidget = self:getNextWidget(widget)
+
+    while nextWidget ~= widget do
+        if self:tryFocus(nextWidget) then return end
+        nextWidget = self:getNextWidget(nextWidget)
+    end
+end
+
+-- focus previous focusable widget (depth first)
+function Layout:focusPreviousWidget ()
+    local widget = self.focusedWidget or self.root
+    local previousWidget = self:getPreviousWidget(widget)
+
+    while previousWidget ~= widget do
+        if self:tryFocus(previousWidget) then return end
+        previousWidget = self:getPreviousWidget(previousWidget)
+    end
+end
+
+-- handlers for keyboard accelerators and tab focus
+function Layout:addDefaultHandlers ()
+    self:onKeyPress(function (event)
+
+        -- tab / shift-tab cycles focused widget
+        if event.key == 'tab' then
+            if love.keyboard.isDown('lshift', 'rshift') then
+                self:focusPreviousWidget()
+            else
+                self:focusNextWidget()
+            end
+            return
+        end
+
+        -- space / enter presses focused widget
+        local widget = self.focusedWidget
+        if widget and (event.key == 'return' or event.key == 'space') then
+            self.input:handlePressStart(event.key, event.x, event.y,
+                widget, event.key)
+            return
+        end
+
+        -- accelerators
+        local acceleratedWidget = self.accelerators[event.key]
+
+        if acceleratedWidget then
+            acceleratedWidget.hovered = true
+            self.input:handlePressStart(event.key, event.x, event.y,
+                acceleratedWidget, event.key)
+        end
+    end)
+
+    self:onKeyRelease(function (event)
+
+        -- space / enter presses focused widget
+        local widget = self.focusedWidget
+        if widget and (event.key == 'return' or event.key == 'space') then
+            self.input:handlePressEnd(event.key, event.x, event.y,
+                widget, event.key)
+            return
+        end
+
+        -- accelerators
+        local acceleratedWidget = self.accelerators[event.key]
+
+        if acceleratedWidget then
+            acceleratedWidget.hovered = false
+            self.input:handlePressEnd(event.key, event.x, event.y,
+                acceleratedWidget, event.key)
+        end
+    end)
+end
+
+-- set the style from a definition table or function
 function Layout:setStyle (rules)
     if type(rules) == 'function' then
         rules = rules()
@@ -30,6 +155,7 @@ function Layout:setStyle (rules)
     self.style = Style(rules or {}, { 'id', 'style' })
 end
 
+-- set the theme from a definition table or function
 function Layout:setTheme (rules)
     if type(rules) == 'function' then
         rules = rules()
@@ -37,6 +163,7 @@ function Layout:setTheme (rules)
     self.theme = Style(rules or {}, { 'type' })
 end
 
+-- show the layout (hooks all appropriate love events and callbacks)
 function Layout:show ()
     local root = self.root
     local width = root.width
@@ -55,6 +182,7 @@ function Layout:show ()
     root:reshape()
 end
 
+-- hide the layout (unhooks love events and callbacks)
 function Layout:hide ()
     if not self.isManagingInput then
         return
@@ -89,7 +217,6 @@ function Layout:addWidget (widget)
     if widget.key then
         self.accelerators[widget.key] = widget
     end
-    table.insert(self.widgets, widget)
 end
 
 -- event stuff
