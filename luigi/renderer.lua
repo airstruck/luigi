@@ -252,13 +252,14 @@ function Renderer:renderChildren (widget)
 end
 
 function Renderer:render (widget)
-    Event.Display:emit(widget, { target = widget }, function()
+    Event.PreDisplay:emit(widget, { target = widget }, function()
         self:renderBackground(widget)
         self:renderOutline(widget)
         self:renderSlices(widget)
         self:renderIconAndText(widget)
         return self:renderChildren(widget)
     end)
+    Event.Display:emit(widget, { target = widget })
 end
 
 return Renderer

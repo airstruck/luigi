@@ -131,6 +131,7 @@ end
 function Input:handlePressEnd (button, x, y, widget, accelerator)
     local widget = widget or self.layout:getWidgetAt(x, y)
     local originWidget = self.pressedWidgets[button]
+    if not originWidget then return end
     originWidget.pressed = nil
     widget:bubbleEvent('PressEnd', {
         origin = originWidget,

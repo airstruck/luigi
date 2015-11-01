@@ -9,8 +9,6 @@ local Hooker = require(ROOT .. 'hooker')
 
 local Layout = Base:extend()
 
-local weakValueMeta = { __mode = 'v' }
-
 function Layout:constructor (data)
     self.accelerators = {}
     self:setStyle()
@@ -19,9 +17,9 @@ function Layout:constructor (data)
     self.isMousePressed = false
     self.isManagingInput = false
     self.hooks = {}
-    self.root = Widget(self, data or {})
+    self.root = Widget(self, data)
 
-    self:addDefaultHandlers ()
+    self:addDefaultHandlers()
 end
 
 -- focus a widget if it's focusable, and return success
@@ -110,7 +108,8 @@ function Layout:addDefaultHandlers ()
 
         -- space / enter presses focused widget
         local widget = self.focusedWidget
-        if widget and (event.key == 'return' or event.key == 'space') then
+        if widget and event.key == 'space' or event.key == ' '
+        or event.key == 'return' then
             self.input:handlePressStart(event.key, event.x, event.y,
                 widget, event.key)
             return
@@ -130,7 +129,8 @@ function Layout:addDefaultHandlers ()
 
         -- space / enter presses focused widget
         local widget = self.focusedWidget
-        if widget and (event.key == 'return' or event.key == 'space') then
+        if widget and event.key == 'space' or event.key == ' '
+        or event.key == 'return' then
             self.input:handlePressEnd(event.key, event.x, event.y,
                 widget, event.key)
             return

@@ -19,7 +19,7 @@ end
 
 local eventNames = {
     'Reshape', -- widget's dimensions changed
-    'Display', -- widget is being drawn
+    'PreDisplay', 'Display', -- before/after widget is drawn
     'KeyPress', 'KeyRelease', -- keyboard key pressed/released
     'TextInput', -- text is entered
     'Move', -- cursor moves, no button pressed
@@ -29,7 +29,7 @@ local eventNames = {
     'PressDrag', -- pressed cursor moves, targets originating widget
     'PressMove', -- pressed cursor moves, targets widget at cursor position
     'Press', -- cursor is pressed and released on same widget
-    'Change', -- widget's value changed via Widget:setValue 
+    'Change', -- widget's value changed via Widget:setValue
 }
 
 local weakKeyMeta = { __mode = 'k' }

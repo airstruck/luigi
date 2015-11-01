@@ -5,7 +5,6 @@ return function (config)
 
     local backColor = config.backColor or { 240, 240, 240 }
     local lineColor = config.lineColor or { 220, 220, 220 }
-    local white = config.white or { 255, 255, 255 }
     local highlight = config.highlight or { 0x19, 0xAE, 0xFF }
 
     return {
@@ -64,6 +63,7 @@ return function (config)
             minimumHeight = 24,
             canFocus = true,
             cursor = 'ibeam',
+            highlight = highlight,
         },
         text_focused = {
             slices = RESOURCE .. 'text_focused.png',
