@@ -75,8 +75,7 @@ local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
     },
     { type = 'sash', height = 4, },
     { type = 'panel', flow = 'x', height = 48, padding = 2,
-        { type = 'text', id = 'aTextField', text = 'a text field',
-            font = 'font/liberation/LiberationMono-Regular.ttf' },
+        { type = 'text', id = 'aTextField', text = 'a text field' },
         { type = 'button', key='return', width = 80, id = 'aButton', text = 'Styling!' },
     },
     { type = 'panel', id = 'statusbar', height = 24, padding = 4, textColor = { 255, 0, 0 } },
@@ -130,6 +129,8 @@ end)
 layout.newButton:onPress(function (event)
     print('creating a new thing!')
 end)
+
+layout.mainCanvas.font = 'font/liberation/LiberationMono-Regular.ttf' 
 
 layout.mainCanvas.text = [[Abedede sdfsdf asfdsdfdsfs sdfsdfsdf
 sfsdfdfbv db er erg rth tryj ty j fgh dfgv

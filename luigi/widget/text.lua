@@ -3,19 +3,28 @@ local utf8 = require 'utf8'
 local blendMultiply = love._version_minor < 10 and 'multiplicative'
     or 'multiply'
 
-local function setCaretPosition (self, text)
+local function getCaretPosition (self, text)
     local font = self.fontData.font
     local x1, y1, x2, y2 = self:getRectangle(true, true)
-    self.startIndex = #text
-    self.startX = font:getWidth(text) + x1
-    self.endIndex, self.endX = self.startIndex, self.startX
+    return #text, font:getWidth(text) + x1
+end
+
+local function setCaretPosition (self, text, mode)
+    local index, x = getCaretPosition(self, text)
+
+    if mode == 'start' or not mode then
+        self.startIndex, self.startX = index, x
+    end
+    if mode == 'end' or not mode then
+        self.endIndex, self.endX = index, x
+    end
 end
 
 -- return caret index and x position
-local function getCaretFromEvent (self, event)
+local function getCaretFromPoint (self, x, y)
     local x1, y1, x2, y2 = self:getRectangle(true, true)
 
-    if event.x <= x1 then
+    if x <= x1 then
         return 0, x1
     end
 
@@ -27,7 +36,7 @@ local function getCaretFromEvent (self, event)
         text = self.value:sub(1, index)
         lastWidth = width
         width = font:getWidth(text)
-        if width > event.x - x1 then
+        if width > x - x1 then
             if position == 1 then
                 return 0, x1
             end
@@ -38,12 +47,104 @@ local function getCaretFromEvent (self, event)
     return #self.value, width + x1
 end
 
+-- move the caret one character to the left
+local function moveCaretLeft (self, alterRange)
+    local text, endIndex = self.value, self.endIndex
+
+    -- if cursor is at beginning, do nothing
+    if endIndex < 1 then
+        return false
+    end
+
+    -- move left
+    local mode = alterRange and 'end'
+    local offset = utf8.offset(text, -1, endIndex) or 0
+
+    setCaretPosition(self, text:sub(1, offset), mode)
+end
+
+-- move the caret one character to the right
+local function moveCaretRight (self, alterRange)
+    local text, endIndex = self.value, self.endIndex
+
+    -- if cursor is at end, do nothing
+    if endIndex == #text then
+        return false
+    end
+
+    local mode = alterRange and 'end'
+    local offset = endIndex < 1 and utf8.offset(text, 1)
+        or utf8.offset(text, 2, endIndex) or #text
+
+    -- move right
+    setCaretPosition(self, text:sub(1, offset), mode)
+end
+
 local function getRange (self)
     if self.startIndex <= self.endIndex then
         return self.startIndex, self.endIndex
     end
 
     return self.endIndex, self.startIndex
+end
+
+local function deleteRange (self)
+    local text = self.value
+    local first, last = getRange(self)
+
+    -- if expanded range is selected, delete text in range
+    if first ~= last then
+        local left = text:sub(1, first)
+        text = left .. text:sub(last + 1)
+        self:setValue(text)
+        setCaretPosition(self, left)
+        return true
+    end
+end
+
+local function deleteCharacterLeft (self)
+    local text = self.value
+    local first, last = getRange(self)
+
+    -- if cursor is at beginning, do nothing
+    if first < 1 then
+        return
+    end
+
+    -- delete character to the left
+    local offset = utf8.offset(text, -1, first) or 0
+    local left = text:sub(1, offset)
+    text = left .. text:sub(first + 1)
+    self:setValue(text)
+    setCaretPosition(self, left)
+end
+
+local function copyRangeToClipboard (self)
+    local text = self.value
+    local first, last = getRange(self)
+    if last >= first + 1 then
+        love.system.setClipboardText(text:sub(first + 1, last))
+    end
+end
+
+local function pasteFromClipboard (self)
+    local text = self.value
+    local pasted = love.system.getClipboardText() or ''
+    local first, last = getRange(self)
+    local left = text:sub(1, first) .. pasted
+    text = left .. text:sub(last + 1)
+    self:setValue(text)
+    setCaretPosition(self, left)
+end
+
+local function insertText (self, newText)
+    local text = self.value
+    local first, last = getRange(self)
+    local left = text:sub(1, first) .. newText
+
+    self.value = left .. text:sub(last + 1)
+    self:setValue(self.value)
+    setCaretPosition(self, left)
 end
 
 return function (self)
@@ -53,79 +154,45 @@ return function (self)
     self.highlight = self.highlight or { 0x80, 0x80, 0x80 }
 
     self:onPressStart(function (event)
-        self.startIndex, self.startX = getCaretFromEvent(self, event)
+        self.startIndex, self.startX = getCaretFromPoint(self, event.x)
         self.endIndex, self.endX = self.startIndex, self.startX
     end)
 
     self:onPressMove(function (event)
-        self.endIndex, self.endX = getCaretFromEvent(self, event)
+        self.endIndex, self.endX = getCaretFromPoint(self, event.x)
     end)
 
     self:onTextInput(function (event)
-        local text = self.value
-        local first, last = getRange(self)
-        local left = text:sub(1, first) .. event.text
-
-        self.value = left .. text:sub(last + 1)
-        self:setValue(self.value)
-        setCaretPosition(self, left)
+        insertText(self, event.text)
     end)
 
     self:onKeyPress(function (event)
         if event.key == 'backspace' then
 
-            local text = self.value
-            local first, last = getRange(self)
-
-            -- if expanded range is selected, delete text in range
-            if first ~= last then
-                local left = text:sub(1, first)
-                self.value = left .. text:sub(last + 1)
-                self:setValue(self.value)
-                setCaretPosition(self, left)
-                return false
+            if not deleteRange(self) then
+                deleteCharacterLeft(self)
             end
-
-            -- if cursor is at beginning, do nothing
-            if first < 1 then
-                return false
-            end
-
-            -- delete character to the left
-            local offset = utf8.offset(self.value, -1, first) or 0
-            local left = self.value:sub(1, offset)
-            self.value = left .. self.value:sub(first + 1)
-            self:setValue(self.value)
-            setCaretPosition(self, left)
 
         elseif event.key == 'left' then
 
-            local text, endIndex = self.value, self.endIndex
-
-            -- if cursor is at beginning, do nothing
-            if endIndex < 1 then
-                return false
-            end
-
-            -- move cursor left
-            local offset = utf8.offset(text, -1, endIndex) or 0
-
-            setCaretPosition(self, text:sub(1, offset))
+            moveCaretLeft(self, love.keyboard.isDown('lshift', 'rshift'))
 
         elseif event.key == 'right' then
 
-            local text, endIndex = self.value, self.endIndex
+            moveCaretRight(self, love.keyboard.isDown('lshift', 'rshift'))
 
-            -- if cursor is at end, do nothing
-            if endIndex == #text then
-                return false
-            end
+        elseif event.key == 'x' and love.keyboard.isDown('lctrl', 'rctrl') then
 
-            local offset = endIndex < 1 and utf8.offset(text, 1)
-                or utf8.offset(text, 2, endIndex) or #text
+            copyRangeToClipboard(self)
+            deleteRange(self)
 
-            -- move cursor right
-            setCaretPosition(self, text:sub(1, offset))
+        elseif event.key == 'c' and love.keyboard.isDown('lctrl', 'rctrl') then
+
+            copyRangeToClipboard(self)
+
+        elseif event.key == 'v' and love.keyboard.isDown('lctrl', 'rctrl') then
+
+            pasteFromClipboard(self)
 
         end
         return false
@@ -141,6 +208,7 @@ return function (self)
         local textTop = math.floor(y1 + ((y2 - y1) - font:getHeight()) / 2)
 
         love.graphics.push('all')
+        love.graphics.setScissor(x1, y1, x2 - x1, y2 - y1)
         love.graphics.setFont(font)
         love.graphics.setColor(textColor)
         love.graphics.print(self.value, x1, textTop)
