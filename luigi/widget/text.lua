@@ -6,7 +6,26 @@ local blendMultiply = love._version_minor < 10 and 'multiplicative'
 local function getCaretPosition (self, text)
     local font = self.fontData.font
     local x1, y1, x2, y2 = self:getRectangle(true, true)
-    return #text, font:getWidth(text) + x1
+    return #text, font:getWidth(text) + x1 - self.scrollX
+end
+
+local function scrollToCaret (self)
+    local x1, y1, x2, y2 = self:getRectangle(true, true)
+    local oldX = self.endX
+    local newX
+
+    if oldX <= x1 then
+        self.scrollX = self.scrollX - (x1 - oldX)
+        newX = x1
+    elseif oldX >= x2 then
+        self.scrollX = self.scrollX + (oldX - x2 + 1)
+        newX = x2 - 1
+    end
+
+    if newX then
+        self.endX = newX
+        self.startX = self.startX + (newX - oldX)
+    end
 end
 
 local function setCaretPosition (self, text, mode)
@@ -18,15 +37,13 @@ local function setCaretPosition (self, text, mode)
     if mode == 'end' or not mode then
         self.endIndex, self.endX = index, x
     end
+
+    scrollToCaret(self)
 end
 
 -- return caret index and x position
 local function getCaretFromPoint (self, x, y)
     local x1, y1, x2, y2 = self:getRectangle(true, true)
-
-    if x <= x1 then
-        return 0, x1
-    end
 
     local font = self.fontData.font
     local width, lastWidth = 0
@@ -36,15 +53,15 @@ local function getCaretFromPoint (self, x, y)
         text = self.value:sub(1, index)
         lastWidth = width
         width = font:getWidth(text)
-        if width > x - x1 then
+        if width > x + self.scrollX - x1 then
             if position == 1 then
-                return 0, x1
+                return 0, x1 - self.scrollX
             end
-            return utf8.offset(self.value, position - 1), lastWidth + x1
+            return utf8.offset(self.value, position - 1), lastWidth + x1 - self.scrollX
         end
     end
 
-    return #self.value, width + x1
+    return #self.value, width + x1 - self.scrollX
 end
 
 -- move the caret one character to the left
@@ -152,14 +169,16 @@ return function (self)
     self.text = ''
     self:setValue(self.value)
     self.highlight = self.highlight or { 0x80, 0x80, 0x80 }
+    self.scrollX = 32
 
     self:onPressStart(function (event)
         self.startIndex, self.startX = getCaretFromPoint(self, event.x)
         self.endIndex, self.endX = self.startIndex, self.startX
     end)
 
-    self:onPressMove(function (event)
+    self:onPressDrag(function (event)
         self.endIndex, self.endX = getCaretFromPoint(self, event.x)
+        scrollToCaret(self)
     end)
 
     self:onTextInput(function (event)
@@ -211,7 +230,7 @@ return function (self)
         love.graphics.setScissor(x1, y1, x2 - x1, y2 - y1)
         love.graphics.setFont(font)
         love.graphics.setColor(textColor)
-        love.graphics.print(self.value, x1, textTop)
+        love.graphics.print(self.value, x1 - self.scrollX, textTop)
         if not self.focused then
             love.graphics.pop()
             return
