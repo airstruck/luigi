@@ -46,7 +46,7 @@ local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
             icon = 'icon/32px/Harddrive.png' },
     },
     { flow = 'x',
-        { id = 'leftSideBox',    width = 200,
+        { id = 'leftSideBox',    width = 200, minwidth = 64, 
             { text = 'Hi, I\'m centered middle. ', style = 'listThing',
                 align = 'middle center' },
             { text = 'Hi, I\'m centered bottom. ', style = 'listThing',
@@ -58,7 +58,7 @@ local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
         { type = 'sash', width = 4, },
         { id = 'mainCanvas' },
         { type = 'sash', width = 4, },
-        { type = 'panel', id = 'rightSideBox', width = 200,
+        { type = 'panel', id = 'rightSideBox', width = 200, minwidth = 64,
             { type = 'panel', text = 'A slider', align = 'bottom', height = 24, padding = 4 },
             { type = 'slider', height = 32, margin = 4, id = 'slidey', value = 0 },
             { type = 'panel', text = 'A stepper', align = 'bottom', height = 24, padding = 4 },
@@ -113,6 +113,7 @@ end)
 
 layout.aButton:onPress(function (event)
     layout.aButton.font = nil
+    layout.aButton.width = layout.aButton.width + 10
 end)
 
 layout.mainCanvas.font = 'font/liberation/LiberationMono-Regular.ttf'

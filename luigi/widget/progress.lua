@@ -13,7 +13,7 @@ return function (self)
 
     self:onReshape(function ()
         local x1, y1, x2, y2 = self:getRectangle(true, true)
-        local min = bar.minimumWidth
+        local min = bar.minwidth
         x1 = x1 + min
         bar.width = self.value * (x2 - x1) + min
     end)

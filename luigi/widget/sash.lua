@@ -21,6 +21,7 @@ return function (self)
         local nextSibling = self:getNext()
         local prevSize = prevSibling and prevSibling[dimension]
         local nextSize = nextSibling and nextSibling[dimension]
+
         if prevSize then
             prevSibling:setDimension(dimension,
                     event[axis] - prevSibling:calculatePosition(axis))
@@ -28,12 +29,9 @@ return function (self)
         if nextSize then
             nextSibling:setDimension(dimension,
                     nextSibling:calculatePosition(axis) +
-                    nextSibling[dimension] - event[axis])
+                    nextSibling:calculateDimension(dimension) - event[axis])
         end
 
-        prevSibling:reshape()
-        nextSibling:reshape()
-        self:reshape()
     end)
 
 end

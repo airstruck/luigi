@@ -154,7 +154,6 @@ function Input:handleReshape (width, height)
 
     root.width = width
     root.height = height
-    root:reshape()
 end
 
 return Input

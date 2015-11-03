@@ -12,8 +12,8 @@ return function (config)
             align = 'center middle',
             padding = 6,
             slices = RESOURCE .. 'button.png',
-            minimumWidth = 24,
-            minimumHeight = 24,
+            minwidth = 24,
+            minheight = 24,
             canFocus = true
         },
         button_hovered = {
@@ -34,8 +34,8 @@ return function (config)
         slider = {
             slices = RESOURCE .. 'button_pressed.png',
             padding = 0,
-            minimumWidth = 24,
-            minimumHeight = 24
+            minwidth = 24,
+            minheight = 24
         },
         panel = {
             background = backColor,
@@ -43,13 +43,13 @@ return function (config)
         progress = {
             slices = RESOURCE .. 'button_pressed.png',
             padding = 0,
-            minimumWidth = 24,
-            minimumHeight = 24
+            minwidth = 24,
+            minheight = 24
         },
         progressInner = {
             slices = RESOURCE .. 'progress.png',
             padding = 0,
-            minimumWidth = 12,
+            minwidth = 12,
         },
         slider_hovered = {
         },
@@ -59,8 +59,8 @@ return function (config)
             align = 'left middle',
             slices = RESOURCE .. 'text.png',
             padding = 6,
-            minimumWidth = 24,
-            minimumHeight = 24,
+            minwidth = 24,
+            minheight = 24,
             canFocus = true,
             cursor = 'ibeam',
             highlight = highlight,

@@ -30,7 +30,8 @@ local function new (Widget, layout, self)
     self.dimensions = { width = nil, height = nil }
     self.shadowProperties = {}
 
-    for _, property in ipairs { 'font', 'fontSize', 'textColor' } do
+    for _, property
+    in ipairs { 'font', 'fontSize', 'textColor', 'width', 'height' } do
         self.shadowProperties[property] = self[property]
         self[property] = nil
     end
@@ -54,8 +55,14 @@ local function new (Widget, layout, self)
             if property == 'font'
             or property == 'fontSize'
             or property == 'textColor' then
-                rawset(self.shadowProperties, property, value)
+                self.shadowProperties[property] = value
                 self.fontData = Font(self.font, self.fontSize, self.textColor)
+                return
+            end
+
+            if property == 'width' or property == 'height' then
+                self.shadowProperties[property] = value
+                ;(self.parent or self):reshape()
                 return
             end
 
@@ -138,8 +145,8 @@ function Widget:calculateDimension (name)
         return self.dimensions[name]
     end
 
-    local min = (name == 'width') and (self.minimumWidth or 0)
-        or (self.minimumHeight or 0)
+    local min = (name == 'width') and (self.minwidth or 0)
+        or (self.minheight or 0)
 
     local max = name == 'width' and love.graphics.getWidth()
         or love.graphics.getHeight()
@@ -232,6 +239,10 @@ function Widget:getHeight ()
 end
 
 function Widget:setDimension (name, size)
+    if not self.parent then
+        self[name] = size
+        return
+    end
     local parentDimension = self.parent:calculateDimension(name)
     local claimed = 0
     for i, widget in ipairs(self.parent.children) do
@@ -242,7 +253,11 @@ function Widget:setDimension (name, size)
     if claimed + size > parentDimension then
         size = parentDimension - claimed
     end
-    self[name] = size
+
+    local min = (name == 'width') and (self.minwidth or 0)
+        or (self.minheight or 0)
+            
+    self[name] = math.max(size, min)
 end
 
 function Widget:setWidth (size)
@@ -297,6 +312,8 @@ end
 
 -- reshape the widget. Call this after changing position/dimensions.
 function Widget:reshape ()
+    if self.isReshaping then return end
+    self.isReshaping = true
     self.position = {}
     self.dimensions = {}
     Event.Reshape:emit(self, {
@@ -305,6 +322,7 @@ function Widget:reshape ()
     for i, widget in ipairs(self.children) do
         widget:reshape()
     end
+    self.isReshaping = nil
 end
 
 return setmetatable(Widget, { __call = new })
