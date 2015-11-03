@@ -29,10 +29,8 @@ return function (self)
         local key = event.key
         if key == 'left' or key == 'down' then
             self:setValue(clamp(self.value - self.step))
-            self:reshape()
         elseif event.key == 'right' or key == 'up' then
             self:setValue(clamp(self.value + self.step))
-            self:reshape()
         end
     end)
 
@@ -41,7 +39,6 @@ return function (self)
         local halfThumb = thumb:getWidth() / 2
         x1, x2 = x1 + halfThumb, x2 - halfThumb
         self:setValue(clamp((event.x - x1) / (x2 - x1)))
-        self:reshape()
         self.layout:tryFocus(thumb)
     end
 
@@ -54,6 +51,10 @@ return function (self)
 
     self:onLeave(function (event)
         thumb.hovered = false
+    end)
+
+    self:onChange(function (event)
+        self:reshape()
     end)
 
     self:onReshape(function (event)

@@ -1,6 +1,7 @@
 local ROOT = (...):gsub('[^.]*$', '')
 
 local Event = require(ROOT .. 'event')
+local Font = require(ROOT .. 'font')
 
 local Widget = {}
 
@@ -23,35 +24,59 @@ end
 
 local function new (Widget, layout, self)
     self = self or {}
-    self.type = self.type or 'generic'
     self.layout = layout
     self.children = {}
     self.position = { x = nil, y = nil }
     self.dimensions = { width = nil, height = nil }
+    self.shadowProperties = {}
+
+    for _, property in ipairs { 'font', 'fontSize', 'textColor' } do
+        self.shadowProperties[property] = self[property]
+        self[property] = nil
+    end
 
     local meta = setmetatable(self, {
         __index = function (self, property)
+            local value = self.shadowProperties[property]
+            if value ~= nil then return value end
+
             local value = Widget[property]
             if value ~= nil then return value end
+
             local style = self.layout.style
             value = style and style:getProperty(self, property)
             if value ~= nil and value ~= 'defer' then return value end
+
             local theme = self.layout.theme
             return theme and theme:getProperty(self, property)
+        end,
+        __newindex = function (self, property, value)
+            if property == 'font'
+            or property == 'fontSize'
+            or property == 'textColor' then
+                rawset(self.shadowProperties, property, value)
+                self.fontData = Font(self.font, self.fontSize, self.textColor)
+                return
+            end
+
+            rawset(self, property, value)
         end
     })
 
-    layout:addWidget(self)
+    self.type = self.type or 'generic'
+    self.fontData = Font(self.font, self.fontSize, self.textColor)
 
-    for k, v in ipairs(self) do
-        self.children[k] = v.isWidget and v or new(Widget, self.layout, v)
-        self.children[k].parent = self
-    end
+    layout:addWidget(self)
 
     local decorate = Widget.typeDecorators[self.type]
 
     if decorate then
         decorate(self)
+    end
+
+    for k, v in ipairs(self) do
+        self.children[k] = v.isWidget and v or new(Widget, self.layout, v)
+        self.children[k].parent = self
     end
 
     return self
@@ -116,7 +141,8 @@ function Widget:calculateDimension (name)
     local min = (name == 'width') and (self.minimumWidth or 0)
         or (self.minimumHeight or 0)
 
-    local max = self.layout.root[name]
+    local max = name == 'width' and love.graphics.getWidth()
+        or love.graphics.getHeight()
 
     if self[name] then
         self.dimensions[name] = clamp(self[name], min, max)

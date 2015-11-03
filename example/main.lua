@@ -1,5 +1,3 @@
-love.filesystem.setSymlinksEnabled(true) -- for older love versions
-
 local Layout = require 'luigi.layout'
 
 local style = {
@@ -34,18 +32,18 @@ local style = {
         height = 120,
         padding = 8,
         background = { 255, 255, 255 },
-        icon = 'icon/emblem-system.png',
+        icon = 'icon/32px/Box.png',
     },
 }
 
 local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
     { type = 'panel', id = 'toolbar', flow = 'x',
         { type = 'button', id = 'newButton', style = 'toolButton', key = 'z',
-            icon = 'icon/emblem-default.png' },
+            icon = 'icon/32px/Blueprint.png' },
         { type = 'button', id = 'loadButton', style = 'toolButton',
-            icon = 'icon/emblem-documents.png' },
+            icon = 'icon/32px/Calendar.png' },
         { type = 'button', id = 'saveButton', style = 'toolButton',
-            icon = 'icon/emblem-downloads.png' },
+            icon = 'icon/32px/Harddrive.png' },
     },
     { flow = 'x',
         { id = 'leftSideBox',    width = 200,
@@ -76,7 +74,8 @@ local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
     { type = 'sash', height = 4, },
     { type = 'panel', flow = 'x', height = 48, padding = 2,
         { type = 'text', id = 'aTextField', text = 'a text field' },
-        { type = 'button', key='return', width = 80, id = 'aButton', text = 'Styling!' },
+        { type = 'button', key='return', width = 80, id = 'aButton', text = 'Styling!',
+    font = 'font/liberation/LiberationMono-Regular.ttf' },
     },
     { type = 'panel', id = 'statusbar', height = 24, padding = 4, textColor = { 255, 0, 0 } },
 }
@@ -94,25 +93,7 @@ layout.leftSideBox:addChild {
 
 layout.slidey:onChange(function (event)
     layout.progressBar:setValue(event.value)
-    layout.progressBar:reshape()
 end)
-
---[[
-local KEY_ESCAPE = 27
-
-layout:onKeyboard(function(event)
-    if event.key == KEY_ESCAPE then
-        layout.window:destroy()
-        os.exit(0)
-    end
-    if key == GLUT_KEY_F11 then
-        glutFullScreen()
-    end
-    if key == GLUT_KEY_F12 then
-        glutPositionWindow(-1, -1)
-    end
-end)
-]]
 
 layout:onMove(function (event)
     local w = event.target
@@ -130,7 +111,11 @@ layout.newButton:onPress(function (event)
     print('creating a new thing!')
 end)
 
-layout.mainCanvas.font = 'font/liberation/LiberationMono-Regular.ttf' 
+layout.aButton:onPress(function (event)
+    layout.aButton.font = nil
+end)
+
+layout.mainCanvas.font = 'font/liberation/LiberationMono-Regular.ttf'
 
 layout.mainCanvas.text = [[Abedede sdfsdf asfdsdfdsfs sdfsdfsdf
 sfsdfdfbv db er erg rth tryj ty j fgh dfgv

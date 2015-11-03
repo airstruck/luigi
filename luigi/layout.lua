@@ -11,15 +11,15 @@ local Layout = Base:extend()
 
 function Layout:constructor (data)
     self.accelerators = {}
+    self:addDefaultHandlers()
     self:setStyle()
     self:setTheme(require(ROOT .. 'theme.light'))
 
     self.isMousePressed = false
     self.isManagingInput = false
     self.hooks = {}
-    self.root = Widget(self, data)
-
-    self:addDefaultHandlers()
+    self.root = data or {}
+    Widget(self, self.root)
 end
 
 -- focus a widget if it's focusable, and return success

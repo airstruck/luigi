@@ -3,12 +3,6 @@ local utf8 = require 'utf8'
 local blendMultiply = love._version_minor < 10 and 'multiplicative'
     or 'multiply'
 
-local function getCaretPosition (self, text)
-    local font = self.fontData.font
-    local x1, y1, x2, y2 = self:getRectangle(true, true)
-    return #text, font:getWidth(text) + x1 - self.scrollX
-end
-
 local function scrollToCaret (self)
     local x1, y1, x2, y2 = self:getRectangle(true, true)
     local oldX = self.endX
@@ -28,8 +22,14 @@ local function scrollToCaret (self)
     end
 end
 
-local function setCaretPosition (self, text, mode)
-    local index, x = getCaretPosition(self, text)
+local function findCaretFromText (self, text)
+    local font = self.fontData.font
+    local x1, y1, x2, y2 = self:getRectangle(true, true)
+    return #text, font:getWidth(text) + x1 - self.scrollX
+end
+
+local function setCaretFromText (self, text, mode)
+    local index, x = findCaretFromText(self, text)
 
     if mode == 'start' or not mode then
         self.startIndex, self.startX = index, x
@@ -42,7 +42,7 @@ local function setCaretPosition (self, text, mode)
 end
 
 -- return caret index and x position
-local function getCaretFromPoint (self, x, y)
+local function findCaretFromPoint (self, x, y)
     local x1, y1, x2, y2 = self:getRectangle(true, true)
 
     local font = self.fontData.font
@@ -77,7 +77,7 @@ local function moveCaretLeft (self, alterRange)
     local mode = alterRange and 'end'
     local offset = utf8.offset(text, -1, endIndex) or 0
 
-    setCaretPosition(self, text:sub(1, offset), mode)
+    setCaretFromText(self, text:sub(1, offset), mode)
 end
 
 -- move the caret one character to the right
@@ -94,7 +94,7 @@ local function moveCaretRight (self, alterRange)
         or utf8.offset(text, 2, endIndex) or #text
 
     -- move right
-    setCaretPosition(self, text:sub(1, offset), mode)
+    setCaretFromText(self, text:sub(1, offset), mode)
 end
 
 local function getRange (self)
@@ -114,7 +114,7 @@ local function deleteRange (self)
         local left = text:sub(1, first)
         text = left .. text:sub(last + 1)
         self:setValue(text)
-        setCaretPosition(self, left)
+        setCaretFromText(self, left)
         return true
     end
 end
@@ -133,7 +133,7 @@ local function deleteCharacterLeft (self)
     local left = text:sub(1, offset)
     text = left .. text:sub(first + 1)
     self:setValue(text)
-    setCaretPosition(self, left)
+    setCaretFromText(self, left)
 end
 
 local function copyRangeToClipboard (self)
@@ -151,7 +151,7 @@ local function pasteFromClipboard (self)
     local left = text:sub(1, first) .. pasted
     text = left .. text:sub(last + 1)
     self:setValue(text)
-    setCaretPosition(self, left)
+    setCaretFromText(self, left)
 end
 
 local function insertText (self, newText)
@@ -161,23 +161,24 @@ local function insertText (self, newText)
 
     self.value = left .. text:sub(last + 1)
     self:setValue(self.value)
-    setCaretPosition(self, left)
+    setCaretFromText(self, left)
 end
 
 return function (self)
-    self.value = self.value or self.text or ''
+    self:setValue(self.value or self.text or '')
     self.text = ''
-    self:setValue(self.value)
     self.highlight = self.highlight or { 0x80, 0x80, 0x80 }
-    self.scrollX = 32
+    self.scrollX = 0
+
+    setCaretFromText(self, self.value)
 
     self:onPressStart(function (event)
-        self.startIndex, self.startX = getCaretFromPoint(self, event.x)
+        self.startIndex, self.startX = findCaretFromPoint(self, event.x)
         self.endIndex, self.endX = self.startIndex, self.startX
     end)
 
     self:onPressDrag(function (event)
-        self.endIndex, self.endX = getCaretFromPoint(self, event.x)
+        self.endIndex, self.endX = findCaretFromPoint(self, event.x)
         scrollToCaret(self)
     end)
 
@@ -235,6 +236,7 @@ return function (self)
             love.graphics.pop()
             return
         end
+         -- TODO: expose highlight blend mode for dark themes
         love.graphics.setBlendMode(blendMultiply)
         love.graphics.setColor(self.highlight)
         love.graphics.rectangle('fill', startX, y1, width, height)
