@@ -120,7 +120,7 @@ function Input:handlePressStart (button, x, y, widget, accelerator)
     widget.pressed = true
     self.pressedWidgets[button] = widget
     self.passedWidgets[button] = widget
-    self.layout:tryFocus(widget)
+    widget:focus()
     widget:bubbleEvent('PressStart', {
         button = button,
         accelerator = accelerator,

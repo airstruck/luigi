@@ -39,7 +39,7 @@ return function (self)
         local halfThumb = thumb:getWidth() / 2
         x1, x2 = x1 + halfThumb, x2 - halfThumb
         self:setValue(clamp((event.x - x1) / (x2 - x1)))
-        self.layout:tryFocus(thumb)
+        thumb:focus()
     end
 
     self:onPressStart(press)

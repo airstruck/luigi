@@ -1,3 +1,9 @@
+--[[--
+Widget class.
+
+@classmod Widget
+--]]--
+
 local ROOT = (...):gsub('[^.]*$', '')
 
 local Event = require(ROOT .. 'event')
@@ -22,7 +28,65 @@ function Widget.register (name, decorator)
     Widget.typeDecorators[name] = decorator
 end
 
-local function new (Widget, layout, self)
+-- look for properties in shadow props, Widget, style, and theme
+local function metaIndex (self, property)
+    local value = self.shadowProperties[property]
+    if value ~= nil then return value end
+
+    local value = Widget[property]
+    if value ~= nil then return value end
+
+    local style = self.layout.style
+    value = style and style:getProperty(self, property)
+    if value ~= nil and value ~= 'defer' then return value end
+
+    local theme = self.layout.theme
+    return theme and theme:getProperty(self, property)
+end
+
+-- setting shadow properties causes special behavior
+local function metaNewIndex (self, property, value)
+    if property == 'font'
+    or property == 'fontSize'
+    or property == 'textColor' then
+        self.shadowProperties[property] = value
+        self.fontData = Font(self.font, self.fontSize, self.textColor)
+        return
+    end
+
+    if property == 'width' then
+        value = math.max(value, self.minwidth or 0)
+        self.shadowProperties[property] = value
+        Widget.reshape(self.parent or self)
+        return
+    end
+
+    if property == 'height' then
+        value = math.max(value, self.minheight or 0)
+        self.shadowProperties[property] = value
+        Widget.reshape(self.parent or self)
+        return
+    end
+
+    rawset(self, property, value)
+end
+
+--[[--
+Widget pseudo-constructor.
+
+@function Luigi.Widget
+
+@tparam Layout layout
+The layout this widget belongs to.
+
+@tparam[opt] table data
+The data definition table for this widget.
+This table is identical to the constructed widget.
+
+@treturn Widget
+A Widget instance.
+--]]--
+local function metaCall (Widget, layout, self)
     self = self or {}
     self.layout = layout
     self.children = {}
@@ -30,45 +94,16 @@ local function new (Widget, layout, self)
     self.dimensions = { width = nil, height = nil }
     self.shadowProperties = {}
 
+    setmetatable(self, { __index = metaIndex, __newindex = metaNewIndex })
+
     for _, property
     in ipairs { 'font', 'fontSize', 'textColor', 'width', 'height' } do
-        self.shadowProperties[property] = self[property]
-        self[property] = nil
-    end
-
-    local meta = setmetatable(self, {
-        __index = function (self, property)
-            local value = self.shadowProperties[property]
-            if value ~= nil then return value end
-
-            local value = Widget[property]
-            if value ~= nil then return value end
-
-            local style = self.layout.style
-            value = style and style:getProperty(self, property)
-            if value ~= nil and value ~= 'defer' then return value end
-
-            local theme = self.layout.theme
-            return theme and theme:getProperty(self, property)
-        end,
-        __newindex = function (self, property, value)
-            if property == 'font'
-            or property == 'fontSize'
-            or property == 'textColor' then
-                self.shadowProperties[property] = value
-                self.fontData = Font(self.font, self.fontSize, self.textColor)
-                return
-            end
-
-            if property == 'width' or property == 'height' then
-                self.shadowProperties[property] = value
-                ;(self.parent or self):reshape()
-                return
-            end
-
-            rawset(self, property, value)
+        local value = rawget(self, property)
+        rawset(self, property, nil)
+        if value ~= nil then
+            self[property] = value
         end
-    })
+    end
 
     self.type = self.type or 'generic'
     self.fontData = Font(self.font, self.fontSize, self.textColor)
@@ -82,13 +117,27 @@ local function new (Widget, layout, self)
     end
 
     for k, v in ipairs(self) do
-        self.children[k] = v.isWidget and v or new(Widget, self.layout, v)
+        self.children[k] = v.isWidget and v or metaCall(Widget, self.layout, v)
         self.children[k].parent = self
     end
 
     return self
 end
 
+--[[--
+Fire an event on this widget and each ancestor.
+
+If any event handler returns non-nil, stop the event from propagating.
+
+@tparam string eventName
+The name of the Event.
+
+@tparam[opt] table data
+Information about the event to send to handlers.
+
+@treturn mixed
+The first value returned by an event handler.
+--]]--
 function Widget:bubbleEvent (eventName, data)
     local event = Event[eventName]
     data = data or {}
@@ -100,6 +149,15 @@ function Widget:bubbleEvent (eventName, data)
     return event:emit(self.layout, data)
 end
 
+--[[--
+Set widget's value property and bubble a Change event.
+
+@tparam mixed value
+The new value of the widget.
+
+@treturn mixed
+The old value of the widget.
+--]]--
 function Widget:setValue (value)
     local oldValue = self.value
     self.value = value
@@ -108,9 +166,17 @@ function Widget:setValue (value)
         value = value,
         oldValue = oldValue,
     })
+
+    return oldValue
 end
 
-function Widget:getPrevious ()
+--[[--
+Get widget's previous sibling.
+
+@treturn Widget|nil
+The widget's previous sibling, if any.
+--]]--
+function Widget:getPreviousSibling ()
     if not self.parent then return end
     local siblings = self.parent.children
     for i, widget in ipairs(siblings) do
@@ -118,7 +184,13 @@ function Widget:getPrevious ()
     end
 end
 
-function Widget:getNext ()
+--[[--
+Get widget's next sibling.
+
+@treturn Widget|nil
+The widget's next sibling, if any.
+--]]--
+function Widget:getNextSibling ()
     if not self.parent then return end
     local siblings = self.parent.children
     for i, widget in ipairs(siblings) do
@@ -126,6 +198,97 @@ function Widget:getNext ()
     end
 end
 
+--[[--
+Attempt to focus the widget.
+
+Unfocus currently focused widget, and focus this widget if it's focusable.
+
+@treturn boolean
+true if this widget was focused, else false.
+--]]--
+function Widget:focus ()
+    local layout = self.layout
+
+    if layout.focusedWidget then
+        layout.focusedWidget.focused = nil
+        layout.focusedWidget = nil
+    end
+
+    if self.canFocus then
+        self.focused = true
+        layout.focusedWidget = self
+        return true
+    end
+
+    return false
+end
+
+--[[--
+Get the next widget, depth-first.
+
+If the widget has children, returns the first child.
+Otherwise, returns the next sibling of the nearest possible ancestor.
+Cycles back around to the layout root from the last widget in the tree.
+
+@treturn Widget
+The next widget in the tree.
+--]]--
+function Widget:getNextNeighbor ()
+    if #self.children > 0 then
+        return self.children[1]
+    end
+    for ancestor in self:eachAncestor(true) do
+        local nextWidget = ancestor:getNextSibling()
+        if nextWidget then return nextWidget end
+    end
+    return self.layout.root
+end
+
+-- get the last child of the last child of the last child of the...
+local function getGreatestDescendant (widget)
+    while #widget.children > 0 do
+        local children = widget.children
+        widget = children[#children]
+    end
+    return widget
+end
+
+--[[--
+Get the previous widget, depth-first.
+
+Uses the reverse of the traversal order used by `getNextNeighbor`.
+Cycles back around to the last widget in the tree from the layout root.
+
+@treturn Widget
+The previous widget in the tree.
+--]]--
+function Widget:getPreviousNeighbor ()
+    local layout = self.layout
+
+    if self == layout.root then
+        return getGreatestDescendant(self)
+    end
+
+    for ancestor in self:eachAncestor(true) do
+        local previousWidget = ancestor:getPreviousSibling()
+        if previousWidget then
+            return getGreatestDescendant(previousWidget)
+        end
+        if ancestor ~= self then return ancestor end
+    end
+
+    return layout.root
+end
+
+--[[--
+Add a child to this widget.
+
+@tparam Widget|table data
+A widget or definition table representing a widget.
+
+@treturn Widget
+The newly added child widget.
+--]]--
 function Widget:addChild (data)
     local layout = self.layout
     local child = Widget(layout, data or {})
@@ -140,7 +303,17 @@ local function clamp (value, min, max)
     return value < min and min or value > max and max or value
 end
 
+local function checkReshape (widget)
+    if widget.needsReshape then
+        widget.position = {}
+        widget.dimensions = {}
+        widget.needsReshape = false
+    end
+end
+
 function Widget:calculateDimension (name)
+    checkReshape(self)
+
     if self.dimensions[name] then
         return self.dimensions[name]
     end
@@ -195,6 +368,8 @@ function Widget:calculateDimension (name)
 end
 
 function Widget:calculatePosition (axis)
+    checkReshape(self)
+
     if self.position[axis] then
         return self.position[axis]
     end
@@ -222,18 +397,42 @@ function Widget:calculatePosition (axis)
     return 0
 end
 
+--[[--
+Get the widget's X coordinate.
+
+@treturn number
+The widget's X coordinate.
+--]]--
 function Widget:getX ()
     return self:calculatePosition('x')
 end
 
+--[[--
+Get the widget's Y coordinate.
+
+@treturn number
+The widget's Y coordinate.
+--]]--
 function Widget:getY ()
     return self:calculatePosition('y')
 end
 
+--[[--
+Get the widget's calculated width.
+
+@treturn number
+The widget's calculated width.
+--]]--
 function Widget:getWidth ()
     return self:calculateDimension('width')
 end
 
+--[[--
+Get the widget's calculated height.
+
+@treturn number
+The widget's calculated height.
+--]]--
 function Widget:getHeight ()
     return self:calculateDimension('height')
 end
@@ -256,16 +455,40 @@ function Widget:setDimension (name, size)
 
     local min = (name == 'width') and (self.minwidth or 0)
         or (self.minheight or 0)
-            
+
     self[name] = math.max(size, min)
+
+    return self[name]
 end
 
-function Widget:setWidth (size)
-    return self:setDimension('width', size)
+--[[--
+Set the widget's width.
+
+Limited to space not occupied by siblings.
+
+@tparam number width
+The desired width. Actual width may differ.
+
+@treturn number
+The actual width of the widget.
+--]]--
+function Widget:setWidth (width)
+    return self:setDimension('width', width)
 end
 
-function Widget:setHeight (size)
-    return self:setDimension('height', size)
+--[[--
+Set the widget's height.
+
+Limited to space not occupied by siblings.
+
+@tparam number height
+The desired height. Actual height may differ.
+
+@treturn number
+The actual height of the widget.
+--]]--
+function Widget:setHeight (height)
+    return self:setDimension('height', height)
 end
 
 function Widget:getOrigin ()
@@ -277,6 +500,27 @@ function Widget:getExtent ()
     return x + self:getWidth(), y + self:getHeight()
 end
 
+--[[--
+Get two points describing a rectangle within the widget.
+
+@tparam boolean useMargin
+Whether to adjust the rectangle based on the widget's margin.
+
+@tparam boolean usePadding
+Whether to adjust the rectangle based on the widget's padding.
+
+@treturn number
+The upper left corner's X position.
+
+@treturn number
+The upper left corner's Y position.
+
+@treturn number
+The lower right corner's X position.
+
+@treturn number
+The lower right corner's Y position.
+--]]--
 function Widget:getRectangle (useMargin, usePadding)
     local x1, y1 = self:getOrigin()
     local x2, y2 = self:getExtent()
@@ -295,7 +539,21 @@ function Widget:getRectangle (useMargin, usePadding)
     return math.floor(x1), math.floor(y1), math.floor(x2), math.floor(y2)
 end
 
+--[[--
+Determine whether a point is within a widget.
+
+@tparam number x
+The point's X coordinate.
+
+@tparam number y
+The point's Y coordinate.
+
+@treturn boolean
+true if the point is within the widget, else false.
+--]]--
 function Widget:isAt (x, y)
+    checkReshape(self)
+
     local x1, y1, x2, y2 = self:getRectangle()
     return (x1 < x) and (x2 > x) and (y1 < y) and (y2 > y)
 end
@@ -310,12 +568,19 @@ function Widget:eachAncestor (includeSelf)
     end
 end
 
--- reshape the widget. Call this after changing position/dimensions.
+--[[--
+Reshape the widget.
+
+Clears calculated widget dimensions, allowing them to be recalculated, and
+fires a Reshape event (does not bubble). Called recursively for each child.
+
+When setting a widget's width or height, this function is automatically called
+on the parent widget.
+--]]--
 function Widget:reshape ()
     if self.isReshaping then return end
     self.isReshaping = true
-    self.position = {}
-    self.dimensions = {}
+    self.needsReshape = true
     Event.Reshape:emit(self, {
         target = self
     })
@@ -325,4 +590,4 @@ function Widget:reshape ()
     self.isReshaping = nil
 end
 
-return setmetatable(Widget, { __call = new })
+return setmetatable(Widget, { __call = metaCall })

@@ -1,0 +1,296 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>Luigi</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Event.html">Event</a></li>
+  <li><strong>Layout</strong></li>
+  <li><a href="../classes/Widget.html">Widget</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>Layout</code></h1>
+<p>Layout class.</p>
+<p>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Luigi.Layout">Luigi.Layout (data)</a></td>
+	<td class="summary">Layout constructor.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Layout:setStyle">Layout:setStyle (rules)</a></td>
+	<td class="summary">Set the style from a definition table or function.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Layout:setTheme">Layout:setTheme (rules)</a></td>
+	<td class="summary">Set the theme from a definition table or function.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Layout:show">Layout:show ()</a></td>
+	<td class="summary">Show the layout.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Layout:hide">Layout:hide ()</a></td>
+	<td class="summary">Hide the layout.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Layout:focusNextWidget">Layout:focusNextWidget ()</a></td>
+	<td class="summary">Focus next focusable widget.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Layout:focusPreviousWidget">Layout:focusPreviousWidget ()</a></td>
+	<td class="summary">Focus previous focusable widget.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Layout:getWidgetAt">Layout:getWidgetAt (x, y[, root])</a></td>
+	<td class="summary">Get the innermost widget at given coordinates.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+    Methods
+    <dl class="function">
+    <dt>
+    <a name = "Luigi.Layout"></a>
+    <strong>Luigi.Layout (data)</strong>
+    </dt>
+    <dd>
+    Layout constructor.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">data</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        A tree of widget data.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Layout.html#">Layout</a></span>
+        A Layout instance.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Layout:setStyle"></a>
+    <strong>Layout:setStyle (rules)</strong>
+    </dt>
+    <dd>
+    Set the style from a definition table or function.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rules</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.5">table</a> or <span class="type">function</span></span>
+        Style definition.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Layout:setTheme"></a>
+    <strong>Layout:setTheme (rules)</strong>
+    </dt>
+    <dd>
+    Set the theme from a definition table or function.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rules</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.5">table</a> or <span class="type">function</span></span>
+        Theme definition.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Layout:show"></a>
+    <strong>Layout:show ()</strong>
+    </dt>
+    <dd>
+    Show the layout. </p>
+
+<p>Hooks all appropriate Love events and callbacks.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Layout:hide"></a>
+    <strong>Layout:hide ()</strong>
+    </dt>
+    <dd>
+    Hide the layout. </p>
+
+<p>Unhooks Love events and callbacks.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Layout:focusNextWidget"></a>
+    <strong>Layout:focusNextWidget ()</strong>
+    </dt>
+    <dd>
+    Focus next focusable widget. </p>
+
+<p>Traverses widgets using Widget:getNextNeighbor until a focusable widget is
+found, and focuses that widget.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a></span>
+        The widget that was focused, or nil
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Layout:focusPreviousWidget"></a>
+    <strong>Layout:focusPreviousWidget ()</strong>
+    </dt>
+    <dd>
+    Focus previous focusable widget. </p>
+
+<p>Traverses widgets using Widget:getPreviousNeighbor until a focusable widget is
+found, and focuses that widget.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a></span>
+        The widget that was focused, or nil
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Layout:getWidgetAt"></a>
+    <strong>Layout:getWidgetAt (x, y[, root])</strong>
+    </dt>
+    <dd>
+    Get the innermost widget at given coordinates.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">number</span></span>
+        Number of pixels from window's left edge.
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">number</span></span>
+        Number of pixels from window's top edge.
+        </li>
+        <li><span class="parameter">root</span>
+            <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a></span>
+        Widget to search within, defaults to layout root.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2015-11-04 15:07:53 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

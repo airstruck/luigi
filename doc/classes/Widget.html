@@ -1,0 +1,618 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>Luigi</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Event.html">Event</a></li>
+  <li><a href="../classes/Layout.html">Layout</a></li>
+  <li><strong>Widget</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>Widget</code></h1>
+<p>Widget class.</p>
+<p>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Luigi.Widget">Luigi.Widget (layout[, data])</a></td>
+	<td class="summary">Widget pseudo-constructor.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Widget:bubbleEvent">Widget:bubbleEvent (eventName[, data])</a></td>
+	<td class="summary">Fire an event on this widget and each ancestor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:setValue">Widget:setValue (value)</a></td>
+	<td class="summary">Set widget's value property and bubble a Change event.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:getPreviousSibling">Widget:getPreviousSibling ()</a></td>
+	<td class="summary">Get widget's previous sibling.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:getNextSibling">Widget:getNextSibling ()</a></td>
+	<td class="summary">Get widget's next sibling.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:focus">Widget:focus ()</a></td>
+	<td class="summary">Attempt to focus the widget.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:getNextNeighbor">Widget:getNextNeighbor ()</a></td>
+	<td class="summary">Get the next widget, depth-first.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:getPreviousNeighbor">Widget:getPreviousNeighbor ()</a></td>
+	<td class="summary">Get the previous widget, depth-first.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:addChild">Widget:addChild (data)</a></td>
+	<td class="summary">Add a child to this widget.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:getX">Widget:getX ()</a></td>
+	<td class="summary">Get the widget's X coordinate.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:getY">Widget:getY ()</a></td>
+	<td class="summary">Get the widget's Y coordinate.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:getWidth">Widget:getWidth ()</a></td>
+	<td class="summary">Get the widget's calculated width.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:getHeight">Widget:getHeight ()</a></td>
+	<td class="summary">Get the widget's calculated height.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:setWidth">Widget:setWidth (width)</a></td>
+	<td class="summary">Set the widget's width.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:setHeight">Widget:setHeight (height)</a></td>
+	<td class="summary">Set the widget's height.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:getRectangle">Widget:getRectangle (useMargin, usePadding)</a></td>
+	<td class="summary">Get two points describing a rectangle within the widget.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:isAt">Widget:isAt (x, y)</a></td>
+	<td class="summary">Determine whether a point is within a widget.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Widget:reshape">Widget:reshape ()</a></td>
+	<td class="summary">Reshape the widget.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+    Methods
+    <dl class="function">
+    <dt>
+    <a name = "Luigi.Widget"></a>
+    <strong>Luigi.Widget (layout[, data])</strong>
+    </dt>
+    <dd>
+    Widget pseudo-constructor.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">layout</span>
+            <span class="types"><a class="type" href="../classes/Layout.html#">Layout</a></span>
+        The layout this widget belongs to.
+        </li>
+        <li><span class="parameter">data</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        The data definition table for this widget.
+This table is identical to the constructed widget.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a></span>
+        A Widget instance.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Widget:bubbleEvent"></a>
+    <strong>Widget:bubbleEvent (eventName[, data])</strong>
+    </dt>
+    <dd>
+    Fire an event on this widget and each ancestor. </p>
+
+<p>If any event handler returns non-nil, stop the event from propagating.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">eventName</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The name of the Event.
+        </li>
+        <li><span class="parameter">data</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        Information about the event to send to handlers.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">mixed</span></span>
+        The first value returned by an event handler.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:setValue"></a>
+    <strong>Widget:setValue (value)</strong>
+    </dt>
+    <dd>
+    Set widget's value property and bubble a Change event.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">mixed</span></span>
+        The new value of the widget.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">mixed</span></span>
+        The old value of the widget.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:getPreviousSibling"></a>
+    <strong>Widget:getPreviousSibling ()</strong>
+    </dt>
+    <dd>
+    Get widget's previous sibling.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a> or <span class="type">nil</span></span>
+        The widget's previous sibling, if any.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:getNextSibling"></a>
+    <strong>Widget:getNextSibling ()</strong>
+    </dt>
+    <dd>
+    Get widget's next sibling.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a> or <span class="type">nil</span></span>
+        The widget's next sibling, if any.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:focus"></a>
+    <strong>Widget:focus ()</strong>
+    </dt>
+    <dd>
+    Attempt to focus the widget. </p>
+
+<p>Unfocus currently focused widget, and focus this widget if it's focusable.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">boolean</span></span>
+        true if this widget was focused, else false.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:getNextNeighbor"></a>
+    <strong>Widget:getNextNeighbor ()</strong>
+    </dt>
+    <dd>
+    Get the next widget, depth-first. </p>
+
+<p>If the widget has children, returns the first child.
+Otherwise, returns the next sibling of the nearest possible ancestor.
+Cycles back around to the layout root from the last widget in the tree.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a></span>
+        The next widget in the tree.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:getPreviousNeighbor"></a>
+    <strong>Widget:getPreviousNeighbor ()</strong>
+    </dt>
+    <dd>
+    Get the previous widget, depth-first. </p>
+
+<p>Uses the reverse of the traversal order used by <a href="../classes/Widget.html#Widget:getNextNeighbor">getNextNeighbor</a>.
+Cycles back around to the last widget in the tree from the layout root.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a></span>
+        The previous widget in the tree.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:addChild"></a>
+    <strong>Widget:addChild (data)</strong>
+    </dt>
+    <dd>
+    Add a child to this widget.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">data</span>
+            <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a> or <a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        A widget or definition table representing a widget.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a></span>
+        The newly added child widget.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:getX"></a>
+    <strong>Widget:getX ()</strong>
+    </dt>
+    <dd>
+    Get the widget's X coordinate.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The widget's X coordinate.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:getY"></a>
+    <strong>Widget:getY ()</strong>
+    </dt>
+    <dd>
+    Get the widget's Y coordinate.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The widget's Y coordinate.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:getWidth"></a>
+    <strong>Widget:getWidth ()</strong>
+    </dt>
+    <dd>
+    Get the widget's calculated width.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The widget's calculated width.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:getHeight"></a>
+    <strong>Widget:getHeight ()</strong>
+    </dt>
+    <dd>
+    Get the widget's calculated height.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The widget's calculated height.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:setWidth"></a>
+    <strong>Widget:setWidth (width)</strong>
+    </dt>
+    <dd>
+    Set the widget's width. </p>
+
+<p>Limited to space not occupied by siblings.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+        The desired width. Actual width may differ.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The actual width of the widget.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:setHeight"></a>
+    <strong>Widget:setHeight (height)</strong>
+    </dt>
+    <dd>
+    Set the widget's height. </p>
+
+<p>Limited to space not occupied by siblings.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">number</span></span>
+        The desired height. Actual height may differ.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The actual height of the widget.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:getRectangle"></a>
+    <strong>Widget:getRectangle (useMargin, usePadding)</strong>
+    </dt>
+    <dd>
+    Get two points describing a rectangle within the widget.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">useMargin</span>
+            <span class="types"><span class="type">boolean</span></span>
+        Whether to adjust the rectangle based on the widget's margin.
+        </li>
+        <li><span class="parameter">usePadding</span>
+            <span class="types"><span class="type">boolean</span></span>
+        Whether to adjust the rectangle based on the widget's padding.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        The upper left corner's X position.</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        The upper left corner's Y position.</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        The lower right corner's X position.</li>
+        <li>
+           <span class="types"><span class="type">number</span></span>
+        The lower right corner's Y position.</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:isAt"></a>
+    <strong>Widget:isAt (x, y)</strong>
+    </dt>
+    <dd>
+    Determine whether a point is within a widget.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">number</span></span>
+        The point's X coordinate.
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">number</span></span>
+        The point's Y coordinate.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">boolean</span></span>
+        true if the point is within the widget, else false.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Widget:reshape"></a>
+    <strong>Widget:reshape ()</strong>
+    </dt>
+    <dd>
+    Reshape the widget. </p>
+
+<p>Clears calculated widget dimensions, allowing them to be recalculated, and
+fires a Reshape event (does not bubble). Called recursively for each child.</p>
+
+<p>When setting a widget's width or height, this function is automatically called
+on the parent widget.
+
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2015-11-04 15:07:53 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -17,19 +17,19 @@ return function (self)
             axis = 'y'
             dimension = 'height'
         end
-        local prevSibling = self:getPrevious()
-        local nextSibling = self:getNext()
+        local prevSibling = self:getPreviousSibling()
+        local nextSibling = self:getNextSibling()
         local prevSize = prevSibling and prevSibling[dimension]
         local nextSize = nextSibling and nextSibling[dimension]
 
         if prevSize then
             prevSibling:setDimension(dimension,
-                    event[axis] - prevSibling:calculatePosition(axis))
+                event[axis] - prevSibling:calculatePosition(axis))
         end
         if nextSize then
             nextSibling:setDimension(dimension,
-                    nextSibling:calculatePosition(axis) +
-                    nextSibling:calculateDimension(dimension) - event[axis])
+                nextSibling:calculatePosition(axis) +
+                nextSibling:calculateDimension(dimension) - event[axis])
         end
 
     end)

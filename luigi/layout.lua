@@ -1,3 +1,9 @@
+--[[--
+Layout class.
+
+@classmod Layout
+--]]--
+
 local ROOT = (...):gsub('[^.]*$', '')
 
 local Base = require(ROOT .. 'base')
@@ -9,6 +15,17 @@ local Hooker = require(ROOT .. 'hooker')
 
 local Layout = Base:extend()
 
+--[[--
+Layout constructor.
+
+@function Luigi.Layout
+
+@tparam table data
+A tree of widget data.
+
+@treturn Layout
+A Layout instance.
+--]]--
 function Layout:constructor (data)
     self.accelerators = {}
     self:addDefaultHandlers()
@@ -22,77 +39,144 @@ function Layout:constructor (data)
     Widget(self, self.root)
 end
 
--- focus a widget if it's focusable, and return success
-function Layout:tryFocus (widget)
-    if widget.canFocus then
-        if self.focusedWidget then
-            self.focusedWidget.focused = false
-        end
-        widget.focused = true
-        self.focusedWidget = widget
-        return true
+--[[--
+Set the style from a definition table or function.
+
+@tparam table|function rules
+Style definition.
+--]]--
+function Layout:setStyle (rules)
+    if type(rules) == 'function' then
+        rules = rules()
     end
+    self.style = Style(rules or {}, { 'id', 'style' })
 end
 
--- get the next widget, cycling back around to root (depth first)
-function Layout:getNextWidget (widget)
-    if #widget.children > 0 then
-        return widget.children[1]
+--[[--
+Set the theme from a definition table or function.
+
+@tparam table|function rules
+Theme definition.
+--]]--
+function Layout:setTheme (rules)
+    if type(rules) == 'function' then
+        rules = rules()
     end
-    for ancestor in widget:eachAncestor(true) do
-        local nextWidget = ancestor:getNext()
-        if nextWidget then return nextWidget end
-    end
-    return self.root
+    self.theme = Style(rules or {}, { 'type' })
 end
 
--- get the last child of the last child of the last child of the...
-local function getGreatestDescendant (widget)
-    while #widget.children > 0 do
-        local children = widget.children
-        widget = children[#children]
+--[[--
+Show the layout.
+
+Hooks all appropriate Love events and callbacks.
+--]]--
+function Layout:show ()
+    local root = self.root
+    local width = root.width
+    local height = root.height
+    local title = root.title
+    if not self.input then
+        self.input = Input(self)
     end
-    return widget
+
+    local currentWidth, currentHeight, flags = love.window.getMode()
+    love.window.setMode(width or currentWidth, height or currentHeight, flags)
+    if title then
+        love.window.setTitle(title)
+    end
+    self:manageInput(self.input)
+    root:reshape()
 end
 
--- get the previous widget, cycling back around to root (depth first)
-function Layout:getPreviousWidget (widget)
-    if widget == self.root then
-        return getGreatestDescendant(widget)
+--[[--
+Hide the layout.
+
+Unhooks Love events and callbacks.
+--]]--
+function Layout:hide ()
+    if not self.isManagingInput then
+        return
     end
-    for ancestor in widget:eachAncestor(true) do
-        local previousWidget = ancestor:getPrevious()
-        if previousWidget then
-            return getGreatestDescendant(previousWidget)
-        end
-        if ancestor ~= widget then return ancestor end
-    end
-    return self.root
+    self.isManagingInput = false
+    self:unhook()
 end
 
--- focus next focusable widget (depth first)
+--[[--
+Focus next focusable widget.
+
+Traverses widgets using Widget:getNextNeighbor until a focusable widget is
+found, and focuses that widget.
+
+@treturn Widget
+The widget that was focused, or nil
+--]]--
 function Layout:focusNextWidget ()
     local widget = self.focusedWidget or self.root
-    local nextWidget = self:getNextWidget(widget)
+    local nextWidget = widget:getNextNeighbor()
 
     while nextWidget ~= widget do
-        if self:tryFocus(nextWidget) then return end
-        nextWidget = self:getNextWidget(nextWidget)
+        if nextWidget:focus() then return nextWidget end
+        nextWidget = nextWidget:getNextNeighbor()
     end
 end
 
--- focus previous focusable widget (depth first)
+--[[--
+Focus previous focusable widget.
+
+Traverses widgets using Widget:getPreviousNeighbor until a focusable widget is
+found, and focuses that widget.
+
+@treturn Widget
+The widget that was focused, or nil
+--]]--
 function Layout:focusPreviousWidget ()
     local widget = self.focusedWidget or self.root
-    local previousWidget = self:getPreviousWidget(widget)
+    local previousWidget = widget:getPreviousNeighbor()
 
     while previousWidget ~= widget do
-        if self:tryFocus(previousWidget) then return end
-        previousWidget = self:getPreviousWidget(previousWidget)
+        if previousWidget:focus() then return previousWidget end
+        previousWidget = previousWidget:getPreviousNeighbor()
     end
 end
 
--- handlers for keyboard accelerators and tab focus
+--[[--
+Get the innermost widget at given coordinates.
+
+@tparam number x
+Number of pixels from window's left edge.
+
+@tparam number y
+Number of pixels from window's top edge.
+
+@tparam[opt] Widget root
+Widget to search within, defaults to layout root.
+--]]--
+function Layout:getWidgetAt (x, y, root)
+    local widget = root or self.root
+    local children = widget.children
+    local childCount = #children
+    -- Loop through in reverse, because siblings defined later in the tree
+    -- will overdraw earlier siblings.
+    for i = childCount, 1, -1 do
+        local child = children[i]
+        local inner = self:getWidgetAt(x, y, child)
+        if inner then return inner end
+    end
+    if widget:isAt(x, y) then return widget end
+    if widget == self.root then return widget end
+end
+
+-- Internal, called from Widget:new
+function Layout:addWidget (widget)
+    if widget.id then
+        self[widget.id] = widget
+    end
+    if widget.key then
+        self.accelerators[widget.key] = widget
+    end
+end
+
+-- Add handlers for keyboard accelerators and tab focus
 function Layout:addDefaultHandlers ()
     self:onKeyPress(function (event)
 
@@ -145,78 +229,6 @@ function Layout:addDefaultHandlers ()
                 acceleratedWidget, event.key)
         end
     end)
-end
-
--- set the style from a definition table or function
-function Layout:setStyle (rules)
-    if type(rules) == 'function' then
-        rules = rules()
-    end
-    self.style = Style(rules or {}, { 'id', 'style' })
-end
-
--- set the theme from a definition table or function
-function Layout:setTheme (rules)
-    if type(rules) == 'function' then
-        rules = rules()
-    end
-    self.theme = Style(rules or {}, { 'type' })
-end
-
--- show the layout (hooks all appropriate love events and callbacks)
-function Layout:show ()
-    local root = self.root
-    local width = root.width
-    local height = root.height
-    local title = root.title
-    if not self.input then
-        self.input = Input(self)
-    end
-
-    local currentWidth, currentHeight, flags = love.window.getMode()
-    love.window.setMode(width or currentWidth, height or currentHeight, flags)
-    if title then
-        love.window.setTitle(title)
-    end
-    self:manageInput(self.input)
-    root:reshape()
-end
-
--- hide the layout (unhooks love events and callbacks)
-function Layout:hide ()
-    if not self.isManagingInput then
-        return
-    end
-    self.isManagingInput = false
-    self:unhook()
-end
-
--- Get the innermost widget at a position, within a root widget.
--- Should always return a widget since all positions are within
--- the layout's root widget.
-function Layout:getWidgetAt (x, y, root)
-    local widget = root or self.root
-    local children = widget.children
-    local childCount = #children
-    -- Loop through in reverse, because siblings defined later in the tree
-    -- will overdraw earlier siblings.
-    for i = childCount, 1, -1 do
-        local child = children[i]
-        local inner = self:getWidgetAt(x, y, child)
-        if inner then return inner end
-    end
-    if widget:isAt(x, y) then return widget end
-    if widget == self.root then return widget end
-end
-
--- Internal, called from Widget:new
-function Layout:addWidget (widget)
-    if widget.id then
-        self[widget.id] = widget
-    end
-    if widget.key then
-        self.accelerators[widget.key] = widget
-    end
 end
 
 -- event stuff
@@ -287,5 +299,27 @@ end
 -- event binders
 
 Event.injectBinders(Layout)
+
+-- ffi
+
+function Layout:showMessage () end
+
+local _, ffi = pcall(require, 'ffi')
+if ffi then
+
+    ffi.cdef [[
+        int SDL_ShowSimpleMessageBox(
+            uint32_t flags,
+            const char* title,
+            const char* message,
+            void* window
+        );
+    ]]
+
+    function Layout:showMessage (title, message)
+        ffi.C.SDL_ShowSimpleMessageBox(0, title, message, nil)
+    end
+
+end
 
 return Layout

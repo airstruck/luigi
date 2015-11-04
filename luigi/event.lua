@@ -1,3 +1,9 @@
+--[[--
+Event class.
+
+@classmod Event
+--]]--
+
 local ROOT = (...):gsub('[^.]*$', '')
 
 local Base = require(ROOT .. 'base')
@@ -17,24 +23,32 @@ function Event:bind (target, callback)
     return Hooker.hook(registry, target, callback)
 end
 
-local eventNames = {
-    'Reshape', -- widget's dimensions changed
-    'PreDisplay', 'Display', -- before/after widget is drawn
-    'KeyPress', 'KeyRelease', -- keyboard key pressed/released
-    'TextInput', -- text is entered
-    'Move', -- cursor moves, no button pressed
-    'Enter', 'Leave', -- cursor enters/leaves widget, no button pressed
-    'PressEnter', 'PressLeave', -- cursor enters/leaves widget, button pressed
-    'PressStart', 'PressEnd', -- cursor or accelerator key press starts/ends
-    'PressDrag', -- pressed cursor moves, targets originating widget
-    'PressMove', -- pressed cursor moves, targets widget at cursor position
-    'Press', -- cursor is pressed and released on same widget
-    'Change', -- widget's value changed via Widget:setValue
+--[[--
+Event names.
+--]]--
+Event.names = {
+    'Reshape', -- A widget is being reshaped.
+    'PreDisplay', -- A widget is about to be drawn.
+    'Display', -- A widget was drawn.
+    'KeyPress', -- A keyboard key was pressed.
+    'KeyRelease', -- A keyboard key was released.
+    'TextInput', -- Text was entered.
+    'Move', -- The cursor moved, and no button was pressed.
+    'Enter', -- The cursor entered a widget, and no button was pressed.
+    'Leave', -- The cursor left a widget, and no button was pressed.
+    'PressEnter', -- The cursor entered a widget, and a button was pressed.
+    'PressLeave', -- The cursor left a widget, and a button was pressed.
+    'PressStart', -- A pointer button or accelerator key was pressed.
+    'PressEnd', -- A pointer button or accelerator key was released.
+    'PressDrag', -- A pressed cursor moved; targets originating widget.
+    'PressMove', -- A pressed cursor moved; targets widget at cursor position.
+    'Press', -- A pointer button was pressed and released on the same widget.
+    'Change', -- A widget's value changed.
 }
 
 local weakKeyMeta = { __mode = 'k' }
 
-for i, name in ipairs(eventNames) do
+for i, name in ipairs(Event.names) do
     Event[name] = Event:extend({
         name = name,
         registry = setmetatable({}, weakKeyMeta),
@@ -42,7 +56,7 @@ for i, name in ipairs(eventNames) do
 end
 
 function Event.injectBinders (t)
-    for i, name in ipairs(eventNames) do
+    for i, name in ipairs(Event.names) do
         t['on' .. name] = function (...) return Event[name]:bind(...) end
     end
 end
