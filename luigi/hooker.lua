@@ -23,7 +23,7 @@ local function unhook (item)
     item.func = nil
 end
 
-local function hook (host, key, func)
+local function hook (host, key, func, atEnd)
     if not func then
         return
     end
@@ -32,17 +32,30 @@ local function hook (host, key, func)
         hooks[host] = {}
     end
 
-    local next = hooks[host][key]
+    local current = hooks[host][key]
     local item = {
-        next = next,
+        next = not atEnd and current or nil,
         unhook = unhook,
         host = host,
         key = key,
         func = func,
     }
 
-    if next then
-        next.prev = item
+    if atEnd then
+        if current then
+            while current.next do
+                current = current.next
+            end
+            current.next = item
+            item.prev = current
+        else
+            hooks[host][key] = item
+        end
+        return item
+    end
+
+    if current then
+        current.prev = item
     end
 
     hooks[host][key] = item
@@ -54,7 +67,7 @@ function Hooker.unhook (item)
     return unhook(item)
 end
 
-function Hooker.hook (host, key, func)
+function Hooker.hook (host, key, func, atEnd)
     if not wrapped[host] then
         wrapped[host] = {}
     end
@@ -68,16 +81,19 @@ function Hooker.hook (host, key, func)
             local item = hooks[host][key]
 
             while item do
-                local result = item.func(...)
-                if result ~= nil then
-                    return result
+                local nextItem = item.next
+                if item.func then
+                    local result = item.func(...)
+                    if result ~= nil then
+                        return result
+                    end
                 end
-                item = item.next
+                item = nextItem
             end
         end
     end
 
-    return hook(host, key, func)
+    return hook(host, key, func, atEnd)
 end
 
 return Hooker

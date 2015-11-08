@@ -3,7 +3,7 @@ return function (self)
     self.flow = 'x' -- TODO: support vertical progress?
 
     local bar = self:addChild {
-        type = 'progressInner',
+        type = 'progress.bar',
         width = 0,
     }
 

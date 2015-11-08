@@ -1,10 +1,6 @@
 local Layout = require 'luigi.layout'
 
 local style = {
-    mainWindow = {
-        width = 600,
-        height = 400,
-    },
     short = {
         height = 48,
     },
@@ -36,7 +32,33 @@ local style = {
     },
 }
 
-local mainForm = { title = "Test window", id = 'mainWindow', type = 'panel',
+local mainForm = { id = 'mainWindow', type = 'panel',
+    { type = 'menu', id = 'menubar', flow = 'x',
+        { text = 'File', id = 'menuFile',
+            { text = 'Save', id = 'menuFileSave', },
+            { text = 'Quit' },
+        },
+        { text = 'Edit',
+            { text = 'Cut' },
+            { text = 'Copy' },
+            { text = 'Paste' },
+            { type = 'slider' },
+        },
+        { text = 'View',
+            { text = 'Theme',
+                { text = 'Light' },
+                { text = 'Dark' },
+            },
+            { text = 'Style',
+                { text = 'Default' },
+            },
+        },
+        { text = 'Help',
+            { text = 'About Luigi', icon = 'icon/16px/Book.png', key = 'backspace', },
+            { text = 'About Luigi Demo', icon = 'icon/16px/Book Red.png' },
+            { text = 'Licenses' },
+        },
+    },
     { type = 'panel', id = 'toolbar', flow = 'x',
         { type = 'button', id = 'newButton', style = 'toolButton', key = 'z',
             icon = 'icon/32px/Blueprint.png' },
@@ -97,7 +119,8 @@ end)
 
 layout:onMove(function (event)
     local w = event.target
-    layout.statusbar.text = (w.id or '(unnamed)') .. ' ' ..
+    layout.statusbar.text = (w.type or '(generic) ') ..
+        (w.id or '(unnamed)') .. ' ' ..
         w:getX() .. ', ' .. w:getY() .. ' | ' ..
         w:getWidth() .. 'x' .. w:getHeight()
 end)
@@ -107,6 +130,14 @@ layout.newButton:onMove(function (event)
     return false
 end)
 
+local foo = Layout { float = true, height = 100,
+    text = 'hello', align = 'center middle', background = {255,0,0}
+}
+
+foo:onReshape(function (event)
+    foo:hide()
+end)
+
 layout.newButton:onPress(function (event)
     print('creating a new thing!')
 end)
@@ -114,6 +145,11 @@ end)
 layout.aButton:onPress(function (event)
     layout.aButton.font = nil
     layout.aButton.width = layout.aButton.width + 10
+    local w = layout.aButton:getWidth()
+    foo.root.width = w * 2
+    foo.root.left = layout.aButton:getX() - w
+    foo.root.top = layout.aButton:getY() - foo.root.height
+    foo:show()
 end)
 
 layout.mainCanvas.font = 'font/liberation/LiberationMono-Regular.ttf'

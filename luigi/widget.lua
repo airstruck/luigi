@@ -17,6 +17,8 @@ Widget.isWidget = true
 
 Widget.typeDecorators = {
     button = require(ROOT .. 'widget.button'),
+    menu = require(ROOT .. 'widget.menu'),
+    ['menu.item'] = require(ROOT .. 'widget.menu.item'),
     progress = require(ROOT .. 'widget.progress'),
     sash = require(ROOT .. 'widget.sash'),
     slider = require(ROOT .. 'widget.slider'),
@@ -55,14 +57,14 @@ local function metaNewIndex (self, property, value)
     end
 
     if property == 'width' then
-        value = math.max(value, self.minwidth or 0)
+        value = value and math.max(value, self.minwidth or 0)
         self.shadowProperties[property] = value
         Widget.reshape(self.parent or self)
         return
     end
 
     if property == 'height' then
-        value = math.max(value, self.minheight or 0)
+        value = value and math.max(value, self.minheight or 0)
         self.shadowProperties[property] = value
         Widget.reshape(self.parent or self)
         return
@@ -89,7 +91,7 @@ A Widget instance.
 local function metaCall (Widget, layout, self)
     self = self or {}
     self.layout = layout
-    self.children = {}
+    self.children = self.children or {}
     self.position = { x = nil, y = nil }
     self.dimensions = { width = nil, height = nil }
     self.shadowProperties = {}
@@ -295,6 +297,7 @@ function Widget:addChild (data)
 
     table.insert(self.children, child)
     child.parent = self
+    child.layout = self.layout
 
     return child
 end
@@ -375,8 +378,9 @@ function Widget:calculatePosition (axis)
     end
     local parent = self.parent
     if not parent then
-        self.position[axis] = 0
-        return 0
+        self.position[axis] = axis == 'x' and (self.left or 0)
+            or axis == 'y' and (self.top or 0)
+        return self.position[axis]
     end
     local parentPos = parent:calculatePosition(axis)
     local p = parentPos
@@ -555,7 +559,7 @@ function Widget:isAt (x, y)
     checkReshape(self)
 
     local x1, y1, x2, y2 = self:getRectangle()
-    return (x1 < x) and (x2 > x) and (y1 < y) and (y2 > y)
+    return (x1 <= x) and (x2 >= x) and (y1 <= y) and (y2 >= y)
 end
 
 function Widget:eachAncestor (includeSelf)

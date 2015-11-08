@@ -37,7 +37,7 @@ function Font:setWidth (width)
 end
 
 function Font:getLineHeight ()
-    return self.font:getLineHeight()
+    return self.font:getHeight()
 end
 
 function Font:getAscender ()

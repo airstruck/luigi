@@ -1,5 +1,15 @@
 --[[--
-Layout class.
+A Layout contains a tree of widgets with a single `root` widget.
+
+Layouts will resize to fit the window unless a `top` or `left`
+property is found in the root widget.
+
+Layouts are drawn in the order that they were shown, so the
+most recently shown layout shown will always appear on top.
+
+Other events are sent to layouts in the opposite direction,
+and are trapped by the first layout that can handle the event
+(for example, the topmost layer that is focused or hovered).
 
 @classmod Layout
 --]]--
@@ -14,6 +24,8 @@ local Style = require(ROOT .. 'style')
 local Hooker = require(ROOT .. 'hooker')
 
 local Layout = Base:extend()
+
+Layout.isLayout = true
 
 --[[--
 Layout constructor.
@@ -32,8 +44,7 @@ function Layout:constructor (data)
     self:setStyle()
     self:setTheme(require(ROOT .. 'theme.light'))
 
-    self.isMousePressed = false
-    self.isManagingInput = false
+    self.isShown = false
     self.hooks = {}
     self.root = data or {}
     Widget(self, self.root)
@@ -71,20 +82,17 @@ Show the layout.
 Hooks all appropriate Love events and callbacks.
 --]]--
 function Layout:show ()
+    if self.isShown then
+        self:unhook() -- return
+        self.isShown = nil
+    end
     local root = self.root
-    local width = root.width
-    local height = root.height
-    local title = root.title
+
     if not self.input then
-        self.input = Input(self)
+        self.input = Input.default -- Input(self)
     end
 
-    local currentWidth, currentHeight, flags = love.window.getMode()
-    love.window.setMode(width or currentWidth, height or currentHeight, flags)
-    if title then
-        love.window.setTitle(title)
-    end
-    self:manageInput(self.input)
+    self:manageInput()
     root:reshape()
 end
 
@@ -94,10 +102,10 @@ Hide the layout.
 Unhooks Love events and callbacks.
 --]]--
 function Layout:hide ()
-    if not self.isManagingInput then
+    if not self.isShown then
         return
     end
-    self.isManagingInput = false
+    self.isShown = nil
     self:unhook()
 end
 
@@ -163,7 +171,7 @@ function Layout:getWidgetAt (x, y, root)
         if inner then return inner end
     end
     if widget:isAt(x, y) then return widget end
-    if widget == self.root then return widget end
+    -- if widget == self.root then return widget end
 end
 
 -- Internal, called from Widget:new
@@ -233,8 +241,8 @@ end
 
 -- event stuff
 
-function Layout:hook (key, method)
-    self.hooks[#self.hooks + 1] = Hooker.hook(love, key, method)
+function Layout:hook (key, method, hookLast)
+    self.hooks[#self.hooks + 1] = Hooker.hook(love, key, method, hookLast)
 end
 
 function Layout:unhook ()
@@ -244,7 +252,7 @@ function Layout:unhook ()
     self.hooks = {}
 end
 
-local getMouseButtonId
+local getMouseButtonId, isMouseDown
 
 if love._version_minor < 10 then
     getMouseButtonId = function (value)
@@ -252,47 +260,56 @@ if love._version_minor < 10 then
             or value == 'r' and 2
             or value == 'm' and 3
     end
+    isMouseDown = function ()
+        return love.mouse.isDown('l', 'r', 'm')
+    end
 else
     getMouseButtonId = function (value)
         return value
     end
+    isMouseDown = function ()
+        return love.mouse.isDown(1, 2, 3)
+    end
 end
 
-function Layout:manageInput (input)
-    if self.isManagingInput then
+function Layout:manageInput ()
+    if self.isShown then
         return
     end
-    self.isManagingInput = true
+    self.isShown = true
+
+    local input = self.input
 
     self:hook('draw', function ()
-        input:handleDisplay()
-    end)
+        input:handleDisplay(self)
+    end, true)
     self:hook('resize', function (width, height)
-        return input:handleReshape(width, height)
+        return input:handleReshape(self, width, height)
     end)
     self:hook('mousepressed', function (x, y, button)
-        self.isMousePressed = true
-        return input:handlePressStart(getMouseButtonId(button), x, y)
+        return input:handlePressStart(self, getMouseButtonId(button), x, y)
     end)
     self:hook('mousereleased', function (x, y, button)
-        self.isMousePressed = false
-        return input:handlePressEnd(getMouseButtonId(button), x, y)
+        return input:handlePressEnd(self, getMouseButtonId(button), x, y)
     end)
     self:hook('mousemoved', function (x, y, dx, dy)
-        if self.isMousePressed then
-            return input:handlePressedMove(x, y)
+        if isMouseDown() then
+            return input:handlePressedMove(self, x, y)
         else
-            return input:handleMove(x, y)
+            return input:handleMove(self, x, y)
         end
     end)
     self:hook('keypressed', function (key, isRepeat)
-        return input:handleKeyPress(key, love.mouse.getX(), love.mouse.getY())
+        return input:handleKeyPress(
+            self, key, love.mouse.getX(), love.mouse.getY())
     end)
     self:hook('keyreleased', function (key)
-        return input:handleKeyRelease(key, love.mouse.getX(), love.mouse.getY())
+        return input:handleKeyRelease(
+            self, key, love.mouse.getX(), love.mouse.getY())
     end)
     self:hook('textinput', function (text)
-        return input:handleTextInput(text, love.mouse.getX(), love.mouse.getY())
+        return input:handleTextInput(
+            self, text, love.mouse.getX(), love.mouse.getY())
     end)
 end
 

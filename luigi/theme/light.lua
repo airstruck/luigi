@@ -25,6 +25,21 @@ return function (config)
         button_pressed = {
             slices = RESOURCE .. 'button_pressed.png',
         },
+        menu = {
+            height = 24,
+        },
+        ['menu.item'] = {
+            padding = 4,
+            align = 'left middle',
+        },
+        ['menu.item_active'] = {
+            background = highlight,
+        },
+        submenu = {
+            padding = 10,
+            margin = -10,
+            slices = RESOURCE .. 'submenu.png',
+        },
         sash = {
             background = lineColor
         },
@@ -46,7 +61,7 @@ return function (config)
             minwidth = 24,
             minheight = 24
         },
-        progressInner = {
+        ['progress.bar'] = {
             slices = RESOURCE .. 'progress.png',
             padding = 0,
             minwidth = 12,
