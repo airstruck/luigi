@@ -16,11 +16,6 @@ local function unhook (item)
     if hooks[item.host][item.key] == item then
         hooks[item.host][item.key] = item.next
     end
-
-    item.host = nil
-    item.prev = nil
-    item.next = nil
-    item.func = nil
 end
 
 local function hook (host, key, func, atEnd)
@@ -81,17 +76,14 @@ function Hooker.hook (host, key, func, atEnd)
             local item = hooks[host][key]
 
             while item do
-                local nextItem = item.next
-                if item.func then
-                    local result = item.func(...)
-                    if result ~= nil then
-                        return result
-                    end
+                local result = item.func(...)
+                if result ~= nil then
+                    return result
                 end
-                item = nextItem
-            end
-        end
-    end
+                item = item.next
+            end -- while
+        end -- function
+    end -- if
 
     return hook(host, key, func, atEnd)
 end

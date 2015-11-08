@@ -93,7 +93,7 @@ show = function (self)
             local tw = child.fontData:getAdvance(child[2].text)
                 + pad * 2 + h
             local kw = child.fontData:getAdvance(child[3].text)
-                + pad * 2
+                + pad * 4
             textWidth = math.max(textWidth, tw)
             keyWidth = math.max(keyWidth, kw)
         end
@@ -144,6 +144,7 @@ return function (self)
     end
 
     if isSubmenu then
+        key = #self.items > 0 and '>' or key
         self.height = self.fontData:getLineHeight() + pad * 2
         self.flow = 'x'
         self:addChild({ icon = icon, width = self.height })

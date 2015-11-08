@@ -166,10 +166,12 @@ function Input:handlePressStart (layout, button, x, y, widget, accelerator)
         hit = nil
         widget = layout.root
     end
-    widget.pressed = true
-    self.pressedWidgets[button] = widget
-    self.passedWidgets[button] = widget
-    widget:focus()
+    if hit then
+        widget.pressed = true
+        self.pressedWidgets[button] = widget
+        self.passedWidgets[button] = widget
+        widget:focus()
+    end
     widget:bubbleEvent('PressStart', {
         hit = hit,
         button = button,
@@ -188,7 +190,9 @@ function Input:handlePressEnd (layout, button, x, y, widget, accelerator)
     end
     local originWidget = self.pressedWidgets[button]
     if not originWidget then return end
-    originWidget.pressed = nil
+    if hit then
+        originWidget.pressed = nil
+    end
     widget:bubbleEvent('PressEnd', {
         hit = hit,
         origin = originWidget,
@@ -203,8 +207,10 @@ function Input:handlePressEnd (layout, button, x, y, widget, accelerator)
             x = x, y = y
         })
     end
-    self.pressedWidgets[button] = nil
-    self.passedWidgets[button] = nil
+    if hit then
+        self.pressedWidgets[button] = nil
+        self.passedWidgets[button] = nil
+    end
     return hit
 end
 
