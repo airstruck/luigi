@@ -5,7 +5,7 @@ local Layout
 local show
 
 local function deactivateSiblings (target)
-    local sibling = target.parent and target.parent.children[1]
+    local sibling = target.parent and target.parent[1]
     local wasSiblingOpen
 
     if not sibling then
@@ -90,9 +90,9 @@ show = function (self)
         root.height = root:getHeight() + h
         if child.type == 'menu.item' then
             local pad = child.padding or 0
-            local tw = child.fontData:getAdvance(child.children[2].text)
+            local tw = child.fontData:getAdvance(child[2].text)
                 + pad * 2 + h
-            local kw = child.fontData:getAdvance(child.children[3].text)
+            local kw = child.fontData:getAdvance(child[3].text)
                 + pad * 2
             textWidth = math.max(textWidth, tw)
             keyWidth = math.max(keyWidth, kw)
@@ -103,13 +103,13 @@ show = function (self)
 
     menuLayout:onReshape(function (event)
         menuLayout:hide()
-        deactivateSiblings(self.rootMenu.children[1])
+        deactivateSiblings(self.rootMenu[1])
     end)
 
     menuLayout:onPressStart(function (event)
         if not event.hit then
             menuLayout:hide()
-            deactivateSiblings(self.rootMenu.children[1])
+            deactivateSiblings(self.rootMenu[1])
         end
         activate(event)
     end)

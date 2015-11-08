@@ -161,12 +161,11 @@ Widget to search within, defaults to layout root.
 --]]--
 function Layout:getWidgetAt (x, y, root)
     local widget = root or self.root
-    local children = widget.children
-    local childCount = #children
+    local childCount = #widget
     -- Loop through in reverse, because siblings defined later in the tree
     -- will overdraw earlier siblings.
     for i = childCount, 1, -1 do
-        local child = children[i]
+        local child = widget[i]
         local inner = self:getWidgetAt(x, y, child)
         if inner then return inner end
     end
@@ -202,7 +201,7 @@ function Layout:addDefaultHandlers ()
         local widget = self.focusedWidget
         if widget and event.key == 'space' or event.key == ' '
         or event.key == 'return' then
-            self.input:handlePressStart(event.key, event.x, event.y,
+            self.input:handlePressStart(self, event.key, event.x, event.y,
                 widget, event.key)
             return
         end
@@ -212,7 +211,7 @@ function Layout:addDefaultHandlers ()
 
         if acceleratedWidget then
             acceleratedWidget.hovered = true
-            self.input:handlePressStart(event.key, event.x, event.y,
+            self.input:handlePressStart(self, event.key, event.x, event.y,
                 acceleratedWidget, event.key)
         end
     end)
@@ -223,7 +222,7 @@ function Layout:addDefaultHandlers ()
         local widget = self.focusedWidget
         if widget and event.key == 'space' or event.key == ' '
         or event.key == 'return' then
-            self.input:handlePressEnd(event.key, event.x, event.y,
+            self.input:handlePressEnd(self, event.key, event.x, event.y,
                 widget, event.key)
             return
         end
@@ -233,7 +232,7 @@ function Layout:addDefaultHandlers ()
 
         if acceleratedWidget then
             acceleratedWidget.hovered = false
-            self.input:handlePressEnd(event.key, event.x, event.y,
+            self.input:handlePressEnd(self, event.key, event.x, event.y,
                 acceleratedWidget, event.key)
         end
     end)

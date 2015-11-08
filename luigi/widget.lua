@@ -91,7 +91,6 @@ A Widget instance.
 local function metaCall (Widget, layout, self)
     self = self or {}
     self.layout = layout
-    self.children = self.children or {}
     self.position = { x = nil, y = nil }
     self.dimensions = { width = nil, height = nil }
     self.shadowProperties = {}
@@ -119,8 +118,8 @@ local function metaCall (Widget, layout, self)
     end
 
     for k, v in ipairs(self) do
-        self.children[k] = v.isWidget and v or metaCall(Widget, self.layout, v)
-        self.children[k].parent = self
+        self[k] = v.isWidget and v or metaCall(Widget, self.layout, v)
+        self[k].parent = self
     end
 
     return self
@@ -179,10 +178,10 @@ Get widget's previous sibling.
 The widget's previous sibling, if any.
 --]]--
 function Widget:getPreviousSibling ()
-    if not self.parent then return end
-    local siblings = self.parent.children
-    for i, widget in ipairs(siblings) do
-        if widget == self then return siblings[i - 1] end
+    local parent = self.parent
+    if not parent then return end
+    for i, widget in ipairs(parent) do
+        if widget == self then return parent[i - 1] end
     end
 end
 
@@ -193,10 +192,10 @@ Get widget's next sibling.
 The widget's next sibling, if any.
 --]]--
 function Widget:getNextSibling ()
-    if not self.parent then return end
-    local siblings = self.parent.children
-    for i, widget in ipairs(siblings) do
-        if widget == self then return siblings[i + 1] end
+    local parent = self.parent
+    if not parent then return end
+    for i, widget in ipairs(parent) do
+        if widget == self then return parent[i + 1] end
     end
 end
 
@@ -236,8 +235,8 @@ Cycles back around to the layout root from the last widget in the tree.
 The next widget in the tree.
 --]]--
 function Widget:getNextNeighbor ()
-    if #self.children > 0 then
-        return self.children[1]
+    if #self > 0 then
+        return self[1]
     end
     for ancestor in self:eachAncestor(true) do
         local nextWidget = ancestor:getNextSibling()
@@ -248,9 +247,8 @@ end
 
 -- get the last child of the last child of the last child of the...
 local function getGreatestDescendant (widget)
-    while #widget.children > 0 do
-        local children = widget.children
-        widget = children[#children]
+    while #widget > 0 do
+        widget = widget[#widget]
     end
     return widget
 end
@@ -295,7 +293,7 @@ function Widget:addChild (data)
     local layout = self.layout
     local child = Widget(layout, data or {})
 
-    table.insert(self.children, child)
+    table.insert(self, child)
     child.parent = self
     child.layout = self.layout
 
@@ -351,7 +349,7 @@ function Widget:calculateDimension (name)
     end
     local claimed = 0
     local unsized = 1
-    for i, widget in ipairs(self.parent.children) do
+    for i, widget in ipairs(self.parent) do
         if widget ~= self then
             if widget[name] then
                 claimed = claimed + widget:calculateDimension(name)
@@ -387,7 +385,7 @@ function Widget:calculatePosition (axis)
     p = p + (parent.margin or 0)
     p = p + (parent.padding or 0)
     local parentFlow = parent.flow or 'y'
-    for i, widget in ipairs(parent.children) do
+    for i, widget in ipairs(parent) do
         if widget == self then
             self.position[axis] = p
             return p
@@ -448,7 +446,7 @@ function Widget:setDimension (name, size)
     end
     local parentDimension = self.parent:calculateDimension(name)
     local claimed = 0
-    for i, widget in ipairs(self.parent.children) do
+    for i, widget in ipairs(self.parent) do
         if widget ~= self and widget[name] then
             claimed = claimed + widget[name]
         end
@@ -588,8 +586,10 @@ function Widget:reshape ()
     Event.Reshape:emit(self, {
         target = self
     })
-    for i, widget in ipairs(self.children) do
-        widget:reshape()
+    for i, widget in ipairs(self) do
+        if widget.reshape then
+            widget:reshape()
+        end
     end
     self.isReshaping = nil
 end
