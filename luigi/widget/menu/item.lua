@@ -13,9 +13,10 @@ local function deactivateSiblings (target)
     end
 
     while sibling do
-        local layout = sibling.menuLayout
 
         sibling.active = nil
+
+        local layout = sibling.menuLayout
 
         if layout and layout.isShown then
             wasSiblingOpen = true
@@ -109,9 +110,12 @@ show = function (self)
     menuLayout:onPressStart(function (event)
         if not event.hit then
             menuLayout:hide()
-            deactivateSiblings(self.rootMenu[1])
+            if self.parentMenu == self.rootMenu then
+                deactivateSiblings(self.rootMenu[1])
+            end
+        else
+            activate(event)
         end
-        activate(event)
     end)
 
     menuLayout:onEnter(activate)
@@ -144,12 +148,22 @@ return function (self)
     end
 
     if isSubmenu then
-        key = #self.items > 0 and '>' or key
+        local tc = self.textColor or { 0, 0, 0 }
+        local keyColor = { tc[1], tc[2], tc[3], 0x90 }
+        local edgeType
+        if #self.items > 0 then
+            key = ' '
+            edgeType = 'menu.expander'
+        else
+            key = key:gsub('%f[%w].', string.upper)
+        end
         self.height = self.fontData:getLineHeight() + pad * 2
         self.flow = 'x'
         self:addChild({ icon = icon, width = self.height })
         self:addChild({ text = text, width = textWidth })
-        self:addChild({ text = key, align = 'right', minwidth = self.height })
+        self:addChild({ text = key, align = 'middle right',
+            minwidth = self.height,
+            textColor = keyColor, type = edgeType })
 
         self.icon = nil
         self.text = nil

@@ -4,10 +4,7 @@ return function (self)
     self.flow = 'x' -- TODO: support vertical stepper
 
     local decrement = self:addChild {
-        type = 'button',
-        text = '<',
-        align = 'middle center',
-        margin = 0,
+        type = 'stepper.left',
     }
 
     local view = self:addChild {
@@ -18,10 +15,7 @@ return function (self)
     }
 
     local increment = self:addChild {
-        type = 'button',
-        text = '>',
-        align = 'middle center',
-        margin = 0,
+        type = 'stepper.right',
     }
 
     self:onReshape(function (event)

@@ -9,73 +9,43 @@ function Style:constructor (rules, lookupNames)
     self.lookupNames = lookupNames
 end
 
-function Style:getProperty (object, property)
-    local ownProperty = rawget(object, property)
-    if ownProperty ~= nil then return ownProperty end
-    for styleDef in self:each(object) do
-        local result = self:getProperty(styleDef, property)
-        if result ~= nil then return result end
-    end
-end
+function Style:getProperty (object, property, original)
+    local value = rawget(object, property)
+    if value ~= nil then return value end
 
-function Style:each (object)
-    local rules = self.rules
-    local nextStyleName = self:eachName(object)
-    return function ()
-        local styleName = nextStyleName()
-        while styleName do
-            local styleDef = rules[styleName]
-            if styleDef then return styleDef end
-            styleName = nextStyleName()
-        end
-    end
-end
+    original = original or object
 
-function Style:eachName (object)
-    local lookupNames = self.lookupNames
-    local lookupNameIndex = 0
-    local lookupPropIndex = 0
-    local lookupProp
-
-    local returnedSpecialName = {}
-
-    local function checkLookupProp()
-        if type(lookupProp) == 'table' and lookupPropIndex >= #lookupProp then
-            lookupProp = nil
-        end
-        while not lookupProp do
-            returnedSpecialName = {}
-            lookupPropIndex = 0
-            lookupNameIndex = lookupNameIndex + 1
-            if lookupNameIndex > #lookupNames then return end
-            lookupProp = rawget(object, lookupNames[lookupNameIndex])
-            if type(lookupProp) == 'string' then
-                lookupProp = { lookupProp }
+    for _, lookupName in ipairs(self.lookupNames) do
+        local lookup = rawget(object, lookupName)
+        if lookup then
+            if type(lookup) ~= 'table' then
+                lookup = { lookup }
             end
-        end
-        return true
-    end
-    local function getSpecialName (names)
-        for k, name in ipairs(names) do
-            if not returnedSpecialName[name] then
-                returnedSpecialName[name] = true
-                if rawget(object, name) then
-                    return lookupProp[lookupPropIndex + 1] .. '_' .. name
-                else
-                    return lookupProp[lookupPropIndex + 1] .. '_not_' .. name
+            for _, lookupValue in ipairs(lookup) do
+                for _, rule in ipairs(self:getRules(original, lookupValue)) do
+                    local value = self:getProperty(rule, property, original)
+                    if value ~= nil then return value end
                 end
-            end
+            end -- lookup values
+        end -- if lookup
+    end -- lookup names
+end
+
+function Style:getRules (object, lookupValue)
+    local rules = self.rules
+    local result = {}
+
+    for _, flag in ipairs { 'pressed', 'focused', 'hovered', 'active' } do
+        if rawget(object, flag) then
+            result[#result + 1] = rules[lookupValue .. '_' .. flag]
+        else
+            result[#result + 1] = rules[lookupValue .. '_not_' .. flag]
         end
     end
-    return function ()
-        if not checkLookupProp() then return end
-        local specialName = getSpecialName {
-            'pressed', 'focused', 'hovered', 'active',
-        }
-        if specialName then return specialName end
-        lookupPropIndex = lookupPropIndex + 1
-        return lookupProp[lookupPropIndex]
-    end
+
+    result[#result + 1] = rules[lookupValue]
+
+    return result
 end
 
 return Style

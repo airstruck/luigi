@@ -35,19 +35,19 @@ local style = {
 local mainForm = { id = 'mainWindow', type = 'panel',
     { type = 'menu', id = 'menubar', flow = 'x',
         { text = 'File', id = 'menuFile',
-            { text = 'Save', id = 'menuFileSave', },
-            { text = 'Quit' },
+            { text = 'Save', id = 'menuFileSave', key = 'ctrl-s' },
+            { text = 'Quit', id = 'menuQuit', key = 'escape' },
         },
         { text = 'Edit',
-            { text = 'Cut' },
-            { text = 'Copy' },
-            { text = 'Paste' },
+            { text = 'Cut', key = 'ctrl-c' },
+            { text = 'Copy', key = 'ctrl-x' },
+            { text = 'Paste', key = 'ctrl-v' },
             { type = 'slider' },
         },
         { text = 'View',
             { text = 'Theme',
-                { text = 'Light' },
-                { text = 'Dark' },
+                { text = 'Light', key = 'ctrl-l' },
+                { text = 'Dark', key = 'ctrl-d' },
             },
             { text = 'Style',
                 { text = 'Default' },
@@ -160,5 +160,13 @@ wefwef    rgh erh rth e rgs dvg eh tyj rt h erg
 erge rg eg erg er ergs erg er ge rh erh rth]]
 
 layout.mainCanvas.align = 'top'
+
+print(layout.menuQuit)
+--[[
+Layout.menuQuit:onPress(function (event)
+    love.event.quit()
+end)
+]]
+
 
 layout:show()

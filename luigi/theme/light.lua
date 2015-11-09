@@ -25,15 +25,31 @@ return function (config)
         button_pressed = {
             slices = RESOURCE .. 'button_pressed.png',
         },
+
+        ['stepper.left'] = {
+            type = 'button',
+            icon = RESOURCE .. 'triangle_left.png',
+        },
+
+        ['stepper.right'] = {
+            type = 'button',
+            icon = RESOURCE .. 'triangle_right.png',
+        },
+
+
         menu = {
             height = 24,
         },
         ['menu.item'] = {
             padding = 4,
             align = 'left middle',
+            textColor = { 0, 0, 0 }
         },
         ['menu.item_active'] = {
             background = highlight,
+        },
+        ['menu.expander'] = {
+            icon = RESOURCE .. 'triangle_right.png',
         },
         submenu = {
             padding = 10,

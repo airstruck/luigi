@@ -39,6 +39,7 @@ A tree of widget data.
 A Layout instance.
 --]]--
 function Layout:constructor (data)
+    data = data or {}
     self.accelerators = {}
     self:addDefaultHandlers()
     self:setStyle()
@@ -46,8 +47,8 @@ function Layout:constructor (data)
 
     self.isShown = false
     self.hooks = {}
-    self.root = data or {}
-    Widget(self, self.root)
+    self.root = data
+    Widget(self, data)
 end
 
 --[[--
