@@ -248,7 +248,9 @@ function Renderer:renderIconAndText (widget)
 end
 
 function Renderer:renderChildren (widget)
-    for i, child in ipairs(widget) do self:render(child) end
+    for i, child in ipairs(widget) do
+        self:render(child)
+    end
 end
 
 function Renderer:render (widget)

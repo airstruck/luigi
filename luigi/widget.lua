@@ -291,9 +291,9 @@ The newly added child widget.
 --]]--
 function Widget:addChild (data)
     local layout = self.layout
-    local child = Widget(layout, data or {})
+    local child = data and data.isWidget and data or Widget(layout, data or {})
 
-    table.insert(self, child)
+    self[#self + 1] = child
     child.parent = self
     child.layout = self.layout
 

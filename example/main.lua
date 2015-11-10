@@ -34,8 +34,8 @@ local style = {
 
 local mainForm = { id = 'mainWindow', type = 'panel',
     { type = 'menu', id = 'menubar', flow = 'x',
-        { text = 'File', id = 'menuFile',
-            { text = 'Save', id = 'menuFileSave', key = 'ctrl-s' },
+        { text = 'File',
+            { text = 'Save', id = 'menuSave', key = 'ctrl-s' },
             { text = 'Quit', id = 'menuQuit', key = 'escape' },
         },
         { text = 'Edit',
@@ -54,9 +54,9 @@ local mainForm = { id = 'mainWindow', type = 'panel',
             },
         },
         { text = 'Help',
-            { text = 'About Luigi', icon = 'icon/16px/Book.png', key = 'backspace', },
-            { text = 'About Luigi Demo', icon = 'icon/16px/Book Red.png' },
-            { text = 'Licenses' },
+            { text = 'About Luigi', icon = 'icon/16px/Book.png', key = 'f1', },
+            { text = 'About Luigi Demo', icon = 'icon/16px/Book Red.png', key = 'f2' },
+            { text = 'Licenses', key = 'f3'  },
         },
     },
     { type = 'panel', id = 'toolbar', flow = 'x',
@@ -161,12 +161,8 @@ erge rg eg erg er ergs erg er ge rh erh rth]]
 
 layout.mainCanvas.align = 'top'
 
-print(layout.menuQuit)
---[[
-Layout.menuQuit:onPress(function (event)
-    love.event.quit()
-end)
-]]
+layout.menuQuit:onPress(function (event) love.event.quit() end)
+
 
 
 layout:show()

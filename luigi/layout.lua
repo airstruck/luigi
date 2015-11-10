@@ -87,14 +87,13 @@ function Layout:show ()
         self:unhook() -- return
         self.isShown = nil
     end
-    local root = self.root
 
     if not self.input then
         self.input = Input.default -- Input(self)
     end
 
     self:manageInput()
-    root:reshape()
+    self.root:reshape()
 end
 
 --[[--
@@ -162,16 +161,18 @@ Widget to search within, defaults to layout root.
 --]]--
 function Layout:getWidgetAt (x, y, root)
     local widget = root or self.root
-    local childCount = #widget
+
     -- Loop through in reverse, because siblings defined later in the tree
     -- will overdraw earlier siblings.
+    local childCount = #widget
+
     for i = childCount, 1, -1 do
         local child = widget[i]
         local inner = self:getWidgetAt(x, y, child)
         if inner then return inner end
     end
+
     if widget:isAt(x, y) then return widget end
-    -- if widget == self.root then return widget end
 end
 
 -- Internal, called from Widget:new

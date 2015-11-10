@@ -1,6 +1,6 @@
 local ROOT = (...):gsub('[^.]*.[^.]*.[^.]*$', '')
 
-local Layout
+local Layout, Event
 
 local show
 
@@ -53,54 +53,8 @@ local function activate (event, ignoreIfNoneOpen)
     end
 end
 
-show = function (self)
-    if not self.items or #self.items < 1 then
-        return
-    end
-    if self.menuLayout then
-        self.menuLayout:show()
-        return
-    end
-
-    local Layout = Layout or require(ROOT .. 'layout')
-
-    local isSubmenu = self.parentMenu and self.parentMenu.parentMenu
-
-    local x = isSubmenu and self:getWidth() or 0
-    local y = isSubmenu and 0 or self:getHeight()
-
-    local menuLayout = Layout {
-        type = 'submenu',
-        left = self:getX() + x,
-        top = self:getY() + y,
-        width = 0,
-        height = 0,
-    }
-
-    local root = menuLayout.root
-
-    local rootPad = root.padding or 0
-
-    local textWidth = 0
-    local keyWidth = 0
-
-    for index, child in ipairs(self.items) do
-        child.type = child.type or 'menu.item'
-        root:addChild(child)
-        local h = child:getHeight()
-        root.height = root:getHeight() + h
-        if child.type == 'menu.item' then
-            local pad = child.padding or 0
-            local tw = child.fontData:getAdvance(child[2].text)
-                + pad * 2 + h
-            local kw = child.fontData:getAdvance(child[3].text)
-                + pad * 4
-            textWidth = math.max(textWidth, tw)
-            keyWidth = math.max(keyWidth, kw)
-        end
-    end
-
-    root.width = textWidth + keyWidth + rootPad
+local function registerLayoutEvents (self)
+    local menuLayout = self.menuLayout
 
     menuLayout:onReshape(function (event)
         menuLayout:hide()
@@ -119,33 +73,64 @@ show = function (self)
     end)
 
     menuLayout:onEnter(activate)
-
     menuLayout:onPressEnter(activate)
-
-    menuLayout:show()
-
-    self.menuLayout = menuLayout
 end
 
-local function extractChild (self, index, child)
-    self[index] = nil
-    self.items[#self.items + 1] = child
-    child.parentMenu = self
-    child.rootMenu = self.rootMenu
-    child.type = child.type or 'menu.item'
+local function addLayoutChildren (self)
+    local root = self.menuLayout.root
+    local textWidth = 0
+    local keyWidth = 0
+    local height = 0
+
+    while #root > 0 do rawset(root, #root, nil) end
+
+    root.height = 0
+    root.width = 0
+
+    for index, child in ipairs(self.items) do
+        child.type = child.type or 'menu.item'
+        root:addChild(child)
+        local childHeight = child:getHeight()
+        height = height + childHeight
+        if child.type == 'menu.item' then
+            local pad = child.padding or 0
+            local tw = child.fontData:getAdvance(child[2].text)
+                + pad * 2 + childHeight
+            local kw = child.fontData:getAdvance(child[3].text)
+                + pad * 2 + childHeight
+            textWidth = math.max(textWidth, tw)
+            keyWidth = math.max(keyWidth, kw)
+        end
+    end
+
+    local isSubmenu = self.parentMenu and self.parentMenu.parentMenu
+    local x = isSubmenu and self:getWidth() or 0
+    local y = isSubmenu and 0 or self:getHeight()
+
+    root.left = self:getX() + x
+    root.top = self:getY() + y
+    root.height = height
+    root.width = textWidth + keyWidth + (root.padding or 0)
 end
 
-return function (self)
+local function createLayout (self)
+    Layout = Layout or require(ROOT .. 'layout')
+
+    self.menuLayout = Layout { type = 'submenu' }
+end
+
+show = function (self)
+    if not self.items or #self.items < 1 then return end
+
+    addLayoutChildren(self)
+    self.menuLayout:show()
+end
+
+local function initialize (self)
     local pad = self.padding or 0
     local isSubmenu = self.parentMenu and self.parentMenu.parentMenu
     local text, key, icon = self.text or '', self.key or '', self.icon
     local textWidth = self.fontData:getAdvance(text) + pad * 2
-
-    self.items = self.items or {}
-
-    for index, child in ipairs(self) do
-        extractChild(self, index, child)
-    end
 
     if isSubmenu then
         local tc = self.textColor or { 0, 0, 0 }
@@ -170,7 +155,20 @@ return function (self)
     else
         self.width = textWidth
     end
+end
 
+local function extractChildren (self)
+    self.items = {}
+    for index, child in ipairs(self) do
+        self[index] = nil
+        self.items[#self.items + 1] = child
+        child.parentMenu = self
+        child.rootMenu = self.rootMenu
+        child.type = child.type or 'menu.item'
+    end
+end
+
+local function registerEvents (self)
     self:onPressStart(activate)
 
     self:onEnter(function (event)
@@ -180,5 +178,17 @@ return function (self)
     self:onPressEnter(function (event)
         activate(event, true)
     end)
+end
 
+return function (self)
+    extractChildren(self)
+    initialize(self)
+    registerEvents(self)
+
+    self.rootMenu.layout:addWidget(self)
+
+    if not self.items or #self.items < 1 then return end
+    createLayout(self)
+    registerLayoutEvents(self)
+    addLayoutChildren(self)
 end
