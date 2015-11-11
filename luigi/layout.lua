@@ -38,17 +38,45 @@ A tree of widget data.
 @treturn Layout
 A Layout instance.
 --]]--
-function Layout:constructor (data)
+function Layout:constructor (data, master)
     data = data or {}
-    self.accelerators = {}
+
+    if master then
+        self:setMaster(master)
+    else
+        self:setTheme(require(ROOT .. 'theme.light'))
+        self:setStyle()
+    end
+
     self:addDefaultHandlers()
-    self:setStyle()
-    self:setTheme(require(ROOT .. 'theme.light'))
 
     self.isShown = false
     self.hooks = {}
     self.root = data
+
     Widget(self, data)
+end
+
+--[[--
+Set the master layout for this layout.
+
+This layout's theme and style will be set the same as the master layout, and
+widgets added to this layout will be indexed and keyboard-accelerated by the
+master layout instead of this layout.
+
+@tparam Layout layout
+Master layout
+
+@treturn Layout Self
+--]]--
+function Layout:setMaster (layout)
+    self.master = layout
+
+    function self:addWidget (...)
+        return layout:addWidget(...)
+    end
+
+    return self
 end
 
 --[[--
@@ -56,12 +84,16 @@ Set the style from a definition table or function.
 
 @tparam table|function rules
 Style definition.
+
+@treturn Layout Self
 --]]--
 function Layout:setStyle (rules)
     if type(rules) == 'function' then
         rules = rules()
     end
     self.style = Style(rules or {}, { 'id', 'style' })
+
+    return self
 end
 
 --[[--
@@ -75,6 +107,26 @@ function Layout:setTheme (rules)
         rules = rules()
     end
     self.theme = Style(rules or {}, { 'type' })
+end
+
+--[[--
+Get the style from master layout or this layout.
+
+@treturn table
+Style table.
+--]]--
+function Layout:getStyle ()
+    return self.master and self.master:getStyle() or self.style
+end
+
+--[[--
+Get the theme from master layout or this layout.
+
+@treturn table
+Theme table.
+--]]--
+function Layout:getTheme ()
+    return self.master and self.master:getTheme() or self.theme
 end
 
 --[[--
@@ -187,6 +239,8 @@ end
 
 -- Add handlers for keyboard accelerators and tab focus
 function Layout:addDefaultHandlers ()
+    self.accelerators = {}
+
     self:onKeyPress(function (event)
 
         -- tab / shift-tab cycles focused widget
@@ -210,7 +264,6 @@ function Layout:addDefaultHandlers ()
 
         -- accelerators
         local acceleratedWidget = self.accelerators[event.key]
-
         if acceleratedWidget then
             acceleratedWidget.hovered = true
             self.input:handlePressStart(self, event.key, event.x, event.y,

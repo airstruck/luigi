@@ -38,11 +38,12 @@ local function metaIndex (self, property)
     local value = Widget[property]
     if value ~= nil then return value end
 
-    local style = self.layout.style
+    local layout = self.layout
+    local style = layout:getStyle()
     value = style and style:getProperty(self, property)
     if value ~= nil and value ~= 'defer' then return value end
 
-    local theme = self.layout.theme
+    local theme = layout:getTheme()
     return theme and theme:getProperty(self, property)
 end
 
