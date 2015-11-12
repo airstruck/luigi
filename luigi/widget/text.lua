@@ -47,19 +47,29 @@ local function findCaretFromPoint (self, x, y)
 
     local font = self.fontData.font
     local width, lastWidth = 0
+    local characters = utf8.codes(self.value)
+    local lastPosition = 0
 
-    for position in utf8.codes(self.value) do
-        local index = utf8.offset(self.value, position)
-        text = self.value:sub(1, index)
+    local function checkPosition (position)
+        local text = self.value:sub(1, position - 1)
         lastWidth = width
         width = font:getWidth(text)
         if width > x + self.scrollX - x1 then
             if position == 1 then
                 return 0, x1 - self.scrollX
             end
-            return utf8.offset(self.value, position - 1), lastWidth + x1 - self.scrollX
+            return lastPosition, lastWidth + x1 - self.scrollX
         end
+        lastPosition = position - 1
     end
+
+    for position in utf8.codes(self.value) do
+        local a, b = checkPosition(position)
+        if a then return a, b end
+    end
+
+    local a, b = checkPosition(#self.value + 1)
+    if a then return a, b end
 
     return #self.value, width + x1 - self.scrollX
 end
@@ -75,9 +85,9 @@ local function moveCaretLeft (self, alterRange)
 
     -- move left
     local mode = alterRange and 'end'
-    local offset = utf8.offset(text, -1, endIndex) or 0
+    local offset = utf8.offset(text, -1, endIndex + 1) or 0
 
-    setCaretFromText(self, text:sub(1, offset), mode)
+    setCaretFromText(self, text:sub(1, offset - 1), mode)
 end
 
 -- move the caret one character to the right
@@ -90,11 +100,10 @@ local function moveCaretRight (self, alterRange)
     end
 
     local mode = alterRange and 'end'
-    local offset = endIndex < 1 and utf8.offset(text, 1)
-        or utf8.offset(text, 2, endIndex) or #text
+    local offset = utf8.offset(text, 2, endIndex + 1) or #text
 
     -- move right
-    setCaretFromText(self, text:sub(1, offset), mode)
+    setCaretFromText(self, text:sub(1, offset - 1), mode)
 end
 
 local function getRange (self)
