@@ -46,8 +46,8 @@ local mainForm = { id = 'mainWindow', type = 'panel',
         },
         { text = 'View',
             { text = 'Theme',
-                { text = 'Light', key = 'ctrl-l' },
-                { text = 'Dark', key = 'ctrl-d' },
+                { text = 'Light', key = 'ctrl-l', id = 'themeLight', },
+                { text = 'Dark', key = 'ctrl-d', id = 'themeDark' },
             },
             { text = 'Style',
                 { text = 'Default' },
@@ -163,6 +163,6 @@ layout.mainCanvas.align = 'top'
 
 layout.menuQuit:onPress(function (event) love.event.quit() end)
 
-
+layout.themeLight:onPress(function (event) love.event.quit() end)
 
 layout:show()

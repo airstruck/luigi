@@ -29,53 +29,34 @@ function Input:getModifierFlags ()
 end
 
 function Input:handleKeyPress (layout, key, x, y)
-    local widget = layout.focusedWidget or layout:getWidgetAt(x, y)
-    local hit = true
-    if not widget then
-        hit = nil
-        widget = layout.root
-    end
+    local widget = layout.focusedWidget or layout.root
     local result = widget:bubbleEvent('KeyPress', {
-        hit = hit,
         key = key,
         modifierFlags = self:getModifierFlags(),
         x = x,
         y = y
     })
     if result ~= nil then return result end
-    return hit
 end
 
 function Input:handleKeyRelease (layout, key, x, y)
-    local widget = layout.focusedWidget or layout:getWidgetAt(x, y)
-    local hit = true
-    if not widget then
-        hit = nil
-        widget = layout.root
-    end
+    local widget = layout.focusedWidget or layout.root
     local result = widget:bubbleEvent('KeyRelease', {
-        hit = hit,
         key = key,
         modifierFlags = self:getModifierFlags(),
         x = x,
         y = y
     })
     if result ~= nil then return result end
-    return hit
 end
 
 function Input:handleTextInput (layout, text, x, y)
-    local widget = layout.focusedWidget or layout:getWidgetAt(x, y)
-    local hit = true
-    if not widget then
-        hit = nil
-        widget = layout.root
-    end
-    widget:bubbleEvent('TextInput', {
+    local widget = layout.focusedWidget or layout.root
+    local result = widget:bubbleEvent('TextInput', {
         hit = hit,
         text = text, x = x, y = y
     })
-    return hit
+    if result ~= nil then return result end
 end
 
 function Input:handleMove (layout, x, y)

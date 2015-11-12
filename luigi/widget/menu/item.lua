@@ -55,18 +55,18 @@ local function deactivateSiblings (target)
     end
 
     while sibling do
+        local layout = sibling.menuLayout
+        local items = sibling.items
 
         sibling.active = nil
-
-        local layout = sibling.menuLayout
 
         if layout and layout.isShown then
             wasSiblingOpen = true
             layout:hide()
         end
 
-        if sibling.items and sibling.items[1] then
-            deactivateSiblings(sibling.items[1])
+        if items and items[1] then
+            deactivateSiblings(items[1])
         end
 
         sibling = sibling:getNextSibling()
