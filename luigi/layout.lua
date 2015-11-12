@@ -91,7 +91,7 @@ function Layout:setStyle (rules)
     if type(rules) == 'function' then
         rules = rules()
     end
-    self.style = Style(rules or {}, { 'id', 'style' })
+    self.style = Style(rules or {}, { 'style' })
 
     return self
 end
@@ -228,6 +228,7 @@ function Layout:getWidgetAt (x, y, root)
 end
 
 -- Internal, called from Widget:new
+--[[
 function Layout:addWidget (widget)
     if widget.id then
         self[widget.id] = widget
@@ -236,14 +237,19 @@ function Layout:addWidget (widget)
         self.accelerators[widget.key] = widget
     end
 end
+]]
 
 -- Add handlers for keyboard accelerators and tab focus
 function Layout:addDefaultHandlers ()
     self.accelerators = {}
 
+    for i = 0, 8 do
+        self.accelerators[i] = {}
+    end
+
     self:onKeyPress(function (event)
 
-        -- tab / shift-tab cycles focused widget
+        -- tab/shift-tab cycles focused widget
         if event.key == 'tab' then
             if love.keyboard.isDown('lshift', 'rshift') then
                 self:focusPreviousWidget()
@@ -253,7 +259,7 @@ function Layout:addDefaultHandlers ()
             return
         end
 
-        -- space / enter presses focused widget
+        -- space/enter presses focused widget
         local widget = self.focusedWidget
         if widget and event.key == 'space' or event.key == ' '
         or event.key == 'return' then
@@ -263,7 +269,8 @@ function Layout:addDefaultHandlers ()
         end
 
         -- accelerators
-        local acceleratedWidget = self.accelerators[event.key]
+        local entry = self.accelerators[event.modifierFlags]
+        local acceleratedWidget = entry and entry[event.key]
         if acceleratedWidget then
             acceleratedWidget.hovered = true
             self.input:handlePressStart(self, event.key, event.x, event.y,
@@ -283,7 +290,8 @@ function Layout:addDefaultHandlers ()
         end
 
         -- accelerators
-        local acceleratedWidget = self.accelerators[event.key]
+        local entry = self.accelerators[event.modifierFlags]
+        local acceleratedWidget = entry and entry[event.key]
 
         if acceleratedWidget then
             acceleratedWidget.hovered = false

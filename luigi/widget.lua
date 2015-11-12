@@ -71,9 +71,50 @@ local function metaNewIndex (self, property, value)
         return
     end
 
+    if property == 'value' then
+        local oldValue = self.value
+        self.shadowProperties[property] = value
+        self:bubbleEvent('Change', {
+            value = value,
+            oldValue = oldValue,
+        })
+        return
+    end
+
+    if property == 'key' then
+        self.shadowProperties[property] = value
+
+        if not value then return end
+
+        local mainKey = (value):match '[^%-]+$'
+        local alt = (value):match 'alt%-' and 1 or 0
+        local ctrl = (value):match 'ctrl%-' and 2 or 0
+        local shift = (value):match 'shift%-' and 4 or 0
+        local modifierFlags = alt + ctrl + shift
+
+        local layout = self.layout.master or self.layout
+
+        layout.accelerators[modifierFlags][mainKey] = self
+        return
+    end
+
+    if property == 'id' then
+        self.shadowProperties[property] = value
+
+        if not value then return end
+
+        local layout = self.layout.master or self.layout
+
+        layout[value] = self
+        return
+    end
+
     rawset(self, property, value)
 end
 
+local shadowKeys = {
+    'font', 'fontSize', 'textColor', 'width', 'height', 'value', 'key', 'id'
+}
 --[[--
 Widget pseudo-constructor.
 
@@ -98,19 +139,16 @@ local function metaCall (Widget, layout, self)
 
     setmetatable(self, { __index = metaIndex, __newindex = metaNewIndex })
 
-    for _, property
-    in ipairs { 'font', 'fontSize', 'textColor', 'width', 'height' } do
+    for _, property in ipairs(shadowKeys) do
         local value = rawget(self, property)
         rawset(self, property, nil)
-        if value ~= nil then
-            self[property] = value
-        end
+        self[property] = value
     end
 
     self.type = self.type or 'generic'
     self.fontData = Font(self.font, self.fontSize, self.textColor)
 
-    layout:addWidget(self)
+    -- layout:addWidget(self)
 
     local decorate = Widget.typeDecorators[self.type]
 
@@ -149,27 +187,6 @@ function Widget:bubbleEvent (eventName, data)
         if result ~= nil then return result end
     end
     return event:emit(self.layout, data)
-end
-
---[[--
-Set widget's value property and bubble a Change event.
-
-@tparam mixed value
-The new value of the widget.
-
-@treturn mixed
-The old value of the widget.
---]]--
-function Widget:setValue (value)
-    local oldValue = self.value
-    self.value = value
-
-    self:bubbleEvent('Change', {
-        value = value,
-        oldValue = oldValue,
-    })
-
-    return oldValue
 end
 
 --[[--

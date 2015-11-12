@@ -132,15 +132,14 @@ local function initialize (self)
             key = ' '
             edgeType = 'menu.expander'
         else
-            key = key:gsub('%f[%w].', string.upper)
+            key = key:gsub('%f[%w].', string.upper) -- :gsub('-', '+')
         end
         self.height = self.fontData:getLineHeight() + pad * 2
         self.flow = 'x'
-        self:addChild({ icon = icon, width = self.height })
-        self:addChild({ text = text, width = textWidth })
-        self:addChild({ text = key, align = 'middle right',
-            minwidth = self.height,
-            textColor = keyColor, type = edgeType })
+        self:addChild { icon = icon, width = self.height }
+        self:addChild { text = text, width = textWidth }
+        self:addChild { text = key, align = 'middle right',
+            minwidth = self.height, textColor = keyColor, type = edgeType }
 
         self.icon = nil
         self.text = nil

@@ -35,8 +35,6 @@ return function (config)
             type = 'button',
             icon = RESOURCE .. 'triangle_right.png',
         },
-
-
         menu = {
             height = 24,
         },
@@ -85,6 +83,10 @@ return function (config)
         slider_hovered = {
         },
         stepper = {
+            slices = RESOURCE .. 'button_pressed.png',
+        },
+        ['stepper.item'] = {
+            align = 'center middle',
         },
         text = {
             align = 'left middle',

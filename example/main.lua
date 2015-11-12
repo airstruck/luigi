@@ -59,7 +59,7 @@ local mainForm = { id = 'mainWindow', type = 'panel',
             { text = 'Licenses', key = 'f3'  },
         },
     },
-    { type = 'panel', id = 'toolbar', flow = 'x',
+    { type = 'panel', id = 'toolbar', style = 'toolbar', flow = 'x',
         { type = 'button', id = 'newButton', style = 'toolButton', key = 'z',
             icon = 'icon/32px/Blueprint.png' },
         { type = 'button', id = 'loadButton', style = 'toolButton',
@@ -84,11 +84,11 @@ local mainForm = { id = 'mainWindow', type = 'panel',
             { type = 'panel', text = 'A slider', align = 'bottom', height = 24, padding = 4 },
             { type = 'slider', height = 32, margin = 4, id = 'slidey', value = 0 },
             { type = 'panel', text = 'A stepper', align = 'bottom', height = 24, padding = 4 },
-            { type = 'stepper', height = 32, margin = 4, options = {
+            { type = 'stepper', height = 32, margin = 4,
                 { value = 1, text = 'Thing One' },
                 { value = 2, text = 'Thing Two' },
                 { value = 3, text = 'Thing Three' },
-            } },
+            },
             { type = 'panel', text = 'A progress bar', align = 'bottom', height = 24, padding = 4 },
             { type = 'progress', height = 32, margin = 4, id = 'progressBar', },
         },
@@ -114,7 +114,7 @@ layout.leftSideBox:addChild {
 }
 
 layout.slidey:onChange(function (event)
-    layout.progressBar:setValue(event.value)
+    layout.progressBar.value = event.value
 end)
 
 layout:onMove(function (event)

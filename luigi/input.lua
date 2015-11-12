@@ -20,6 +20,14 @@ function Input:handleDisplay (layout)
     Event.Display:emit(layout)
 end
 
+function Input:getModifierFlags ()
+    local alt = love.keyboard.isDown('lalt', 'ralt') and 1 or 0
+    local ctrl = love.keyboard.isDown('lctrl', 'rctrl') and 2 or 0
+    local shift = love.keyboard.isDown('lshift', 'rshift') and 4 or 0
+
+    return alt + ctrl + shift
+end
+
 function Input:handleKeyPress (layout, key, x, y)
     local widget = layout.focusedWidget or layout:getWidgetAt(x, y)
     local hit = true
@@ -29,7 +37,10 @@ function Input:handleKeyPress (layout, key, x, y)
     end
     local result = widget:bubbleEvent('KeyPress', {
         hit = hit,
-        key = key, x = x, y = y
+        key = key,
+        modifierFlags = self:getModifierFlags(),
+        x = x,
+        y = y
     })
     if result ~= nil then return result end
     return hit
@@ -44,7 +55,10 @@ function Input:handleKeyRelease (layout, key, x, y)
     end
     local result = widget:bubbleEvent('KeyRelease', {
         hit = hit,
-        key = key, x = x, y = y
+        key = key,
+        modifierFlags = self:getModifierFlags(),
+        x = x,
+        y = y
     })
     if result ~= nil then return result end
     return hit

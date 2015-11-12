@@ -113,7 +113,7 @@ local function deleteRange (self)
     if first ~= last then
         local left = text:sub(1, first)
         text = left .. text:sub(last + 1)
-        self:setValue(text)
+        self.value = text
         setCaretFromText(self, left)
         return true
     end
@@ -132,7 +132,7 @@ local function deleteCharacterLeft (self)
     local offset = utf8.offset(text, -1, first) or 0
     local left = text:sub(1, offset)
     text = left .. text:sub(first + 1)
-    self:setValue(text)
+    self.value = text
     setCaretFromText(self, left)
 end
 
@@ -150,7 +150,7 @@ local function pasteFromClipboard (self)
     local first, last = getRange(self)
     local left = text:sub(1, first) .. pasted
     text = left .. text:sub(last + 1)
-    self:setValue(text)
+    self.value = text
     setCaretFromText(self, left)
 end
 
@@ -160,12 +160,11 @@ local function insertText (self, newText)
     local left = text:sub(1, first) .. newText
 
     self.value = left .. text:sub(last + 1)
-    self:setValue(self.value)
     setCaretFromText(self, left)
 end
 
 return function (self)
-    self:setValue(self.value or self.text or '')
+    self.value = self.value or self.text or ''
     self.text = ''
     self.highlight = self.highlight or { 0x80, 0x80, 0x80 }
     self.scrollX = 0
