@@ -7,7 +7,7 @@ LUIGI is compatible with LÖVE 0.10.0 and 0.9.2.
 
 ## SDL backend
 
-LUIGI can also run under LuaJit when
+LUIGI can also run under LuaJIT when
 [SDL 2](https://www.libsdl.org/download-2.0.php),
 [SDL_image](https://www.libsdl.org/projects/SDL_image/) and
 [SDL_ttf](https://www.libsdl.org/projects/SDL_ttf) are installed.
