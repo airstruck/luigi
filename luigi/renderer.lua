@@ -1,5 +1,6 @@
 local ROOT = (...):gsub('[^.]*$', '')
 
+local Backend = require(ROOT .. 'backend')
 local Base = require(ROOT .. 'base')
 local Event = require(ROOT .. 'event')
 local Font = require(ROOT .. 'font')
@@ -11,7 +12,7 @@ local sliceCache = {}
 
 function Renderer:loadImage (path)
     if not imageCache[path] then
-        imageCache[path] = love.graphics.newImage(path)
+        imageCache[path] = Backend.Image(path)
     end
 
     return imageCache[path]
@@ -26,7 +27,7 @@ function Renderer:loadSlices (path)
         local image = self:loadImage(path)
         local iw, ih = image:getWidth(), image:getHeight()
         local w, h = math.floor(iw / 3), math.floor(ih / 3)
-        local Quad = love.graphics.newQuad
+        local Quad = Backend.Quad
 
         slices.image = image
         slices.width = w
@@ -49,6 +50,7 @@ function Renderer:loadSlices (path)
 end
 
 function Renderer:renderSlices (widget)
+
     local path = widget.slices
     if not path then return end
 
@@ -56,7 +58,7 @@ function Renderer:renderSlices (widget)
 
     local slices = self:loadSlices(path)
 
-    local batch = love.graphics.newSpriteBatch(slices.image)
+    local batch = Backend.SpriteBatch(slices.image)
 
     local xScale = ((x2 - x1) - slices.width * 2) / slices.width
     local yScale = ((y2 - y1) - slices.height * 2) / slices.height
@@ -79,27 +81,27 @@ function Renderer:renderSlices (widget)
     batch:add(slices.bottomLeft, x1, y2 - slices.height)
     batch:add(slices.bottomRight, x2 - slices.width, y2 - slices.height)
 
-    love.graphics.draw(batch)
+    Backend.draw(batch)
 end
 
 function Renderer:renderBackground (widget)
     if not widget.background then return end
     local x1, y1, x2, y2 = widget:getRectangle(true)
 
-    love.graphics.push('all')
-    love.graphics.setColor(widget.background)
-    love.graphics.rectangle('fill', x1, y1, x2 - x1, y2 - y1)
-    love.graphics.pop()
+    Backend.push()
+    Backend.setColor(widget.background)
+    Backend.drawRectangle('fill', x1, y1, x2 - x1, y2 - y1)
+    Backend.pop()
 end
 
 function Renderer:renderOutline (widget)
     if not widget.outline then return end
     local x1, y1, x2, y2 = widget:getRectangle(true)
 
-    love.graphics.push('all')
-    love.graphics.setColor(widget.outline)
-    love.graphics.rectangle('line', x1 + 0.5, y1 + 0.5, x2 - x1, y2 - y1)
-    love.graphics.pop()
+    Backend.push()
+    Backend.setColor(widget.outline)
+    Backend.drawRectangle('line', x1 + 0.5, y1 + 0.5, x2 - x1, y2 - y1)
+    Backend.pop()
 end
 
 -- returns icon coordinates and rectangle with remaining space
@@ -188,9 +190,9 @@ function Renderer:renderIconAndText (widget)
         return
     end
 
-    love.graphics.push('all')
+    Backend.push()
 
-    love.graphics.setScissor(x1, y1, x2 - x1, y2 - y1)
+    Backend.setScissor(x1, y1, x2 - x1, y2 - y1)
 
     local iconX, iconY, textX, textY, font
 
@@ -228,23 +230,20 @@ function Renderer:renderIconAndText (widget)
     if icon then
         iconX, iconY = math.floor(iconX), math.floor(iconY)
         if widget.tint then
-            love.graphics.setBlendMode('alpha', true)
-            love.graphics.setColor(widget.tint)
+            Backend.setColor(widget.tint)
         end
-        love.graphics.draw(icon, iconX, iconY)
+        Backend.draw(icon, iconX, iconY)
     end
 
     -- draw the text
     if text and x2 > x1 then
         textX, textY = math.floor(textX), math.floor(textY)
-        love.graphics.setFont(font.font)
-        love.graphics.setColor(font.color)
-
-        local layout = font.layout
-        love.graphics.printf(text, textX, textY, x2 - x1, layout.align)
+        Backend.setFont(font)
+        Backend.setColor(font.color)
+        Backend.printf(text, textX, textY, x2 - x1, font.align)
     end
 
-    love.graphics.pop()
+    Backend.pop()
 end
 
 function Renderer:renderChildren (widget)

@@ -1,7 +1,7 @@
-local utf8 = require 'utf8'
+local ROOT = (...):gsub('[^.]*.[^.]*$', '')
 
-local blendMultiply = love._version_minor < 10 and 'multiplicative'
-    or 'multiply'
+local utf8 = require(ROOT .. 'utf8')
+local Backend = require(ROOT .. 'backend')
 
 local function scrollToCaret (self)
     local x1, y1, x2, y2 = self:getRectangle(true, true)
@@ -23,9 +23,9 @@ local function scrollToCaret (self)
 end
 
 local function findCaretFromText (self, text)
-    local font = self.fontData.font
+    local font = self.fontData
     local x1, y1, x2, y2 = self:getRectangle(true, true)
-    return #text, font:getWidth(text) + x1 - self.scrollX
+    return #text, font:getAdvance(text) + x1 - self.scrollX
 end
 
 local function setCaretFromText (self, text, mode)
@@ -45,15 +45,14 @@ end
 local function findCaretFromPoint (self, x, y)
     local x1, y1, x2, y2 = self:getRectangle(true, true)
 
-    local font = self.fontData.font
+    local font = self.fontData
     local width, lastWidth = 0
-    local characters = utf8.codes(self.value)
     local lastPosition = 0
 
     local function checkPosition (position)
         local text = self.value:sub(1, position - 1)
         lastWidth = width
-        width = font:getWidth(text)
+        width = font:getAdvance(text)
         if width > x + self.scrollX - x1 then
             if position == 1 then
                 return 0, x1 - self.scrollX
@@ -149,13 +148,13 @@ local function copyRangeToClipboard (self)
     local text = self.value
     local first, last = getRange(self)
     if last >= first + 1 then
-        love.system.setClipboardText(text:sub(first + 1, last))
+        Backend.setClipboardText(text:sub(first + 1, last))
     end
 end
 
 local function pasteFromClipboard (self)
     local text = self.value
-    local pasted = love.system.getClipboardText() or ''
+    local pasted = Backend.getClipboardText() or ''
     local first, last = getRange(self)
     local left = text:sub(1, first) .. pasted
     text = left .. text:sub(last + 1)
@@ -203,22 +202,22 @@ return function (self)
 
         elseif event.key == 'left' then
 
-            moveCaretLeft(self, love.keyboard.isDown('lshift', 'rshift'))
+            moveCaretLeft(self, Backend.isKeyDown('lshift', 'rshift'))
 
         elseif event.key == 'right' then
 
-            moveCaretRight(self, love.keyboard.isDown('lshift', 'rshift'))
+            moveCaretRight(self, Backend.isKeyDown('lshift', 'rshift'))
 
-        elseif event.key == 'x' and love.keyboard.isDown('lctrl', 'rctrl') then
+        elseif event.key == 'x' and Backend.isKeyDown('lctrl', 'rctrl') then
 
             copyRangeToClipboard(self)
             deleteRange(self)
 
-        elseif event.key == 'c' and love.keyboard.isDown('lctrl', 'rctrl') then
+        elseif event.key == 'c' and Backend.isKeyDown('lctrl', 'rctrl') then
 
             copyRangeToClipboard(self)
 
-        elseif event.key == 'v' and love.keyboard.isDown('lctrl', 'rctrl') then
+        elseif event.key == 'v' and Backend.isKeyDown('lctrl', 'rctrl') then
 
             pasteFromClipboard(self)
 
@@ -230,28 +229,30 @@ return function (self)
         local startX, endX = self.startX or 0, self.endX or 0
         local x1, y1, x2, y2 = self:getRectangle(true, true)
         local width, height = endX - startX, y2 - y1
-        local fontData = self.fontData
-        local font = fontData.font
-        local textColor = fontData.color
-        local textTop = math.floor(y1 + ((y2 - y1) - font:getHeight()) / 2)
+        local font = self.fontData
+        local textColor = font.color
+        local textTop = math.floor(y1 + ((y2 - y1) - font:getLineHeight()) / 2)
 
-        love.graphics.push('all')
-        love.graphics.setScissor(x1, y1, x2 - x1, y2 - y1)
-        love.graphics.setFont(font)
-        love.graphics.setColor(textColor)
-        love.graphics.print(self.value, x1 - self.scrollX, textTop)
+        Backend.push()
+        Backend.setScissor(x1, y1, x2 - x1, y2 - y1)
+        Backend.setFont(font)
+
+        -- draw highlight
+        Backend.setColor(self.highlight)
+        Backend.drawRectangle('fill', startX, y1, width, height)
+        if Backend.getTime() % 2 < 1.75 then
+            Backend.setColor(textColor)
+            Backend.drawRectangle('fill', endX, y1, 1, height)
+        end
+
+        -- draw text
+        Backend.setColor(textColor)
+        Backend.print(self.value, x1 - self.scrollX, textTop)
         if not self.focused then
-            love.graphics.pop()
+            Backend.pop()
             return
         end
-         -- TODO: expose highlight blend mode for dark themes
-        love.graphics.setBlendMode(blendMultiply)
-        love.graphics.setColor(self.highlight)
-        love.graphics.rectangle('fill', startX, y1, width, height)
-        if love.timer.getTime() % 2 < 1.75 then
-            love.graphics.setColor(textColor)
-            love.graphics.rectangle('fill', endX, y1, 1, height)
-        end
-        love.graphics.pop()
+
+        Backend.pop()
     end)
 end

@@ -16,12 +16,13 @@ and are trapped by the first layout that can handle the event
 
 local ROOT = (...):gsub('[^.]*$', '')
 
+local Backend = require(ROOT .. 'backend')
 local Base = require(ROOT .. 'base')
 local Event = require(ROOT .. 'event')
 local Widget = require(ROOT .. 'widget')
 local Input = require(ROOT .. 'input')
 local Style = require(ROOT .. 'style')
-local Hooker = require(ROOT .. 'hooker')
+local Backend = require(ROOT .. 'backend')
 
 local Layout = Base:extend()
 
@@ -50,8 +51,8 @@ function Layout:constructor (data, master)
 
     self:addDefaultHandlers()
 
-    self.isShown = false
     self.hooks = {}
+    self.isShown = false
     self.root = data
 
     Widget(self, data)
@@ -136,15 +137,17 @@ Hooks all appropriate Love events and callbacks.
 --]]--
 function Layout:show ()
     if self.isShown then
-        self:unhook() -- return
+        Backend.hide(self)
         self.isShown = nil
     end
+    
+    self.isShown = true
 
     if not self.input then
         self.input = Input.default -- Input(self)
     end
 
-    self:manageInput()
+    Backend.show(self)
     self.root:reshape()
 end
 
@@ -158,7 +161,7 @@ function Layout:hide ()
         return
     end
     self.isShown = nil
-    self:unhook()
+    Backend.hide(self)
 end
 
 --[[--
@@ -251,7 +254,7 @@ function Layout:addDefaultHandlers ()
 
         -- tab/shift-tab cycles focused widget
         if event.key == 'tab' then
-            if love.keyboard.isDown('lshift', 'rshift') then
+            if Backend.isKeyDown('lshift', 'rshift') then
                 self:focusPreviousWidget()
             else
                 self:focusNextWidget()
@@ -301,104 +304,6 @@ function Layout:addDefaultHandlers ()
     end)
 end
 
--- event stuff
-
-function Layout:hook (key, method, hookLast)
-    self.hooks[#self.hooks + 1] = Hooker.hook(love, key, method, hookLast)
-end
-
-function Layout:unhook ()
-    for _, item in ipairs(self.hooks) do
-        Hooker.unhook(item)
-    end
-    self.hooks = {}
-end
-
-local getMouseButtonId, isMouseDown
-
-if love._version_minor < 10 then
-    getMouseButtonId = function (value)
-        return value == 'l' and 1
-            or value == 'r' and 2
-            or value == 'm' and 3
-    end
-    isMouseDown = function ()
-        return love.mouse.isDown('l', 'r', 'm')
-    end
-else
-    getMouseButtonId = function (value)
-        return value
-    end
-    isMouseDown = function ()
-        return love.mouse.isDown(1, 2, 3)
-    end
-end
-
-function Layout:manageInput ()
-    if self.isShown then
-        return
-    end
-    self.isShown = true
-
-    local input = self.input
-
-    self:hook('draw', function ()
-        input:handleDisplay(self)
-    end, true)
-    self:hook('resize', function (width, height)
-        return input:handleReshape(self, width, height)
-    end)
-    self:hook('mousepressed', function (x, y, button)
-        return input:handlePressStart(self, getMouseButtonId(button), x, y)
-    end)
-    self:hook('mousereleased', function (x, y, button)
-        return input:handlePressEnd(self, getMouseButtonId(button), x, y)
-    end)
-    self:hook('mousemoved', function (x, y, dx, dy)
-        if isMouseDown() then
-            return input:handlePressedMove(self, x, y)
-        else
-            return input:handleMove(self, x, y)
-        end
-    end)
-    self:hook('keypressed', function (key, isRepeat)
-        return input:handleKeyPress(
-            self, key, love.mouse.getX(), love.mouse.getY())
-    end)
-    self:hook('keyreleased', function (key)
-        return input:handleKeyRelease(
-            self, key, love.mouse.getX(), love.mouse.getY())
-    end)
-    self:hook('textinput', function (text)
-        return input:handleTextInput(
-            self, text, love.mouse.getX(), love.mouse.getY())
-    end)
-end
-
--- event binders
-
 Event.injectBinders(Layout)
-
--- ffi
-
-function Layout:showMessage () end
-
-local _, ffi = pcall(require, 'ffi')
-if ffi then
-
-    ffi.cdef [[
-        int SDL_ShowSimpleMessageBox(
-            uint32_t flags,
-            const char* title,
-            const char* message,
-            void* window
-        );
-    ]]
-
-    function Layout:showMessage (title, message)
-        ffi.C.SDL_ShowSimpleMessageBox(0, title, message, nil)
-    end
-
-end
 
 return Layout

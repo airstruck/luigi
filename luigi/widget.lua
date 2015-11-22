@@ -6,6 +6,7 @@ Widget class.
 
 local ROOT = (...):gsub('[^.]*$', '')
 
+local Backend = require(ROOT .. 'backend')
 local Event = require(ROOT .. 'event')
 local Font = require(ROOT .. 'font')
 
@@ -340,8 +341,9 @@ function Widget:calculateDimension (name)
     local min = (name == 'width') and (self.minwidth or 0)
         or (self.minheight or 0)
 
-    local max = name == 'width' and love.graphics.getWidth()
-        or love.graphics.getHeight()
+    local windowWidth, windowHeight = Backend.getWindowSize()
+
+    local max = name == 'width' and windowWidth or windowHeight
 
     if self[name] then
         self.dimensions[name] = clamp(self[name], min, max)

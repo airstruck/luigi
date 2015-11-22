@@ -72,7 +72,7 @@ local mainForm = { id = 'mainWindow', type = 'panel',
             { text = 'Hi, I\'m centered middle. ', style = 'listThing',
                 align = 'middle center' },
             { text = 'Hi, I\'m centered bottom. ', style = 'listThing',
-                align = 'bottom center' },
+                align = 'bottom center', slices = 'luigi/theme/light/button.png' },
             { text = 'Hi, I\'m centered top. ', style = 'listThing',
                 align = 'top center' },
             { text = 'A man, a plan, a canal: Panama!', style = 'listThing' },
@@ -161,8 +161,12 @@ erge rg eg erg er ergs erg er ge rh erh rth]]
 
 layout.mainCanvas.align = 'top'
 
-layout.menuQuit:onPress(function (event) love.event.quit() end)
+local Backend = require 'luigi.backend'
 
-layout.themeLight:onPress(function (event) love.event.quit() end)
+layout.menuQuit:onPress(function (event) Backend.quit() end)
+
+layout.themeLight:onPress(function (event) Backend.quit() end)
 
 layout:show()
+
+Backend.run()

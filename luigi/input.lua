@@ -1,5 +1,6 @@
 local ROOT = (...):gsub('[^.]*$', '')
 
+local Backend = require(ROOT .. 'backend')
 local Base = require(ROOT .. 'base')
 local Event = require(ROOT .. 'event')
 local Renderer = require(ROOT .. 'renderer')
@@ -21,9 +22,9 @@ function Input:handleDisplay (layout)
 end
 
 function Input:getModifierFlags ()
-    local alt = love.keyboard.isDown('lalt', 'ralt') and 1 or 0
-    local ctrl = love.keyboard.isDown('lctrl', 'rctrl') and 2 or 0
-    local shift = love.keyboard.isDown('lshift', 'rshift') and 4 or 0
+    local alt = Backend.isKeyDown('lalt', 'ralt') and 1 or 0
+    local ctrl = Backend.isKeyDown('lctrl', 'rctrl') and 2 or 0
+    local shift = Backend.isKeyDown('lshift', 'rshift') and 4 or 0
 
     return alt + ctrl + shift
 end
@@ -96,9 +97,9 @@ function Input:handleMove (layout, x, y)
             x = x, y = y
         })
         if widget.cursor then
-            love.mouse.setCursor(love.mouse.getSystemCursor(widget.cursor))
+            Backend.setCursor(Backend.getSystemCursor(widget.cursor))
         else
-            love.mouse.setCursor()
+            Backend.setCursor()
         end
         self.previousMoveWidget = widget
     end
