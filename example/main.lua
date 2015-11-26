@@ -29,7 +29,7 @@ local style = {
         padding = 8,
         background = { 255, 255, 255 },
         icon = 'icon/32px/Box.png',
-        multiline = true,
+        wrap = true,
     },
 }
 
@@ -177,7 +177,7 @@ eight
 
 layout.mainCanvas.align = 'top'
 
-layout.mainCanvas.multiline = true
+layout.mainCanvas.wrap = true
 
 local Backend = require 'luigi.backend'
 

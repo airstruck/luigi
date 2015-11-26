@@ -166,7 +166,7 @@ function Renderer:positionText (widget, x1, y1, x2, y2)
     end
 
     if not widget.textData then
-        local limit = widget.multiline and x2 - x1 or nil
+        local limit = widget.wrap and x2 - x1 or nil
         widget.textData = Text(
             font, widget.text, widget.textColor, horizontal, limit)
     end
@@ -230,9 +230,9 @@ function Renderer:renderIconAndText (widget)
         end
     end
 
-    -- horizontal alignment for non-multiline
+    -- horizontal alignment for non-wrapped text
     -- TODO: handle this in Backend.Text
-    if text and not widget.multiline then
+    if text and not widget.wrap then
         if align:find 'right' then
             textX = textX + ((x2 - x1) - widget.textData:getWidth())
         elseif align:find 'center' then

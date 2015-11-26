@@ -57,7 +57,7 @@ local function metaNewIndex (self, property, value)
     end
 
     if property == 'text' or property == 'textColor'
-    or property == 'align' or property == 'multiline' then
+    or property == 'align' or property == 'wrap' then
         self.shadowProperties[property] = value
         self.textData = nil
         return
@@ -66,7 +66,7 @@ local function metaNewIndex (self, property, value)
     if property == 'width' then
         value = value and math.max(value, self.minwidth or 0)
         self.shadowProperties[property] = value
-        if self.multiline then
+        if self.wrap then
             self.textData = nil
         end
         Widget.reshape(self.parent or self)
@@ -126,7 +126,7 @@ local shadowKeys = {
     'width', 'height',
     'font', 'fontSize',
     'text', 'textColor',
-    'align', 'multiline',
+    'align', 'wrap',
 }
 
 --[[--
