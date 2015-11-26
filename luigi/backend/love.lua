@@ -11,13 +11,21 @@ Backend.Cursor = love.mouse.newCursor
 
 Backend.Font = require(ROOT .. 'backend.love.font')
 
+Backend.Text = require(ROOT .. 'backend.love.text')
+
 Backend.Image = love.graphics.newImage
 
 Backend.Quad = love.graphics.newQuad
 
 Backend.SpriteBatch = love.graphics.newSpriteBatch
 
-Backend.draw = love.graphics.draw
+-- love.graphics.draw( drawable, x, y, r, sx, sy, ox, oy, kx, ky )
+Backend.draw = function (drawable, ...)
+    if drawable.typeOf and drawable:typeOf 'Drawable' then
+        return love.graphics.draw(drawable, ...)
+    end
+    return drawable:draw(...)
+end
 
 Backend.drawRectangle = love.graphics.rectangle
 

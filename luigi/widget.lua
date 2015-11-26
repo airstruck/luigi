@@ -8,7 +8,7 @@ local ROOT = (...):gsub('[^.]*$', '')
 
 local Backend = require(ROOT .. 'backend')
 local Event = require(ROOT .. 'event')
-local Font = require(ROOT .. 'font')
+local Font = Backend.Font
 
 local Widget = {}
 
@@ -50,17 +50,25 @@ end
 
 -- setting shadow properties causes special behavior
 local function metaNewIndex (self, property, value)
-    if property == 'font'
-    or property == 'fontSize'
-    or property == 'textColor' then
+    if property == 'font' or property == 'fontSize' then
         self.shadowProperties[property] = value
-        self.fontData = Font(self.font, self.fontSize, self.textColor)
+        self.fontData = nil
+        self.textData = nil
+    end
+
+    if property == 'text' or property == 'textColor'
+    or property == 'align' or property == 'multiline' then
+        self.shadowProperties[property] = value
+        self.textData = nil
         return
     end
 
     if property == 'width' then
         value = value and math.max(value, self.minwidth or 0)
         self.shadowProperties[property] = value
+        if self.multiline then
+            self.textData = nil
+        end
         Widget.reshape(self.parent or self)
         return
     end
@@ -114,8 +122,13 @@ local function metaNewIndex (self, property, value)
 end
 
 local shadowKeys = {
-    'font', 'fontSize', 'textColor', 'width', 'height', 'value', 'key', 'id'
+    'id', 'key', 'value',
+    'width', 'height',
+    'font', 'fontSize',
+    'text', 'textColor',
+    'align', 'multiline',
 }
+
 --[[--
 Widget pseudo-constructor.
 
@@ -603,6 +616,7 @@ function Widget:reshape ()
     if self.isReshaping then return end
     self.isReshaping = true
     self.needsReshape = true
+    self.textData = nil
     Event.Reshape:emit(self, {
         target = self
     })

@@ -34,8 +34,7 @@ function Input:handleKeyPress (layout, key, x, y)
     local result = widget:bubbleEvent('KeyPress', {
         key = key,
         modifierFlags = self:getModifierFlags(),
-        x = x,
-        y = y
+        x = x, y = y
     })
     if result ~= nil then return result end
 end
@@ -45,8 +44,7 @@ function Input:handleKeyRelease (layout, key, x, y)
     local result = widget:bubbleEvent('KeyRelease', {
         key = key,
         modifierFlags = self:getModifierFlags(),
-        x = x,
-        y = y
+        x = x, y = y
     })
     if result ~= nil then return result end
 end
@@ -55,7 +53,8 @@ function Input:handleTextInput (layout, text, x, y)
     local widget = layout.focusedWidget or layout.root
     local result = widget:bubbleEvent('TextInput', {
         hit = hit,
-        text = text, x = x, y = y
+        text = text,
+        x = x, y = y
     })
     if result ~= nil then return result end
 end
@@ -193,7 +192,8 @@ function Input:handlePressEnd (layout, button, x, y, widget, accelerator)
         hit = hit,
         origin = originWidget,
         accelerator = accelerator,
-        button = button, x = x, y = y
+        button = button,
+        x = x, y = y
     })
     if (widget == originWidget) then
         widget:bubbleEvent('Press', {

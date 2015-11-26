@@ -4,16 +4,18 @@ local Hooker = require(ROOT .. 'hooker')
 
 local ffi = require 'ffi'
 local sdl = require((...) .. '.sdl')
+
 local Image = require((...) .. '.image')
 local Font = require((...) .. '.font')
 local Keyboard = require((...) .. '.keyboard')
+local Text = require((...) .. '.text')
 
 local IntOut = ffi.typeof 'int[1]'
 
 -- create window and renderer
 
 local window = sdl.createWindow('', 0, 0, 800, 600,
-    sdl.WINDOW_SHOWN)
+    sdl.WINDOW_SHOWN + sdl.WINDOW_RESIZABLE)
 
 if window == nil then
     io.stderr:write(ffi.string(sdl.getError()))
@@ -58,13 +60,17 @@ Backend.run = function ()
                 return
             elseif event.type == sdl.WINDOWEVENT
             and event.window.event == sdl.WINDOWEVENT_RESIZED then
-                callback.resize(event.window.data1, event.window.data2)
+                local window = event.window
+                callback.resize(window.data1, window.data2)
             elseif event.type == sdl.MOUSEBUTTONDOWN then
-                callback.mousepressed(event.button.x, event.button.y, event.button.button)
+                local button = event.button
+                callback.mousepressed(button.x, button.y, button.button)
             elseif event.type == sdl.MOUSEBUTTONUP then
-                callback.mousereleased(event.button.x, event.button.y, event.button.button)
+                local button = event.button
+                callback.mousereleased(button.x, button.y, button.button)
             elseif event.type == sdl.MOUSEMOTION then
-                callback.mousemoved(event.motion.x, event.motion.y)
+                local motion = event.motion
+                callback.mousemoved(motion.x, motion.y)
             elseif event.type == sdl.KEYDOWN then
                 local key = Keyboard.stringByKeycode[event.key.keysym.sym]
                 callback.keypressed(key, event.key['repeat'])
@@ -94,6 +100,10 @@ Backend.Image = function (path)
     return Image(renderer, path)
 end
 
+Backend.Text = function (...)
+    return Text(renderer, ...)
+end
+
 Backend.Quad = function (x, y, w, h)
     return { x, y, w, h }
 end
@@ -101,7 +111,28 @@ end
 Backend.SpriteBatch = require((...) .. '.spritebatch')
 
 Backend.draw = function (drawable, x, y, sx, sy)
-    return drawable:draw(x, y, sx, sy)
+    if drawable.draw then
+        return drawable:draw(x, y, sx, sy)
+    end
+
+    if drawable.sdlTexture == nil
+    or drawable.sdlRenderer == nil
+    or drawable.getWidth == nil
+    or drawable.getHeight == nil
+        then return
+    end
+
+    local w = drawable:getWidth() * (sx or 1)
+    local h = drawable:getHeight() * (sy or 1)
+
+    -- HACK. Somehow drawing something first prevents renderCopy from
+    -- incorrectly scaling up in some cases (after rendering slices).
+    -- For example http://stackoverflow.com/questions/28218906
+    sdl.renderDrawPoint(drawable.sdlRenderer, -1, -1)
+
+    -- Draw the image.
+    sdl.renderCopy(drawable.sdlRenderer, drawable.sdlTexture,
+        nil, sdl.Rect(x, y, w, h))
 end
 
 Backend.drawRectangle = function (mode, x, y, w, h)
@@ -118,7 +149,7 @@ local currentFont = Font()
 Backend.print = function (text, x, y)
     if not text or text == '' then return end
     local font = currentFont.sdlFont
-    local color = sdl.Color(currentFont.color)
+    local color = sdl.Color(currentFont.color or { 0, 0, 0, 255 })
     local write = Font.SDL2_ttf.TTF_RenderUTF8_Blended
 
     local surface = write(font, text, color)
@@ -130,7 +161,9 @@ end
 
 Backend.printf = Backend.print
 
-Backend.getClipboardText = sdl.getClipboardText
+Backend.getClipboardText = function ()
+    return ffi.string(sdl.getClipboardText())
+end
 
 Backend.setClipboardText = sdl.setClipboardText
 

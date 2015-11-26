@@ -140,7 +140,7 @@ function Layout:show ()
         Backend.hide(self)
         self.isShown = nil
     end
-    
+
     self.isShown = true
 
     if not self.input then

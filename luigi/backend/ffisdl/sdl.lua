@@ -1,7 +1,7 @@
-local ROOT = (...):gsub('[^.]*$', '')
+local REL = (...):gsub('[^.]*$', '')
 
 local ffi = require 'ffi'
-local sdl = require(ROOT .. 'sdl2.init')
+local sdl = require(REL .. 'sdl2.init')
 
 sdl.AudioCVT = ffi.typeof 'SDL_AudioCVT'
 -- sdl.AudioDeviceEvent = ffi.typeof 'SDL_AudioDeviceEvent'

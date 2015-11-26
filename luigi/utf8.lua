@@ -1,3 +1,5 @@
+-- modified for partial compatibility with Lua 5.3
+
 --utf8 module (Cosmin Apreutesei, public domain).
 --byte indices are i's, char (codepoint) indices are ci's.
 --invalid characters are counted as 1-byte chars so they don't get lost. validate/sanitize beforehand as needed.
@@ -56,11 +58,12 @@ function utf8.byte_index(s, target_ci)
 		end
 	end
 	assert(target_ci > ci, 'invalid index')
+	return #s + 1
 end
 
 --char index given byte index. nil if the index is outside the string.
 function utf8.char_index(s, target_i)
-	if target_i < 1 or target_i > #s then return end
+	if target_i < 1 or target_i > #s + 1 then return end
 	local ci = 0
 	for i in utf8.byte_indices(s) do
 		ci = ci + 1
@@ -68,7 +71,8 @@ function utf8.char_index(s, target_i)
 			return ci
 		end
 	end
-	error'invalid index'
+	return ci + 1
+	-- error'invalid index'
 end
 
 --byte index of the prev. char before the char at byte index i, which defaults to #s + 1.
@@ -306,11 +310,28 @@ function utf8.sanitize(s, repl_char)
 	return utf8.replace(s, replace_invalid, repl_char)
 end
 
--- added for partial compatibility with lua 5.3
+-- Returns the position (in bytes) where the encoding of the n-th character
+-- of s (counting from position i) starts.
+function utf8.offset(s, n, i)
 
-function utf8.offset(s, char_offset, byte_index)
-    local ci = utf8.char_index(s, byte_index)
-    return utf8.byte_index(s, ci + char_offset)
+	-- The default for i is 1 when n is non-negative and #s + 1 otherwise
+	if not i then
+		i = n < 0 and #s + 1 or 1
+	end
+
+    local ci = utf8.char_index(s, i)
+
+	-- As a special case, when n is 0 the function returns the start of
+	-- the encoding of the character that contains the i-th byte of s.
+	if n == 0 then
+		return ci
+	end
+
+	if n > 0 then
+    	n = n - 1
+	end
+
+	return utf8.byte_index(s, ci + n)
 end
 
 utf8.codes = utf8.byte_indices

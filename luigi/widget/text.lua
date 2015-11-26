@@ -230,7 +230,7 @@ return function (self)
         local x1, y1, x2, y2 = self:getRectangle(true, true)
         local width, height = endX - startX, y2 - y1
         local font = self.fontData
-        local textColor = font.color
+        local textColor = self.textColor or { 0, 0, 0, 255 }
         local textTop = math.floor(y1 + ((y2 - y1) - font:getLineHeight()) / 2)
 
         Backend.push()

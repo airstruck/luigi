@@ -197,12 +197,9 @@ Font.SDL2_ttf = SDL2_ttf
 
 local fontCache = {}
 
-function Font:constructor (path, size, color)
+function Font:constructor (path, size)
     if not size then
         size = 12
-    end
-    if not color then
-        color = { 0, 0, 0, 255 }
     end
     if not path then
         path = REL:gsub('%.', '/') .. 'resource/DejaVuSans.ttf'
@@ -222,7 +219,6 @@ function Font:constructor (path, size, color)
     end
 
     self.sdlFont = fontCache[key]
-    self.color = color
 end
 
 function Font:setAlignment (align)

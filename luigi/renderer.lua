@@ -3,7 +3,8 @@ local ROOT = (...):gsub('[^.]*$', '')
 local Backend = require(ROOT .. 'backend')
 local Base = require(ROOT .. 'base')
 local Event = require(ROOT .. 'event')
-local Font = require(ROOT .. 'font')
+local Font = Backend.Font
+local Text = Backend.Text
 
 local Renderer = Base:extend()
 
@@ -17,6 +18,8 @@ function Renderer:loadImage (path)
 
     return imageCache[path]
 end
+
+-- TODO: make slices a seperate drawable
 
 function Renderer:loadSlices (path)
     local slices = sliceCache[path]
@@ -141,39 +144,40 @@ end
 
 -- returns text coordinates
 function Renderer:positionText (widget, x1, y1, x2, y2)
-    if not widget.text then
+    if not widget.text or x1 >= x2 then
         return nil, nil, x1, y1, x2, y2
     end
 
     if not widget.fontData then
-        widget.fontData = Font(widget.font, widget.fontSize, widget.textColor)
+        widget.fontData = Font(widget.font, widget.fontSize)
     end
 
     local font = widget.fontData
     local align = widget.align or ''
-    local padding = widget.padding or 0
-
-    font:setWidth(x2 - x1)
+    local horizontal = 'left'
 
     -- horizontal alignment
-    if align:find('right') then
-        font:setAlignment('right')
-    elseif align:find('center') then
-        font:setAlignment('center')
-    elseif align:find('justify') then
-        font:setAlignment('justify')
-    else -- if align:find('left') then
-        font:setAlignment('left')
+    if align:find 'right' then
+        horizontal = 'right'
+    elseif align:find 'center' then
+        horizontal = 'center'
+    elseif align:find 'justify' then
+        horizontal = 'justify'
     end
 
+    if not widget.textData then
+        local limit = widget.multiline and x2 - x1 or nil
+        widget.textData = Text(
+            font, widget.text, widget.textColor, horizontal, limit)
+    end
+
+    local textHeight = widget.textData:getHeight()
     local y
 
     -- vertical alignment
     if align:find('bottom') then
-        local textHeight = font:getWrappedHeight(widget.text)
         y = y2 - textHeight
     elseif align:find('middle') then
-        local textHeight = font:getWrappedHeight(widget.text)
         y = y2 - (y2 - y1) / 2 - textHeight / 2
     else -- if align:find('top') then
         y = y1
@@ -210,19 +214,29 @@ function Renderer:renderIconAndText (widget)
     if icon and text and align:find('center') then
         local iconHeight = icon:getHeight()
 
-        if align:find('middle') then
-            local textHeight = font:getWrappedHeight(text)
+        if align:find 'middle' then
+            local textHeight = widget.textData:getHeight()
             local contentHeight = textHeight + padding + iconHeight
             local offset = ((y2 - y1) - contentHeight) / 2
             iconY = y1 + offset
             textY = y1 + offset + padding + iconHeight
-        elseif align:find('top') then
+        elseif align:find 'top' then
             iconY = y1
             textY = y1 + padding + iconHeight
-        else -- if align:find('bottom')
-            local textHeight = font:getWrappedHeight(text)
+        else -- if align:find 'bottom'
+            local textHeight = widget.textData:getHeight()
             textY = y2 - textHeight
             iconY = textY - padding - iconHeight
+        end
+    end
+
+    -- horizontal alignment for non-multiline
+    -- TODO: handle this in Backend.Text
+    if text and not widget.multiline then
+        if align:find 'right' then
+            textX = textX + ((x2 - x1) - widget.textData:getWidth())
+        elseif align:find 'center' then
+            textX = textX + ((x2 - x1) - widget.textData:getWidth()) / 2
         end
     end
 
@@ -238,9 +252,7 @@ function Renderer:renderIconAndText (widget)
     -- draw the text
     if text and x2 > x1 then
         textX, textY = math.floor(textX), math.floor(textY)
-        Backend.setFont(font)
-        Backend.setColor(font.color)
-        Backend.printf(text, textX, textY, x2 - x1, font.align)
+        Backend.draw(widget.textData, textX, textY)
     end
 
     Backend.pop()

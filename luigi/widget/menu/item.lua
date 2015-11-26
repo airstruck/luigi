@@ -125,7 +125,7 @@ local function initialize (self)
     local textWidth = self.fontData:getAdvance(text) + pad * 2
 
     if isSubmenu then
-        local tc = self.textColor or { 0, 0, 0 }
+        local tc = self.textColor or { 0, 0, 0, 255 }
         local keyColor = { tc[1], tc[2], tc[3], 0x90 }
         local edgeType
         if #self.items > 0 then

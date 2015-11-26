@@ -29,6 +29,7 @@ local style = {
         padding = 8,
         background = { 255, 255, 255 },
         icon = 'icon/32px/Box.png',
+        multiline = true,
     },
 }
 
@@ -71,8 +72,8 @@ local mainForm = { id = 'mainWindow', type = 'panel',
         { id = 'leftSideBox',    width = 200, minwidth = 64,
             { text = 'Hi, I\'m centered middle. ', style = 'listThing',
                 align = 'middle center' },
-            { text = 'Hi, I\'m centered bottom. ', style = 'listThing',
-                align = 'bottom center', slices = 'luigi/theme/light/button.png' },
+            { text = 'Hi, I\'m right bottom.\nAlso two lines, woopdy woop.Hi, I\'m right bottom.\nAlso two lines, woopdy woop.Hi, I\'m right bottom.\nAlso two lines, woopdy woop.', style = 'listThing',
+                align = 'bottom right', slices = 'luigi/theme/light/button.png' },
             { text = 'Hi, I\'m centered top. ', style = 'listThing',
                 align = 'top center' },
             { text = 'A man, a plan, a canal: Panama!', style = 'listThing' },
@@ -154,12 +155,29 @@ end)
 
 layout.mainCanvas.font = 'font/liberation/LiberationMono-Regular.ttf'
 
-layout.mainCanvas.text = [[Abedede sdfsdf asfdsdfdsfs sdfsdfsdf
-sfsdfdfbv db er erg rth tryj ty j fgh dfgv
-wefwef    rgh erh rth e rgs dvg eh tyj rt h erg
-erge rg eg erg er ergs erg er ge rh erh rth]]
+layout.mainCanvas.text = [[
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+
+Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+   Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+
+Excepteur sint         occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+One
+two
+Three
+four
+
+five
+six
+seven
+eight
+]]
 
 layout.mainCanvas.align = 'top'
+
+layout.mainCanvas.multiline = true
 
 local Backend = require 'luigi.backend'
 
