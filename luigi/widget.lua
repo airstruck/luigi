@@ -16,17 +16,31 @@ Event.injectBinders(Widget)
 
 Widget.isWidget = true
 
+--[[--
+Widget type registry.
+--]]--
 Widget.typeDecorators = {
-    button = require(ROOT .. 'widget.button'),
-    menu = require(ROOT .. 'widget.menu'),
-    ['menu.item'] = require(ROOT .. 'widget.menu.item'),
-    progress = require(ROOT .. 'widget.progress'),
-    sash = require(ROOT .. 'widget.sash'),
-    slider = require(ROOT .. 'widget.slider'),
-    stepper = require(ROOT .. 'widget.stepper'),
-    text = require(ROOT .. 'widget.text'),
+    button = require(ROOT .. 'widget.button'), -- A simple button
+    menu = require(ROOT .. 'widget.menu'), -- A menu bar
+    ['menu.item'] = require(ROOT .. 'widget.menu.item'), -- A menu item
+    progress = require(ROOT .. 'widget.progress'), -- A progress bar
+    sash = require(ROOT .. 'widget.sash'), -- Resizes nearby widgets
+    slider = require(ROOT .. 'widget.slider'), -- Slides to adjust a normalized value
+    stepper = require(ROOT .. 'widget.stepper'), -- Steps through a series of choices
+    text = require(ROOT .. 'widget.text'), -- A text entry widget
 }
 
+--[[--
+Register a custom widget type.
+
+@static
+
+@tparam string name
+A unique name for this type of widget.
+
+@tparam function(Widget) decorator
+An initialization function for this type of widget.
+--]]--
 function Widget.register (name, decorator)
     Widget.typeDecorators[name] = decorator
 end

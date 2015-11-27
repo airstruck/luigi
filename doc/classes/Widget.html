@@ -33,6 +33,7 @@
 <h2>Contents</h2>
 <ul>
 <li><a href="#Functions">Functions</a></li>
+<li><a href="#Tables">Tables</a></li>
 <li><a href="#Methods">Methods</a></li>
 </ul>
 
@@ -58,8 +59,19 @@
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
+	<td class="name" nowrap><a href="#Widget.register">Widget.register (name, decorator)</a></td>
+	<td class="summary">Register a custom widget type.</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#Luigi.Widget">Luigi.Widget (layout[, data])</a></td>
 	<td class="summary">Widget pseudo-constructor.</td>
+	</tr>
+</table>
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Widget.typeDecorators">Widget.typeDecorators</a></td>
+	<td class="summary">Widget type registry.</td>
 	</tr>
 </table>
 <h2><a href="#Methods">Methods</a></h2>
@@ -109,14 +121,6 @@
 	<td class="summary">Get the widget's calculated height.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Widget:setWidth">Widget:setWidth (width)</a></td>
-	<td class="summary">Set the widget's width.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#Widget:setHeight">Widget:setHeight (height)</a></td>
-	<td class="summary">Set the widget's height.</td>
-	</tr>
-	<tr>
 	<td class="name" nowrap><a href="#Widget:getRectangle">Widget:getRectangle (useMargin, usePadding)</a></td>
 	<td class="summary">Get two points describing a rectangle within the widget.</td>
 	</tr>
@@ -137,6 +141,31 @@
     <h2 class="section-header "><a name="Functions"></a>Functions</h2>
     Methods
     <dl class="function">
+    <dt>
+    <a name = "Widget.register"></a>
+    <strong>Widget.register (name, decorator)</strong>
+    </dt>
+    <dd>
+    Register a custom widget type.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        A unique name for this type of widget.
+        </li>
+        <li><span class="parameter">decorator</span>
+            <span class="types"><span class="type">function(Widget)</span></span>
+        An initialization function for this type of widget.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
     <dt>
     <a name = "Luigi.Widget"></a>
     <strong>Luigi.Widget (layout[, data])</strong>
@@ -165,6 +194,51 @@ This table is identical to the constructed widget.
            <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a></span>
         A Widget instance.
     </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Widget.typeDecorators"></a>
+    <strong>Widget.typeDecorators</strong>
+    </dt>
+    <dd>
+    Widget type registry.
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">button</span>
+        A simple button
+        </li>
+        <li><span class="parameter">menu</span>
+        A menu bar
+        </li>
+        <li><span class="parameter">[</span>
+        A menu item
+        </li>
+        <li><span class="parameter">progress</span>
+        A progress bar
+        </li>
+        <li><span class="parameter">sash</span>
+        Resizes nearby widgets
+        </li>
+        <li><span class="parameter">slider</span>
+        Slides to adjust a normalized value
+        </li>
+        <li><span class="parameter">stepper</span>
+        Steps through a series of choices
+        </li>
+        <li><span class="parameter">text</span>
+        A text entry widget
+        </li>
+    </ul>
+
 
 
 
@@ -425,64 +499,6 @@ Cycles back around to the last widget in the tree from the layout root.
 
 </dd>
     <dt>
-    <a name = "Widget:setWidth"></a>
-    <strong>Widget:setWidth (width)</strong>
-    </dt>
-    <dd>
-    Set the widget's width. </p>
-
-<p>Limited to space not occupied by siblings.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">width</span>
-            <span class="types"><span class="type">number</span></span>
-        The desired width. Actual width may differ.
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">number</span></span>
-        The actual width of the widget.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Widget:setHeight"></a>
-    <strong>Widget:setHeight (height)</strong>
-    </dt>
-    <dd>
-    Set the widget's height. </p>
-
-<p>Limited to space not occupied by siblings.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">height</span>
-            <span class="types"><span class="type">number</span></span>
-        The desired height. Actual height may differ.
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">number</span></span>
-        The actual height of the widget.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
     <a name = "Widget:getRectangle"></a>
     <strong>Widget:getRectangle (useMargin, usePadding)</strong>
     </dt>
@@ -580,7 +596,7 @@ on the parent widget.
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
-<i style="float:right;">Last updated 2015-11-11 18:35:22 </i>
+<i style="float:right;">Last updated 2015-11-27 03:17:14 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
