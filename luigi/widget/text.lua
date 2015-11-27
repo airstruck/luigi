@@ -4,7 +4,8 @@ local utf8 = require(ROOT .. 'utf8')
 local Backend = require(ROOT .. 'backend')
 
 local function scrollToCaret (self)
-    local x1, y1, x2, y2 = self:getRectangle(true, true)
+    local x1, y1, w, h = self:getRectangle(true, true)
+    local x2, y2 = x1 + w, y1 + h
     local oldX = self.endX
     local newX
 
@@ -24,8 +25,8 @@ end
 
 local function findCaretFromText (self, text)
     local font = self.fontData
-    local x1, y1, x2, y2 = self:getRectangle(true, true)
-    return #text, font:getAdvance(text) + x1 - self.scrollX
+    local x = self:getRectangle(true, true)
+    return #text, font:getAdvance(text) + x - self.scrollX
 end
 
 local function setCaretFromText (self, text, mode)
@@ -43,7 +44,7 @@ end
 
 -- return caret index and x position
 local function findCaretFromPoint (self, x, y)
-    local x1, y1, x2, y2 = self:getRectangle(true, true)
+    local x1 = self:getRectangle(true, true)
 
     local font = self.fontData
     local width, lastWidth = 0
@@ -227,27 +228,27 @@ return function (self)
 
     self:onDisplay(function (event)
         local startX, endX = self.startX or 0, self.endX or 0
-        local x1, y1, x2, y2 = self:getRectangle(true, true)
-        local width, height = endX - startX, y2 - y1
+        local x, y, w, h = self:getRectangle(true, true)
+        local width, height = endX - startX, h
         local font = self.fontData
         local textColor = self.textColor or { 0, 0, 0, 255 }
-        local textTop = math.floor(y1 + ((y2 - y1) - font:getLineHeight()) / 2)
+        local textTop = math.floor(y + (h - font:getLineHeight()) / 2)
 
         Backend.push()
-        Backend.setScissor(x1, y1, x2 - x1, y2 - y1)
+        Backend.setScissor(x, y, w, h)
         Backend.setFont(font)
 
         -- draw highlight
         Backend.setColor(self.highlight)
-        Backend.drawRectangle('fill', startX, y1, width, height)
+        Backend.drawRectangle('fill', startX, y, width, height)
         if Backend.getTime() % 2 < 1.75 then
             Backend.setColor(textColor)
-            Backend.drawRectangle('fill', endX, y1, 1, height)
+            Backend.drawRectangle('fill', endX, y, 1, height)
         end
 
         -- draw text
         Backend.setColor(textColor)
-        Backend.print(self.value, x1 - self.scrollX, textTop)
+        Backend.print(self.value, x - self.scrollX, textTop)
         if not self.focused then
             Backend.pop()
             return

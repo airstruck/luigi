@@ -57,53 +57,53 @@ function Renderer:renderSlices (widget)
     local path = widget.slices
     if not path then return end
 
-    local x1, y1, x2, y2 = widget:getRectangle(true)
+    local x, y, w, h = widget:getRectangle(true)
 
     local slices = self:loadSlices(path)
 
     local batch = Backend.SpriteBatch(slices.image)
 
-    local xScale = ((x2 - x1) - slices.width * 2) / slices.width
-    local yScale = ((y2 - y1) - slices.height * 2) / slices.height
+    local xScale = (w - slices.width * 2) / slices.width
+    local yScale = (h - slices.height * 2) / slices.height
 
-    batch:add(slices.middleCenter, x1 + slices.width, y1 + slices.height, 0,
+    batch:add(slices.middleCenter, x + slices.width, y + slices.height, 0,
     xScale, yScale)
 
-    batch:add(slices.topCenter, x1 + slices.width, y1, 0,
+    batch:add(slices.topCenter, x + slices.width, y, 0,
         xScale, 1)
-    batch:add(slices.bottomCenter, x1 + slices.width, y2 - slices.height, 0,
+    batch:add(slices.bottomCenter, x + slices.width, y + h - slices.height, 0,
         xScale, 1)
 
-    batch:add(slices.middleLeft, x1, y1 + slices.height, 0,
+    batch:add(slices.middleLeft, x, y + slices.height, 0,
         1, yScale)
-    batch:add(slices.middleRight, x2 - slices.width, y1 + slices.height, 0,
+    batch:add(slices.middleRight, x + w - slices.width, y + slices.height, 0,
         1, yScale)
 
-    batch:add(slices.topLeft, x1, y1)
-    batch:add(slices.topRight, x2 - slices.width, y1)
-    batch:add(slices.bottomLeft, x1, y2 - slices.height)
-    batch:add(slices.bottomRight, x2 - slices.width, y2 - slices.height)
+    batch:add(slices.topLeft, x, y)
+    batch:add(slices.topRight, x + w - slices.width, y)
+    batch:add(slices.bottomLeft, x, y + h - slices.height)
+    batch:add(slices.bottomRight, x + w - slices.width, y + h - slices.height)
 
     Backend.draw(batch)
 end
 
 function Renderer:renderBackground (widget)
     if not widget.background then return end
-    local x1, y1, x2, y2 = widget:getRectangle(true)
+    local x, y, w, h = widget:getRectangle(true)
 
     Backend.push()
     Backend.setColor(widget.background)
-    Backend.drawRectangle('fill', x1, y1, x2 - x1, y2 - y1)
+    Backend.drawRectangle('fill', x, y, w, h)
     Backend.pop()
 end
 
 function Renderer:renderOutline (widget)
     if not widget.outline then return end
-    local x1, y1, x2, y2 = widget:getRectangle(true)
+    local x, y, w, h = widget:getRectangle(true)
 
     Backend.push()
     Backend.setColor(widget.outline)
-    Backend.drawRectangle('line', x1 + 0.5, y1 + 0.5, x2 - x1, y2 - y1)
+    Backend.drawRectangle('line', x + 0.5, y + 0.5, w, h)
     Backend.pop()
 end
 
@@ -187,22 +187,22 @@ function Renderer:positionText (widget, x1, y1, x2, y2)
 end
 
 function Renderer:renderIconAndText (widget)
-    local x1, y1, x2, y2 = widget:getRectangle(true, true)
+    local x, y, w, h = widget:getRectangle(true, true)
 
     -- if the drawable area has no width or height, don't render
-    if x2 <= x1 or y2 <= y1 then
+    if w < 1 or h < 1 then
         return
     end
 
     Backend.push()
 
-    Backend.setScissor(x1, y1, x2 - x1, y2 - y1)
-
-    local iconX, iconY, textX, textY, font
+    Backend.setScissor(x, y, w, h)
 
     -- calculate position for icon and text based on alignment and padding
-    iconX, iconY, x1, y1, x2, y2 = self:positionIcon(widget, x1, y1, x2, y2)
-    font, textX, textY = self:positionText(widget, x1, y1, x2, y2)
+    local iconX, iconY, x1, y1, x2, y2 = self:positionIcon(
+        widget, x, y, x + w, y + h)
+    local font, textX, textY = self:positionText(
+        widget, x1, y1, x2, y2)
 
     local icon = widget.icon and self:loadImage(widget.icon)
     local text = widget.text
@@ -217,15 +217,15 @@ function Renderer:renderIconAndText (widget)
         if align:find 'middle' then
             local textHeight = widget.textData:getHeight()
             local contentHeight = textHeight + padding + iconHeight
-            local offset = ((y2 - y1) - contentHeight) / 2
-            iconY = y1 + offset
-            textY = y1 + offset + padding + iconHeight
+            local offset = (h - contentHeight) / 2
+            iconY = y + offset
+            textY = y + offset + padding + iconHeight
         elseif align:find 'top' then
-            iconY = y1
-            textY = y1 + padding + iconHeight
+            iconY = y
+            textY = y + padding + iconHeight
         else -- if align:find 'bottom'
             local textHeight = widget.textData:getHeight()
-            textY = y2 - textHeight
+            textY = y + h - textHeight
             iconY = textY - padding - iconHeight
         end
     end
@@ -234,9 +234,9 @@ function Renderer:renderIconAndText (widget)
     -- TODO: handle this in Backend.Text
     if text and not widget.wrap then
         if align:find 'right' then
-            textX = textX + ((x2 - x1) - widget.textData:getWidth())
+            textX = textX + (w - widget.textData:getWidth())
         elseif align:find 'center' then
-            textX = textX + ((x2 - x1) - widget.textData:getWidth()) / 2
+            textX = textX + (w - widget.textData:getWidth()) / 2
         end
     end
 
@@ -250,7 +250,7 @@ function Renderer:renderIconAndText (widget)
     end
 
     -- draw the text
-    if text and x2 > x1 then
+    if text and w > 1 then
         textX, textY = math.floor(textX), math.floor(textY)
         Backend.draw(widget.textData, textX, textY)
     end

@@ -487,7 +487,7 @@ function Widget:getHeight ()
 end
 
 --[[--
-Get two points describing a rectangle within the widget.
+Get x/y/width/height values describing a rectangle within the widget.
 
 @tparam boolean useMargin
 Whether to adjust the rectangle based on the widget's margin.
@@ -502,19 +502,19 @@ The upper left corner's X position.
 The upper left corner's Y position.
 
 @treturn number
-The lower right corner's X position.
+The rectangle's width
 
 @treturn number
-The lower right corner's Y position.
+The rectangle's height
 --]]--
 function Widget:getRectangle (useMargin, usePadding)
-    local x1, y1 = self:getX(), self:getY()
-    local x2, y2 = self:getWidth() + x1, self:getHeight() + y1
+    local x, y = self:getX(), self:getY()
+    local w, h = self:getWidth(), self:getHeight()
     local function shrink(amount)
-        x1 = x1 + amount
-        y1 = y1 + amount
-        x2 = x2 - amount
-        y2 = y2 - amount
+        x = x + amount
+        y = y + amount
+        w = w - amount * 2
+        h = h - amount * 2
     end
     if useMargin then
         shrink(self.margin or 0)
@@ -522,7 +522,7 @@ function Widget:getRectangle (useMargin, usePadding)
     if usePadding then
         shrink(self.padding or 0)
     end
-    return math.floor(x1), math.floor(y1), math.floor(x2), math.floor(y2)
+    return math.floor(x), math.floor(y), math.floor(w), math.floor(h)
 end
 
 --[[--
@@ -540,7 +540,8 @@ true if the point is within the widget, else false.
 function Widget:isAt (x, y)
     checkReshape(self)
 
-    local x1, y1, x2, y2 = self:getRectangle()
+    local x1, y1, w, h = self:getRectangle()
+    local x2, y2 = x1 + w, y1 + h
     return (x1 <= x) and (x2 >= x) and (y1 <= y) and (y2 >= y)
 end
 

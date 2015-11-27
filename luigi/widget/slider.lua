@@ -35,7 +35,8 @@ return function (self)
     end)
 
     local function press (event)
-        local x1, y1, x2, y2 = self:getRectangle(true, true)
+        local x1, y1, w, h = self:getRectangle(true, true)
+        local x2, y2 = x1 + w, y1 + h
         local halfThumb = thumb:getWidth() / 2
         x1, x2 = x1 + halfThumb, x2 - halfThumb
         self.value = clamp((event.x - x1) / (x2 - x1))
@@ -58,7 +59,9 @@ return function (self)
     end)
 
     self:onReshape(function (event)
-        local x1, y1, x2, y2 = self:getRectangle(true, true)
+        -- TODO: eliminate redundancy with `press`
+        local x1, y1, w, h = self:getRectangle(true, true)
+        local x2, y2 = x1 + w, y1 + h
         local halfThumb = thumb:getWidth() / 2
         x1, x2 = x1 + halfThumb, x2 - halfThumb
         spacer.width = self.value * (x2 - x1)
