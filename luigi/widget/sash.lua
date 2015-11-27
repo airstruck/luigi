@@ -1,3 +1,28 @@
+local function setDimension (widget, name, size)
+    if not widget.parent then
+        widget[name] = size
+        return
+    end
+    local parentDimension = widget.parent:calculateDimension(name)
+    local claimed = 0
+    for i, sibling in ipairs(widget.parent) do
+        if sibling ~= widget and sibling[name] then
+            claimed = claimed + sibling[name]
+        end
+    end
+    if claimed + size > parentDimension then
+        size = parentDimension - claimed
+    end
+
+    local min = (name == 'width') and (widget.minwidth or 0)
+        or (widget.minheight or 0)
+
+    widget[name] = math.max(size, min)
+
+    return widget[name]
+end
+
+
 return function (self)
 
     self:onEnter(function (event)
@@ -23,11 +48,11 @@ return function (self)
         local nextSize = nextSibling and nextSibling[dimension]
 
         if prevSize then
-            prevSibling:setDimension(dimension,
+            setDimension(prevSibling, dimension,
                 event[axis] - prevSibling:calculatePosition(axis))
         end
         if nextSize then
-            nextSibling:setDimension(dimension,
+            setDimension(nextSibling, dimension,
                 nextSibling:calculatePosition(axis) +
                 nextSibling:calculateDimension(dimension) - event[axis])
         end

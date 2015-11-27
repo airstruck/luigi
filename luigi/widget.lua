@@ -472,69 +472,6 @@ function Widget:getHeight ()
     return self:calculateDimension('height')
 end
 
-function Widget:setDimension (name, size)
-    if not self.parent then
-        self[name] = size
-        return
-    end
-    local parentDimension = self.parent:calculateDimension(name)
-    local claimed = 0
-    for i, widget in ipairs(self.parent) do
-        if widget ~= self and widget[name] then
-            claimed = claimed + widget[name]
-        end
-    end
-    if claimed + size > parentDimension then
-        size = parentDimension - claimed
-    end
-
-    local min = (name == 'width') and (self.minwidth or 0)
-        or (self.minheight or 0)
-
-    self[name] = math.max(size, min)
-
-    return self[name]
-end
-
---[[--
-Set the widget's width.
-
-Limited to space not occupied by siblings.
-
-@tparam number width
-The desired width. Actual width may differ.
-
-@treturn number
-The actual width of the widget.
---]]--
-function Widget:setWidth (width)
-    return self:setDimension('width', width)
-end
-
---[[--
-Set the widget's height.
-
-Limited to space not occupied by siblings.
-
-@tparam number height
-The desired height. Actual height may differ.
-
-@treturn number
-The actual height of the widget.
---]]--
-function Widget:setHeight (height)
-    return self:setDimension('height', height)
-end
-
-function Widget:getOrigin ()
-    return self:getX(), self:getY()
-end
-
-function Widget:getExtent ()
-    local x, y = self:getX(), self:getY()
-    return x + self:getWidth(), y + self:getHeight()
-end
-
 --[[--
 Get two points describing a rectangle within the widget.
 
@@ -557,8 +494,8 @@ The lower right corner's X position.
 The lower right corner's Y position.
 --]]--
 function Widget:getRectangle (useMargin, usePadding)
-    local x1, y1 = self:getOrigin()
-    local x2, y2 = self:getExtent()
+    local x1, y1 = self:getX(), self:getY()
+    local x2, y2 = self:getWidth() + x1, self:getHeight() + y1
     local function shrink(amount)
         x1 = x1 + amount
         y1 = y1 + amount
