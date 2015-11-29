@@ -1,3 +1,9 @@
+--[[--
+A menu bar.
+
+@widget menu
+--]]--
+
 return function (self)
 
     for index, child in ipairs(self) do

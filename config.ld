@@ -1,7 +1,8 @@
-project = 'Luigi'
+project = 'LUIGI'
 description = 'Lovely User Interfaces for Game Inventors'
-full_description = 'A UI library for LÖVE 0.10.0 and 0.9.2'
+full_description = 'A UI library'
 file = { 'luigi' }
 format = 'markdown'
--- sort = true
 
+new_type('widget', 'Widget Types', true)
+new_type('attrib', 'Widget Attributes', false)

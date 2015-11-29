@@ -24,7 +24,7 @@
 
 <div id="navigation">
 <br/>
-<h1>Luigi</h1>
+<h1>LUIGI</h1>
 
 <ul>
   <li><a href="../index.html">Index</a></li>
@@ -33,8 +33,8 @@
 <h2>Contents</h2>
 <ul>
 <li><a href="#Functions">Functions</a></li>
-<li><a href="#Tables">Tables</a></li>
 <li><a href="#Methods">Methods</a></li>
+<li><a href="#Constructor">Constructor</a></li>
 </ul>
 
 
@@ -43,6 +43,21 @@
   <li><a href="../classes/Event.html">Event</a></li>
   <li><a href="../classes/Layout.html">Layout</a></li>
   <li><strong>Widget</strong></li>
+</ul>
+<h2>Widget Types</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../widget types/button.html">button</a></li>
+  <li><a href="../widget types/menu.html">menu</a></li>
+  <li><a href="../widget types/menu.item.html">menu.item</a></li>
+  <li><a href="../widget types/progress.html">progress</a></li>
+  <li><a href="../widget types/sash.html">sash</a></li>
+  <li><a href="../widget types/slider.html">slider</a></li>
+  <li><a href="../widget types/stepper.html">stepper</a></li>
+  <li><a href="../widget types/text.html">text</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../modules/attribute.html">attribute</a></li>
 </ul>
 
 </div>
@@ -61,17 +76,6 @@
 	<tr>
 	<td class="name" nowrap><a href="#Widget.register">Widget.register (name, decorator)</a></td>
 	<td class="summary">Register a custom widget type.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#Luigi.Widget">Luigi.Widget (layout[, data])</a></td>
-	<td class="summary">Widget pseudo-constructor.</td>
-	</tr>
-</table>
-<h2><a href="#Tables">Tables</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#Widget.typeDecorators">Widget.typeDecorators</a></td>
-	<td class="summary">Widget type registry.</td>
 	</tr>
 </table>
 <h2><a href="#Methods">Methods</a></h2>
@@ -133,6 +137,13 @@
 	<td class="summary">Reshape the widget.</td>
 	</tr>
 </table>
+<h2><a href="#Constructor">Constructor</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Luigi.Widget">Luigi.Widget (layout[, data])</a></td>
+	<td class="summary">Widget pseudo-constructor.</td>
+	</tr>
+</table>
 
 <br/>
 <br/>
@@ -158,84 +169,6 @@
         <li><span class="parameter">decorator</span>
             <span class="types"><span class="type">function(Widget)</span></span>
         An initialization function for this type of widget.
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "Luigi.Widget"></a>
-    <strong>Luigi.Widget (layout[, data])</strong>
-    </dt>
-    <dd>
-    Widget pseudo-constructor.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">layout</span>
-            <span class="types"><a class="type" href="../classes/Layout.html#">Layout</a></span>
-        The layout this widget belongs to.
-        </li>
-        <li><span class="parameter">data</span>
-            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
-        The data definition table for this widget.
-This table is identical to the constructed widget.
-         (<em>optional</em>)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a></span>
-        A Widget instance.
-    </ol>
-
-
-
-
-</dd>
-</dl>
-    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "Widget.typeDecorators"></a>
-    <strong>Widget.typeDecorators</strong>
-    </dt>
-    <dd>
-    Widget type registry.
-
-
-    <h3>Fields:</h3>
-    <ul>
-        <li><span class="parameter">button</span>
-        A simple button
-        </li>
-        <li><span class="parameter">menu</span>
-        A menu bar
-        </li>
-        <li><span class="parameter">[</span>
-        A menu item
-        </li>
-        <li><span class="parameter">progress</span>
-        A progress bar
-        </li>
-        <li><span class="parameter">sash</span>
-        Resizes nearby widgets
-        </li>
-        <li><span class="parameter">slider</span>
-        Slides to adjust a normalized value
-        </li>
-        <li><span class="parameter">stepper</span>
-        Steps through a series of choices
-        </li>
-        <li><span class="parameter">text</span>
-        A text entry widget
         </li>
     </ul>
 
@@ -590,13 +523,50 @@ on the parent widget.
 
 </dd>
 </dl>
+    <h2 class="section-header "><a name="Constructor"></a>Constructor</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Luigi.Widget"></a>
+    <strong>Luigi.Widget (layout[, data])</strong>
+    </dt>
+    <dd>
+    Widget pseudo-constructor.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">layout</span>
+            <span class="types"><a class="type" href="../classes/Layout.html#">Layout</a></span>
+        The layout this widget belongs to.
+        </li>
+        <li><span class="parameter">data</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        The data definition table for this widget.
+This table is identical to the constructed widget.
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Widget.html#">Widget</a></span>
+        A Widget instance.
+    </ol>
+
+
+
+
+</dd>
+</dl>
 
 
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
-<i style="float:right;">Last updated 2015-11-27 06:40:48 </i>
+<i style="float:right;">Last updated 2015-11-29 14:57:48 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

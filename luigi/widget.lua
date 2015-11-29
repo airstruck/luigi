@@ -8,6 +8,7 @@ local ROOT = (...):gsub('[^.]*$', '')
 
 local Backend = require(ROOT .. 'backend')
 local Event = require(ROOT .. 'event')
+local Attribute = require(ROOT .. 'attribute')
 local Font = Backend.Font
 
 local Widget = {}
@@ -16,18 +17,15 @@ Event.injectBinders(Widget)
 
 Widget.isWidget = true
 
---[[--
-Widget type registry.
---]]--
 Widget.typeDecorators = {
-    button = require(ROOT .. 'widget.button'), -- A simple button
-    menu = require(ROOT .. 'widget.menu'), -- A menu bar
-    ['menu.item'] = require(ROOT .. 'widget.menu.item'), -- A menu item
-    progress = require(ROOT .. 'widget.progress'), -- A progress bar
-    sash = require(ROOT .. 'widget.sash'), -- Resizes nearby widgets
-    slider = require(ROOT .. 'widget.slider'), -- Slides to adjust a normalized value
-    stepper = require(ROOT .. 'widget.stepper'), -- Steps through a series of choices
-    text = require(ROOT .. 'widget.text'), -- A text entry widget
+    button = require(ROOT .. 'widget.button'),
+    menu = require(ROOT .. 'widget.menu'),
+    ['menu.item'] = require(ROOT .. 'widget.menu.item'),
+    progress = require(ROOT .. 'widget.progress'),
+    sash = require(ROOT .. 'widget.sash'),
+    slider = require(ROOT .. 'widget.slider'),
+    stepper = require(ROOT .. 'widget.stepper'),
+    text = require(ROOT .. 'widget.text'),
 }
 
 --[[--
@@ -45,9 +43,9 @@ function Widget.register (name, decorator)
     Widget.typeDecorators[name] = decorator
 end
 
--- look for properties in shadow props, Widget, style, and theme
+-- look for properties in attributes, Widget, style, and theme
 local function metaIndex (self, property)
-    local value = self.shadowProperties[property]
+    local value = self.attributes[property]
     if value ~= nil then return value end
 
     local value = Widget[property]
@@ -62,91 +60,27 @@ local function metaIndex (self, property)
     return theme and theme:getProperty(self, property)
 end
 
--- setting shadow properties causes special behavior
+-- setting attributes triggers special behavior
 local function metaNewIndex (self, property, value)
-    if property == 'font' or property == 'fontSize' then
-        self.shadowProperties[property] = value
-        self.fontData = nil
-        self.textData = nil
-    end
-
-    if property == 'text' or property == 'textColor'
-    or property == 'align' or property == 'wrap' then
-        self.shadowProperties[property] = value
-        self.textData = nil
-        return
-    end
-
-    if property == 'width' then
-        value = value and math.max(value, self.minwidth or 0)
-        self.shadowProperties[property] = value
-        if self.wrap then
-            self.textData = nil
-        end
-        Widget.reshape(self.parent or self)
-        return
-    end
-
-    if property == 'height' then
-        value = value and math.max(value, self.minheight or 0)
-        self.shadowProperties[property] = value
-        Widget.reshape(self.parent or self)
-        return
-    end
-
-    if property == 'value' then
-        local oldValue = self.value
-        self.shadowProperties[property] = value
-        self:bubbleEvent('Change', {
-            value = value,
-            oldValue = oldValue,
-        })
-        return
-    end
-
-    if property == 'key' then
-        self.shadowProperties[property] = value
-
-        if not value then return end
-
-        local mainKey = (value):match '[^%-]+$'
-        local alt = (value):match 'alt%-' and 1 or 0
-        local ctrl = (value):match 'ctrl%-' and 2 or 0
-        local shift = (value):match 'shift%-' and 4 or 0
-        local modifierFlags = alt + ctrl + shift
-
-        local layout = self.layout.master or self.layout
-
-        layout.accelerators[modifierFlags][mainKey] = self
-        return
-    end
-
-    if property == 'id' then
-        self.shadowProperties[property] = value
-
-        if not value then return end
-
-        local layout = self.layout.master or self.layout
-
-        layout[value] = self
-        return
+    if Attribute[property] then
+        return Attribute[property](self, value)
     end
 
     rawset(self, property, value)
 end
 
-local shadowKeys = {
-    'id', 'key', 'value',
-    'width', 'height',
-    'font', 'fontSize',
-    'text', 'textColor',
-    'align', 'wrap',
-}
+local attributeNames = {}
+
+for name in pairs(Attribute) do
+    attributeNames[#attributeNames + 1] = name
+end
 
 --[[--
 Widget pseudo-constructor.
 
 @function Luigi.Widget
+
+@within Constructor
 
 @tparam Layout layout
 The layout this widget belongs to.
@@ -163,18 +97,18 @@ local function metaCall (Widget, layout, self)
     self.layout = layout
     self.position = { x = nil, y = nil }
     self.dimensions = { width = nil, height = nil }
-    self.shadowProperties = {}
+    self.attributes = {}
 
     setmetatable(self, { __index = metaIndex, __newindex = metaNewIndex })
 
-    for _, property in ipairs(shadowKeys) do
+    for _, property in ipairs(attributeNames) do
         local value = rawget(self, property)
         rawset(self, property, nil)
         self[property] = value
     end
 
     self.type = self.type or 'generic'
-    self.fontData = Font(self.font, self.fontSize, self.textColor)
+    self.fontData = Font(self.font, self.size, self.color)
 
     -- layout:addWidget(self)
 

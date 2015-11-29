@@ -1,3 +1,12 @@
+--[[--
+A slider.
+
+Dragging this widget changes its `value` property to a
+number between 0 and 1, inclusive.
+
+@widget slider
+--]]--
+
 return function (self)
 
     local function clamp (value)

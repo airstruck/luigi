@@ -1,3 +1,17 @@
+--[[--
+A sash.
+
+Dragging this widget resizes the widgets adjacent to it.
+A sash must be adjacent to a widget with a specified size
+in the same direction as the parent element's `flow`.
+
+For example, if the parent of the sash is `flow = 'x'`
+then either or both of the siblings next to the sash
+must have a specified `width` property.
+
+@widget sash
+--]]--
+
 local function setDimension (widget, name, size)
     if not widget.parent then
         widget[name] = size

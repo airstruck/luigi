@@ -1,0 +1,604 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>LUIGI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Widget_Attributes">Widget Attributes</a></li>
+<li><a href="#Size_Attributes">Size Attributes </a></li>
+<li><a href="#Font_Attributes">Font Attributes </a></li>
+<li><a href="#Text_Attributes">Text Attributes </a></li>
+<li><a href="#Visual_Attributes">Visual Attributes </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><strong>attribute</strong></li>
+</ul>
+<h2>Widget Types</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../widget types/button.html">button</a></li>
+  <li><a href="../widget types/menu.html">menu</a></li>
+  <li><a href="../widget types/menu.item.html">menu.item</a></li>
+  <li><a href="../widget types/progress.html">progress</a></li>
+  <li><a href="../widget types/sash.html">sash</a></li>
+  <li><a href="../widget types/slider.html">slider</a></li>
+  <li><a href="../widget types/stepper.html">stepper</a></li>
+  <li><a href="../widget types/text.html">text</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="$(kind=='Topics' and '' or 'nowrap'">
+  <li><a href="../classes/Event.html">Event</a></li>
+  <li><a href="../classes/Layout.html">Layout</a></li>
+  <li><a href="../classes/Widget.html">Widget</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>attribute</code></h1>
+<p>Widget attributes.</p>
+<p>This module defines "attributes" (special fields) that are
+recognized by all widgets. Their interpretation may vary
+depending on the <a href="http://www.lua.org/manual/5.1/manual.html#pdf-type">type</a> of widget. Some widget types may also
+recognize additional attributes.</p>
+
+<p>Setting attributes can have side effects. For example, setting
+<a href="../modules/attribute.html#height">height</a> or <a href="../modules/attribute.html#width">width</a> causes the parent widget and its descendants
+to recalculate their size and position.</p>
+
+
+<h2><a href="#Widget_Attributes">Widget Attributes</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#id">id</a></td>
+	<td class="summary">widget identifier.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#key">key</a></td>
+	<td class="summary">Keyboard accelerator.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#value">value</a></td>
+	<td class="summary">widget value.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#style">style</a></td>
+	<td class="summary">widget style.</td>
+	</tr>
+</table>
+<h2><a href="#Size_Attributes">Size Attributes </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#flow">flow</a></td>
+	<td class="summary">Flow axis.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#width">width</a></td>
+	<td class="summary">Width.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#height">height</a></td>
+	<td class="summary">Height.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#minwidth">minwidth</a></td>
+	<td class="summary">Minimum width.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#minheight">minheight</a></td>
+	<td class="summary">Minimum height.</td>
+	</tr>
+</table>
+<h2><a href="#Font_Attributes">Font Attributes </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#font">font</a></td>
+	<td class="summary">Font path.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#size">size</a></td>
+	<td class="summary">Font size.</td>
+	</tr>
+</table>
+<h2><a href="#Text_Attributes">Text Attributes </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#text">text</a></td>
+	<td class="summary">Text to display.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#color">color</a></td>
+	<td class="summary">Text color.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#align">align</a></td>
+	<td class="summary">Text and icon alignment.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#wrap">wrap</a></td>
+	<td class="summary">Wrap text onto multiple lines.</td>
+	</tr>
+</table>
+<h2><a href="#Visual_Attributes">Visual Attributes </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#background">background</a></td>
+	<td class="summary">Background color.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#outline">outline</a></td>
+	<td class="summary">Outline color.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#slices">slices</a></td>
+	<td class="summary">Slice image.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#margin">margin</a></td>
+	<td class="summary">Margin size.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#padding">padding</a></td>
+	<td class="summary">Padding size.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#icon">icon</a></td>
+	<td class="summary">Icon path.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Widget_Attributes"></a>Widget Attributes</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "id"></a>
+    <strong>id</strong>
+    </dt>
+    <dd>
+    widget identifier. </p>
+
+<p>Should contain a unique string identifying the widget, if present.</p>
+
+<p>A reference to the widget will be stored in the associated layout
+in a property having the same name as the widget's id.</p>
+
+<p>Setting this attribute re-registers the widget with its layout.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "key"></a>
+    <strong>key</strong>
+    </dt>
+    <dd>
+    Keyboard accelerator. </p>
+
+<p>Should contain a string representing a key and optional modifiers,
+separated by dashes; for example <code>&apos;ctrl-c&apos;</code> or <code>&apos;alt-shift-escape&apos;</code>.</p>
+
+<p>Pressing this key combination bubbles a <code>Press</code> event on the widget,
+as if it had been pressed with a mouse or touch interface.</p>
+
+<p>Setting this attribute re-registers the widget with its layout.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "value"></a>
+    <strong>value</strong>
+    </dt>
+    <dd>
+    widget value. </p>
+
+<p>Some widget types expect the value to be of a specific type and
+within a specific range. For example, <a href="../widget types/slider.html#">slider</a> and <a href="../widget types/progress.html#">progress</a>
+widgets expect a normalized number, and <a href="../widget types/text.html#">text</a> widgets expect
+a string.</p>
+
+<p>Setting this attribute bubbles the <code>Change</code> event.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "style"></a>
+    <strong>style</strong>
+    </dt>
+    <dd>
+    widget style. </p>
+
+<p>Should contain a string or array of strings identifying
+style rules to be applied to the widget. When resolving
+any attribute with a <code>nil</code> value, these style rules are
+searched for a corresponding attribute.</p>
+
+<p>Setting this attribute resets the <code>Font</code> and <code>Text</code> object
+associated with this widget.</p>
+
+<p>Setting this attribute recalculates the size and position
+of the parent widget and its descendants.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Size_Attributes"></a>Size Attributes </h2>
+
+          <div class="section-description">
+          Setting these attributes recalculates the size and position
+of the parent widget and its descendants.
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "flow"></a>
+    <strong>flow</strong>
+    </dt>
+    <dd>
+    Flow axis. </p>
+
+<p>Should equal either <code>&apos;x&apos;</code> or <code>&apos;y&apos;</code>. Defaults to <code>&apos;y&apos;</code>.</p>
+
+<p>This attribute determines the placement and default dimensions
+of any child widgets.</p>
+
+<p>When flow is <code>&apos;x&apos;</code>, the <a href="../modules/attribute.html#height">height</a> of child widgets defaults
+to this widget's height, and each child is placed to the
+right of the previous child. When flow is <code>&apos;y&apos;</code>, the <a href="../modules/attribute.html#width">width</a>
+of child widgets defaults to this widget's width, and each
+child is placed below the previous child.</p>
+
+<p>Setting this attribute resets the <code>Text</code> object associated
+with this widget.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "width"></a>
+    <strong>width</strong>
+    </dt>
+    <dd>
+    Width. </p>
+
+<p>This attribute may not always hold a numeric value.
+To get the calculated width, use <a href="../classes/Widget.html#Widget:getWidth">Widget:getWidth</a>.</p>
+
+<p>Setting this attribute when the <a href="../modules/attribute.html#wrap">wrap</a> attribute is
+also present resets the <code>Text</code> object associated
+with this widget.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "height"></a>
+    <strong>height</strong>
+    </dt>
+    <dd>
+    Height. </p>
+
+<p>This attribute may not always hold a numeric value.
+To get the calculated height, use <a href="../classes/Widget.html#Widget:getHeight">Widget:getHeight</a>.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "minwidth"></a>
+    <strong>minwidth</strong>
+    </dt>
+    <dd>
+    Minimum width.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "minheight"></a>
+    <strong>minheight</strong>
+    </dt>
+    <dd>
+    Minimum height.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Font_Attributes"></a>Font Attributes </h2>
+
+          <div class="section-description">
+          Setting these attributes resets the Font and Text
+objects associated with the widget.
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "font"></a>
+    <strong>font</strong>
+    </dt>
+    <dd>
+    Font path. </p>
+
+<p>Should contain a path to a TrueType font to use for displaying
+this widget's <a href="../widget types/text.html#">text</a>.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "size"></a>
+    <strong>size</strong>
+    </dt>
+    <dd>
+    Font size. </p>
+
+<p>Should contain a number representing the size of the font, in points.
+Defaults to 12.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Text_Attributes"></a>Text Attributes </h2>
+
+          <div class="section-description">
+          Setting these attributes resets the Text object
+associated with the widget.
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "text"></a>
+    <strong>text</strong>
+    </dt>
+    <dd>
+    Text to display.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "color"></a>
+    <strong>color</strong>
+    </dt>
+    <dd>
+    Text color. </p>
+
+<p>Should contain an array with 3 or 4 values (RGB or RGBA) from 0 to 255.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "align"></a>
+    <strong>align</strong>
+    </dt>
+    <dd>
+    Text and icon alignment.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "wrap"></a>
+    <strong>wrap</strong>
+    </dt>
+    <dd>
+    Wrap text onto multiple lines. </p>
+
+<p>Should contain <code>true</code> for multiline text, or <code>false</code> or <code>nil</code>
+for a single line. Even text containing line breaks will display
+as a single line when this attribute is not set to <code>true</code>.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Visual_Attributes"></a>Visual Attributes </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "background"></a>
+    <strong>background</strong>
+    </dt>
+    <dd>
+    Background color. </p>
+
+<p>Should contain an array with 3 or 4 values (RGB or RGBA) from 0 to 255.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "outline"></a>
+    <strong>outline</strong>
+    </dt>
+    <dd>
+    Outline color. </p>
+
+<p>Should contain an array with 3 or 4 values (RGB or RGBA) from 0 to 255.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "slices"></a>
+    <strong>slices</strong>
+    </dt>
+    <dd>
+    Slice image. </p>
+
+<p>Should contain a path to an image with "slices" to display for this widget.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "margin"></a>
+    <strong>margin</strong>
+    </dt>
+    <dd>
+    Margin size. </p>
+
+<p>The margin area occupies space outside of the <a href="../modules/attribute.html#outline">outline</a> and <a href="../modules/attribute.html#slices">slices</a>.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "padding"></a>
+    <strong>padding</strong>
+    </dt>
+    <dd>
+    Padding size. </p>
+
+<p>The padding area occupies space inside the <a href="../modules/attribute.html#outline">outline</a> and <a href="../modules/attribute.html#slices">slices</a>,
+and outside the space where the <a href="../modules/attribute.html#icon">icon</a> and <a href="../widget types/text.html#">text</a> and any
+child widgets appear.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "icon"></a>
+    <strong>icon</strong>
+    </dt>
+    <dd>
+    Icon path. </p>
+
+<p>Should contain a path to an image file.
+
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2015-11-29 14:57:48 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

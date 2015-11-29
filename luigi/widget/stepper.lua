@@ -1,3 +1,15 @@
+--[[--
+A stepper.
+
+This widget is composed of two buttons and a content area.
+Upon creation, this widget's children are moved into an
+`items` property. The items are displayed one at a time in
+the content area. Pressing the buttons cycles through the
+item displayed in the content area.
+
+@widget stepper
+--]]--
+
 return function (self)
     self.items = {}
     self.index = 1

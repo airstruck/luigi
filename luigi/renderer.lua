@@ -149,7 +149,7 @@ function Renderer:positionText (widget, x1, y1, x2, y2)
     end
 
     if not widget.fontData then
-        widget.fontData = Font(widget.font, widget.fontSize)
+        widget.fontData = Font(widget.font, widget.size)
     end
 
     local font = widget.fontData
@@ -168,7 +168,7 @@ function Renderer:positionText (widget, x1, y1, x2, y2)
     if not widget.textData then
         local limit = widget.wrap and x2 - x1 or nil
         widget.textData = Text(
-            font, widget.text, widget.textColor, horizontal, limit)
+            font, widget.text, widget.color, horizontal, limit)
     end
 
     local textHeight = widget.textData:getHeight()

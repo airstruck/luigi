@@ -41,7 +41,7 @@ return function (config)
         ['menu.item'] = {
             padding = 4,
             align = 'left middle',
-            textColor = { 0, 0, 0 }
+            color = { 0, 0, 0 }
         },
         ['menu.item_active'] = {
             background = highlight,

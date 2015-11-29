@@ -1,3 +1,12 @@
+--[[--
+A menu item.
+
+When a `menu` is created, any sub-items not having a specified type
+are automatically given a type of `'menu.item'`. These widgets should
+not be explicitly created.
+
+@widget menu.item
+--]]--
 local ROOT = (...):gsub('[^.]*.[^.]*.[^.]*$', '')
 
 local Layout, Event
@@ -125,7 +134,7 @@ local function initialize (self)
     local textWidth = self.fontData:getAdvance(text) + pad * 2
 
     if isSubmenu then
-        local tc = self.textColor or { 0, 0, 0, 255 }
+        local tc = self.color or { 0, 0, 0, 255 }
         local keyColor = { tc[1], tc[2], tc[3], 0x90 }
         local edgeType
         if #self.items > 0 then
@@ -139,7 +148,7 @@ local function initialize (self)
         self:addChild { icon = icon, width = self.height }
         self:addChild { text = text, width = textWidth }
         self:addChild { text = key, align = 'middle right',
-            minwidth = self.height, textColor = keyColor, type = edgeType }
+            minwidth = self.height, color = keyColor, type = edgeType }
 
         self.icon = nil
         self.text = nil

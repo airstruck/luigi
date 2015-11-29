@@ -100,7 +100,7 @@ local mainForm = { id = 'mainWindow', type = 'panel',
         { type = 'button', key='return', width = 80, id = 'aButton', text = 'Styling!',
     font = 'font/liberation/LiberationMono-Regular.ttf' },
     },
-    { type = 'panel', id = 'statusbar', height = 24, padding = 4, textColor = { 255, 0, 0 } },
+    { type = 'panel', id = 'statusbar', height = 24, padding = 4, color = { 255, 0, 0 } },
 }
 
 local layout = Layout(mainForm)

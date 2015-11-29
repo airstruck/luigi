@@ -1,3 +1,8 @@
+--[[--
+A text entry area.
+
+@widget text
+--]]--
 local ROOT = (...):gsub('[^.]*.[^.]*$', '')
 
 local utf8 = require(ROOT .. 'utf8')
@@ -231,7 +236,7 @@ return function (self)
         local x, y, w, h = self:getRectangle(true, true)
         local width, height = endX - startX, h
         local font = self.fontData
-        local textColor = self.textColor or { 0, 0, 0, 255 }
+        local color = self.color or { 0, 0, 0, 255 }
         local textTop = math.floor(y + (h - font:getLineHeight()) / 2)
 
         Backend.push()
@@ -242,12 +247,12 @@ return function (self)
         Backend.setColor(self.highlight)
         Backend.drawRectangle('fill', startX, y, width, height)
         if Backend.getTime() % 2 < 1.75 then
-            Backend.setColor(textColor)
+            Backend.setColor(color)
             Backend.drawRectangle('fill', endX, y, 1, height)
         end
 
         -- draw text
-        Backend.setColor(textColor)
+        Backend.setColor(color)
         Backend.print(self.value, x - self.scrollX, textTop)
         if not self.focused then
             Backend.pop()

@@ -17,6 +17,7 @@ function Style:getProperty (object, property, original)
 
     for _, lookupName in ipairs(self.lookupNames) do
         local lookup = rawget(object, lookupName)
+            or object.attributes and rawget(object.attributes, lookupName)
         if lookup then
             if type(lookup) ~= 'table' then
                 lookup = { lookup }
