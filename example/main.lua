@@ -92,6 +92,13 @@ local mainForm = { id = 'mainWindow', type = 'panel',
             },
             { type = 'panel', text = 'A progress bar', align = 'bottom', height = 24, padding = 4 },
             { type = 'progress', height = 32, margin = 4, id = 'progressBar', },
+            { type = 'panel', text = 'A check box', align = 'bottom', height = 24, padding = 4 },
+            { type = 'check', text = 'Check it out', height = 32, padding = 4, id = 'checkBox', },
+            { type = 'panel', text = 'Some radio widgets', align = 'bottom', height = 24, padding = 4 },
+            { type = 'radio', text = 'One fish', height = 32, padding = 4, },
+            { type = 'radio', text = 'Two fish', height = 32, padding = 4, },
+            { type = 'radio', text = 'Red fish', height = 32, padding = 4, },
+            { type = 'radio', text = 'Blue fish', height = 32, padding = 4, },
         },
     },
     { type = 'sash', height = 4, },
@@ -120,7 +127,7 @@ end)
 
 layout:onMove(function (event)
     local w = event.target
-    layout.statusbar.text = (w.type or '(generic) ') ..
+    layout.statusbar.text = (tostring(w.type)) ..
         (w.id or '(unnamed)') .. ' ' ..
         w:getX() .. ', ' .. w:getY() .. ' | ' ..
         w:getWidth() .. 'x' .. w:getHeight()

@@ -19,9 +19,11 @@ Widget.isWidget = true
 
 Widget.typeDecorators = {
     button = require(ROOT .. 'widget.button'),
+    check = require(ROOT .. 'widget.check'),
     menu = require(ROOT .. 'widget.menu'),
     ['menu.item'] = require(ROOT .. 'widget.menu.item'),
     progress = require(ROOT .. 'widget.progress'),
+    radio = require(ROOT .. 'widget.radio'),
     sash = require(ROOT .. 'widget.sash'),
     slider = require(ROOT .. 'widget.slider'),
     stepper = require(ROOT .. 'widget.stepper'),

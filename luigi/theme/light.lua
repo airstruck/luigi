@@ -101,6 +101,48 @@ return function (config)
         text_focused = {
             slices = RESOURCE .. 'text_focused.png',
         },
+        check = {
+            canFocus = true,
+        },
+        ['check.unchecked'] = {
+            icon = RESOURCE .. 'check_unchecked.png',
+        },
+        ['check.checked'] = {
+            icon = RESOURCE .. 'check_checked.png',
+        },
+        ['check.unchecked_pressed'] = {
+            icon = RESOURCE .. 'check_unchecked_pressed.png',
+        },
+        ['check.checked_pressed'] = {
+            icon = RESOURCE .. 'check_checked_pressed.png',
+        },
+        ['check.unchecked_focused'] = {
+            icon = RESOURCE .. 'check_unchecked_focused.png',
+        },
+        ['check.checked_focused'] = {
+            icon = RESOURCE .. 'check_checked_focused.png',
+        },
+        radio = {
+            canFocus = true,
+        },
+        ['radio.unchecked'] = {
+            icon = RESOURCE .. 'radio_unchecked.png',
+        },
+        ['radio.checked'] = {
+            icon = RESOURCE .. 'radio_checked.png',
+        },
+        ['radio.unchecked_pressed'] = {
+            icon = RESOURCE .. 'radio_unchecked_pressed.png',
+        },
+        ['radio.checked_pressed'] = {
+            icon = RESOURCE .. 'radio_checked_pressed.png',
+        },
+        ['radio.unchecked_focused'] = {
+            icon = RESOURCE .. 'radio_unchecked_focused.png',
+        },
+        ['radio.checked_focused'] = {
+            icon = RESOURCE .. 'radio_checked_focused.png',
+        },
     }
 
 end
