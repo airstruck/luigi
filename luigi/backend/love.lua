@@ -115,7 +115,7 @@ function Backend.show (layout)
         return input:handleReshape(layout, width, height)
     end)
     hook(layout, 'mousepressed', function (x, y, button)
-        if love._version_minor < 10 and button == 'wu' or button == 'wd' then
+        if button == 'wu' or button == 'wd' then
             return input:handleWheelMove(layout, 0, button == 'wu' and 1 or -1)
         end
         return input:handlePressStart(layout, getMouseButtonId(button), x, y)
