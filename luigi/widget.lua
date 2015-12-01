@@ -358,13 +358,17 @@ function Widget:calculatePosition (axis)
         return self.position[axis]
     end
     local parent = self.parent
+    local scroll = 0
     if not parent then
         self.position[axis] = axis == 'x' and (self.left or 0)
             or axis == 'y' and (self.top or 0)
         return self.position[axis]
+    elseif parent then
+        scroll = axis == 'x' and (parent.scrollX or 0)
+            or axis == 'y' and (parent.scrollY or 0)
     end
     local parentPos = parent:calculatePosition(axis)
-    local p = parentPos
+    local p = parentPos - scroll
     p = p + (parent.margin or 0)
     p = p + (parent.padding or 0)
     local parentFlow = parent.flow or 'y'
@@ -420,6 +424,38 @@ The widget's calculated height.
 --]]--
 function Widget:getHeight ()
     return self:calculateDimension('height')
+end
+
+--[[--
+Get the content width.
+
+Gets the combined width of the widget's children.
+
+@treturn number
+The content width.
+--]]--
+function Widget:getContentWidth ()
+    local width = 0
+    for _, child in ipairs(self) do
+        width = width + child:getWidth()
+    end
+    return width
+end
+
+--[[--
+Get the content height.
+
+Gets the combined height of the widget's children.
+
+@treturn number
+The content height.
+--]]--
+function Widget:getContentHeight ()
+    local height = 0
+    for _, child in ipairs(self) do
+        height = height + child:getHeight()
+    end
+    return height
 end
 
 --[[--

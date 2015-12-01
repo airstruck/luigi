@@ -44,6 +44,7 @@ Event.names = {
     'PressMove', -- A pressed cursor moved; targets widget at cursor position.
     'Press', -- A pointer button was pressed and released on the same widget.
     'Change', -- A widget's value changed.
+    'WheelMove', -- The scroll wheel on the mouse moved.
 }
 
 local weakKeyMeta = { __mode = 'k' }

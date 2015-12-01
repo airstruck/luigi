@@ -123,6 +123,20 @@ function Attribute.style (widget, value)
 end
 
 --[[--
+Scroll ability.
+
+Should contain `true` or `false` (or `nil`).
+
+If set to `true`, moving the scroll wheel over the widget will adjust
+its scroll position when the widget's contents overflow its boundary.
+
+@attrib scroll
+--]]--
+function Attribute.scroll (widget, value)
+    widget.attributes.scroll = value
+end
+
+--[[--
 Size Attributes.
 
 Setting these attributes recalculates the size and position

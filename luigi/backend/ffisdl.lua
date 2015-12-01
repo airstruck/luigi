@@ -47,6 +47,7 @@ local callback = {
     keypressed = function () end,
     keyreleased = function () end,
     textinput = function () end,
+    wheelmoved = function () end,
 }
 
 Backend.run = function ()
@@ -79,6 +80,9 @@ Backend.run = function ()
                 callback.keyreleased(key, event.key['repeat'])
             elseif event.type == sdl.TEXTINPUT then
                 callback.textinput(ffi.string(event.text.text))
+            elseif event.type == sdl.MOUSEWHEEL then
+                local wheel = event.wheel
+                callback.wheelmoved(wheel.x, wheel.y)
             end
         end
 
@@ -269,8 +273,10 @@ local stack = {}
 
 Backend.pop = function ()
     local history = stack[#stack]
-    Backend.setColor(history.color or { 0, 0, 0, 255 })
-    Backend.setScissor(history.scissor)
+    local color = history.color or { 0, 0, 0, 255 }
+    sdl.setRenderDrawColor(renderer,
+        color[1], color[2], color[3], color[4] or 255)
+    sdl.renderSetClipRect(renderer, history.scissor) -- Backend.setScissor(history.scissor)
     stack[#stack] = nil
 end
 
@@ -315,6 +321,9 @@ function Backend.show (layout)
     end)
     hook(layout, 'textinput', function (text)
         return input:handleTextInput(layout, text, Backend.getMousePosition())
+    end)
+    hook(layout, 'wheelmoved', function (x, y)
+        return input:handleWheelMove(layout, x, y)
     end)
 end
 

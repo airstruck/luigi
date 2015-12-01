@@ -302,6 +302,29 @@ function Layout:addDefaultHandlers ()
                 acceleratedWidget, event.key)
         end
     end)
+
+    self:onWheelMove(function (event)
+        for widget in event.target:eachAncestor(true) do
+            if widget.scroll then
+                if not widget.scrollY then
+                    widget.scrollY = 0
+                end
+                local scrollY = widget.scrollY - event.y * 10
+                local maxY = widget:getContentHeight() - widget:getHeight()
+                if scrollY > maxY then
+                    scrollY = maxY
+                end
+                if scrollY < 0 then
+                    scrollY = 0
+                end
+                if scrollY ~= widget.scrollY then
+                    widget.scrollY = scrollY
+                    widget:reshape()
+                    return false
+                end
+            end -- if widget.scroll
+        end -- ancestor loop
+    end) -- wheel move
 end
 
 Event.injectBinders(Layout)

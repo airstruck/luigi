@@ -196,7 +196,9 @@ function Renderer:renderIconAndText (widget)
 
     Backend.push()
 
-    Backend.setScissor(x, y, w, h)
+    local parentY = widget.parent and widget.parent:getY() or 0
+
+    Backend.setScissor(x, math.max(y, parentY), w, h)
 
     -- calculate position for icon and text based on alignment and padding
     local iconX, iconY, x1, y1, x2, y2 = self:positionIcon(
@@ -266,11 +268,32 @@ end
 
 function Renderer:render (widget)
     Event.PreDisplay:emit(widget, { target = widget }, function()
+
+        local x, y, w, h = widget:getRectangle()
+
+        -- if the drawable area has no width or height, don't render
+        if w < 1 or h < 1 then
+            return
+        end
+
+        Backend.push()
+
+        if widget.parent then
+            local parentY = widget.parent:getY()
+            Backend.setScissor(x, math.max(y, parentY), w, h)
+        else
+            Backend.setScissor()
+        end
+
         self:renderBackground(widget)
         self:renderOutline(widget)
         self:renderSlices(widget)
         self:renderIconAndText(widget)
+
+        Backend.pop()
+
         return self:renderChildren(widget)
+
     end)
     Event.Display:emit(widget, { target = widget })
 end

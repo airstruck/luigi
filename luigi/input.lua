@@ -213,16 +213,30 @@ end
 function Input:handleReshape (layout, width, height)
     local root = layout.root
 
-    Event.Reshape:emit(layout, {
-        target = layout
-    })
+    Event.Reshape:emit(layout, { target = layout })
 
-    if root.float then
-        return
+    if not root.float then
+        root.width = width
+        root.height = height
+    end
+end
+
+function Input:handleWheelMove (layout, x, y)
+    local root = layout.root
+    local mx, my = Backend.getMousePosition()
+    local widget = layout:getWidgetAt(mx, my)
+
+    if not widget then
+        hit = nil
+        widget = layout.root
     end
 
-    root.width = width
-    root.height = height
+    widget:bubbleEvent('WheelMove', {
+        hit = hit,
+        x = x, y = y
+    })
+
+    return hit
 end
 
 Input.default = Input()

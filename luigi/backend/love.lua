@@ -115,6 +115,9 @@ function Backend.show (layout)
         return input:handleReshape(layout, width, height)
     end)
     hook(layout, 'mousepressed', function (x, y, button)
+        if love._version_minor < 10 and button == 'wu' or button == 'wd' then
+            return input:handleWheelMove(layout, 0, button == 'wu' and 1 or -1)
+        end
         return input:handlePressStart(layout, getMouseButtonId(button), x, y)
     end)
     hook(layout, 'mousereleased', function (x, y, button)
@@ -136,6 +139,11 @@ function Backend.show (layout)
     hook(layout, 'textinput', function (text)
         return input:handleTextInput(layout, text, Backend.getMousePosition())
     end)
+    if love._version_minor > 9 then
+        hook(layout, 'wheelmoved', function (x, y)
+            return input:handleWheelMove(layout, x, y)
+        end)
+    end
 end
 
 return Backend
