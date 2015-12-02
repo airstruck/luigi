@@ -213,12 +213,14 @@ end
 function Input:handleReshape (layout, width, height)
     local root = layout.root
 
-    Event.Reshape:emit(layout, { target = layout })
-
-    if not root.float then
+    if root.float then
+        root:reshape()
+    else
         root.width = width
         root.height = height
     end
+
+    Event.Reshape:emit(layout, { target = layout })
 end
 
 function Input:handleWheelMove (layout, x, y)

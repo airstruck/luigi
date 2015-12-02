@@ -194,11 +194,7 @@ function Renderer:renderIconAndText (widget)
         return
     end
 
-    Backend.push()
-
     local parentY = widget.parent and widget.parent:getY() or 0
-
-    Backend.setScissor(x, math.max(y, parentY), w, h)
 
     -- calculate position for icon and text based on alignment and padding
     local iconX, iconY, x1, y1, x2, y2 = self:positionIcon(
@@ -242,6 +238,9 @@ function Renderer:renderIconAndText (widget)
         end
     end
 
+    Backend.push()
+    Backend.setScissor(x, math.max(y, parentY), w, h)
+
     -- draw the icon
     if icon then
         iconX, iconY = math.floor(iconX), math.floor(iconY)
@@ -252,7 +251,7 @@ function Renderer:renderIconAndText (widget)
     end
 
     -- draw the text
-    if text and w > 1 then
+    if text and textX and textY and w > 1 then
         textX, textY = math.floor(textX), math.floor(textY)
         Backend.draw(widget.textData, textX, textY)
     end

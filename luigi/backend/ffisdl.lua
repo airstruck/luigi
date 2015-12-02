@@ -38,6 +38,8 @@ ffi.gc(renderer, sdl.destroyRenderer)
 
 local Backend = {}
 
+Backend.sdl = sdl
+
 local callback = {
     draw = function () end,
     resize = function () end,
@@ -274,6 +276,9 @@ local stack = {}
 Backend.pop = function ()
     local history = stack[#stack]
     local color = history.color or { 0, 0, 0, 255 }
+    Backend.setColor(history.color or { 0, 0, 0, 255 })
+    Backend.sdl = sdl
+
     sdl.setRenderDrawColor(renderer,
         color[1], color[2], color[3], color[4] or 255)
     sdl.renderSetClipRect(renderer, history.scissor) -- Backend.setScissor(history.scissor)

@@ -123,6 +123,25 @@ local function registerLayoutEvents (self)
         end
     end)
 
+    menuLayout:onPress(function (event)
+        for widget in event.target:eachAncestor(true) do
+            if widget.type == 'menu.item' and #widget.items == 0 then
+                menuLayout:hide()
+                deactivateSiblings(self.rootMenu[1])
+            end
+        end
+    end)
+
+    menuLayout:onPressEnd(function (event)
+        for widget in event.target:eachAncestor(true) do
+            if widget.type == 'menu.item' and #widget.items == 0
+            and event.target ~= event.origin then
+                widget:bubbleEvent('Press', event)
+            end
+        end
+    end)
+
+
     menuLayout:onEnter(activate)
     menuLayout:onPressEnter(activate)
 end

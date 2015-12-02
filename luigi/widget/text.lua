@@ -200,6 +200,20 @@ return function (self)
     end)
 
     self:onKeyPress(function (event)
+
+        -- ignore tabs (keyboard navigation)
+        if event.key == 'tab' then
+            return
+        end
+
+        -- focus next widget on enter (keyboard navigation)
+        if event.key == 'return' then
+            self.layout:focusNextWidget()
+            -- if the next widget is a button, allow the event to propagate
+            -- so that the button is pressed (TODO: is this a good idea?)
+            return self.layout.focusedWidget.type ~= 'button' or nil
+        end
+
         if event.key == 'backspace' then
 
             if not deleteRange(self) then

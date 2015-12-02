@@ -351,6 +351,28 @@ function Widget:calculateDimension (name)
     return size
 end
 
+local function calculateRootPosition (self, axis)
+    local value = (axis == 'x' and self.left) or (axis == 'y' and self.top)
+
+    if value then
+        self.position[axis] = value
+        return value
+    end
+
+    local ww, wh = Backend.getWindowSize()
+
+    if axis == 'x' and self.width then
+        value = (ww - self.width) / 2
+    elseif axis == 'y' and self.height then
+        value = (wh - self.height) / 2
+    else
+        value = 0
+    end
+
+    self.position[axis] = value
+    return value
+end
+
 function Widget:calculatePosition (axis)
     checkReshape(self)
 
@@ -360,10 +382,8 @@ function Widget:calculatePosition (axis)
     local parent = self.parent
     local scroll = 0
     if not parent then
-        self.position[axis] = axis == 'x' and (self.left or 0)
-            or axis == 'y' and (self.top or 0)
-        return self.position[axis]
-    elseif parent then
+        return calculateRootPosition(self, axis)
+    else
         scroll = axis == 'x' and (parent.scrollX or 0)
             or axis == 'y' and (parent.scrollY or 0)
     end

@@ -215,19 +215,20 @@ Number of pixels from window's top edge.
 Widget to search within, defaults to layout root.
 --]]--
 function Layout:getWidgetAt (x, y, root)
-    local widget = root or self.root
-
+    if not root then
+        root = self.root
+    end
     -- Loop through in reverse, because siblings defined later in the tree
     -- will overdraw earlier siblings.
-    local childCount = #widget
-
-    for i = childCount, 1, -1 do
-        local child = widget[i]
-        local inner = self:getWidgetAt(x, y, child)
-        if inner then return inner end
+    for i = #root, 1, -1 do
+        local child = root[i]
+        if child:isAt(x, y) then
+            local inner = self:getWidgetAt(x, y, child)
+            if inner then return inner end
+        end
     end
 
-    if widget:isAt(x, y) then return widget end
+    if root:isAt(x, y) then return root end
 end
 
 -- Internal, called from Widget:new
@@ -325,6 +326,7 @@ function Layout:addDefaultHandlers ()
             end -- if widget.scroll
         end -- ancestor loop
     end) -- wheel move
+
 end
 
 Event.injectBinders(Layout)

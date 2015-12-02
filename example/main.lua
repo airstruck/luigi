@@ -55,9 +55,9 @@ local mainForm = { id = 'mainWindow', type = 'panel',
             },
         },
         { text = 'Help',
-            { text = 'About Luigi', icon = 'icon/16px/Book.png', key = 'f1', },
-            { text = 'About Luigi Demo', icon = 'icon/16px/Book Red.png', key = 'f2' },
-            { text = 'Licenses', key = 'f3'  },
+            { id = 'about', text = 'About Luigi', icon = 'icon/16px/Book.png', key = 'f1', },
+            { id = 'aboutDemo', text = 'About Luigi Demo', icon = 'icon/16px/Book Red.png', key = 'f2' },
+            { id = 'license', text = 'License', key = 'f3'  },
         },
     },
     { type = 'panel', id = 'toolbar', style = 'toolbar', flow = 'x',
@@ -192,6 +192,21 @@ layout.menuQuit:onPress(function (event) Backend.quit() end)
 
 layout.themeLight:onPress(function (event) Backend.quit() end)
 
+-- license dialog
+
+local licenseDialog = Layout(require 'dialog.license')
+
+licenseDialog.closeButton:onPress(function()
+    licenseDialog:hide()
+end)
+
+layout.license:onPress(function()
+    licenseDialog:show()
+end)
+
+
+-- show the main layout
+
 layout:show()
 
-Backend.run()
+Backend.run() -- only needed when using ffisdl backend
