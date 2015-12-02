@@ -1,6 +1,6 @@
-return { type = 'submenu', width = 600, height = 400, float = true,
-    { type = 'panel', text = 'License', height = 40, size = 24, align = 'middle center', },
-    { wrap = true, margin = 4, text = [[
+return { style = 'dialog',
+    { style = 'dialogHead', text = 'License' },
+    { style = 'dialogBody', text = [[
 The MIT License (MIT)
 
 Copyright (c) 2015 airstruck
@@ -23,8 +23,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ]]  },
-    { type = 'panel', flow = 'x', height = 40,
-        {},
-        { type = 'button', text = 'Close', id = 'closeButton', width = 100, margin = 4 }
+    { style = 'dialogFoot',
+        {}, -- spacer
+        { style = 'dialogButton', id = 'closeButton', text = 'Close' }
     }
 }

@@ -58,6 +58,26 @@ function Layout:constructor (data, master)
     Widget(self, data)
 end
 
+local function clearWidget (widget)
+    widget.textData = nil
+    widget.fontData = nil
+    widget.position = {}
+    widget.dimensions = {}
+    widget.type = widget.type
+end
+
+local function reset (self)
+    if not self.root then return end
+    local widget = self.root:getNextNeighbor()
+
+    clearWidget(self.root)
+
+    while widget ~= self.root do
+        clearWidget(widget)
+        widget = widget:getNextNeighbor()
+    end
+end
+
 --[[--
 Set the master layout for this layout.
 
@@ -77,6 +97,7 @@ function Layout:setMaster (layout)
         return layout:addWidget(...)
     end
 
+    reset(self)
     return self
 end
 
@@ -94,6 +115,7 @@ function Layout:setStyle (rules)
     end
     self.style = Style(rules or {}, { 'style' })
 
+    reset(self)
     return self
 end
 
@@ -108,6 +130,8 @@ function Layout:setTheme (rules)
         rules = rules()
     end
     self.theme = Style(rules or {}, { 'type' })
+    reset(self)
+    return self
 end
 
 --[[--

@@ -74,8 +74,12 @@ end
 local attributeNames = {}
 
 for name in pairs(Attribute) do
-    attributeNames[#attributeNames + 1] = name
+    if name ~= 'type' then -- type must be handled last
+        attributeNames[#attributeNames + 1] = name
+    end
 end
+
+attributeNames[#attributeNames + 1] = 'type'
 
 --[[--
 Widget pseudo-constructor.
@@ -107,17 +111,6 @@ local function metaCall (Widget, layout, self)
         local value = rawget(self, property)
         rawset(self, property, nil)
         self[property] = value
-    end
-
-    self.type = self.type or 'generic'
-    self.fontData = Font(self.font, self.size, self.color)
-
-    -- layout:addWidget(self)
-
-    local decorate = Widget.typeDecorators[self.type]
-
-    if decorate then
-        decorate(self)
     end
 
     for k, v in ipairs(self) do

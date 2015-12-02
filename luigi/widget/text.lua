@@ -178,6 +178,10 @@ local function insertText (self, newText)
 end
 
 return function (self)
+    if not self.fontData then
+        self.fontData = Backend.Font(self.font, self.size)
+    end
+
     self.value = self.value or self.text or ''
     self.text = ''
     self.highlight = self.highlight or { 0x80, 0x80, 0x80 }

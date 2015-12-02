@@ -11,7 +11,25 @@ Setting attributes can have side effects. For example, setting
 to recalculate their size and position.
 --]]--
 
+local ROOT = (...):gsub('[^.]*$', '')
+
 local Attribute = {}
+
+function Attribute.type (widget, value)
+    local oldType = widget.attributes.type
+
+    widget.attributes.type = value
+
+    if value and not widget.hasType then
+        widget.hasType = true
+        local Widget = require(ROOT .. 'widget')
+        local decorate = Widget.typeDecorators[value]
+
+        if decorate then
+            decorate(widget)
+        end
+    end
+end
 
 --[[--
 widget identifier.

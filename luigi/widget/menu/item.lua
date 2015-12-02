@@ -9,6 +9,8 @@ not be explicitly created.
 --]]--
 local ROOT = (...):gsub('[^.]*.[^.]*.[^.]*$', '')
 
+local Backend = require(ROOT .. 'backend')
+
 local Layout, Event
 
 local function addLayoutChildren (self)
@@ -141,12 +143,14 @@ local function registerLayoutEvents (self)
         end
     end)
 
-
     menuLayout:onEnter(activate)
     menuLayout:onPressEnter(activate)
 end
 
 local function initialize (self)
+    if not self.fontData then
+        self.fontData = Backend.Font(self.font, self.size)
+    end
     local pad = self.padding or 0
     local isSubmenu = self.parentMenu and self.parentMenu.parentMenu
     local text, key, icon = self.text or '', self.key or '', self.icon

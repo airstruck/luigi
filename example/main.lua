@@ -1,116 +1,8 @@
 local Layout = require 'luigi.layout'
 
-local style = {
-    short = {
-        height = 48,
-    },
-    toolbar = {
-        style = { 'short' },
-    },
-    toolButton = {
-        align = 'center middle',
-        width = 48,
-    },
-    toolButton_focused = {
-        slices = 'defer',
-    },
-    toolButton_not_hovered = {
-        slices = false,
-    },
-    statusbar = {
-        style = 'panel',
-        align = 'left middle',
-    },
-    listThing = {
-        style = { 'short', 'panel' },
-        align = 'left middle',
-        outline = { 200, 200, 200 },
-        height = 120,
-        padding = 8,
-        background = { 255, 255, 255 },
-        icon = 'icon/32px/Box.png',
-        wrap = true,
-    },
-}
+local style = require 'style'
 
-local mainForm = { id = 'mainWindow', type = 'panel',
-    { type = 'menu', id = 'menubar', flow = 'x',
-        { text = 'File',
-            { text = 'Save', id = 'menuSave', key = 'ctrl-s' },
-            { text = 'Quit', id = 'menuQuit', key = 'escape' },
-        },
-        { text = 'Edit',
-            { text = 'Cut', key = 'ctrl-c' },
-            { text = 'Copy', key = 'ctrl-x' },
-            { text = 'Paste', key = 'ctrl-v' },
-            { type = 'slider' },
-        },
-        { text = 'View',
-            { text = 'Theme',
-                { text = 'Light', key = 'ctrl-l', id = 'themeLight', },
-                { text = 'Dark', key = 'ctrl-d', id = 'themeDark' },
-            },
-            { text = 'Style',
-                { text = 'Default' },
-            },
-        },
-        { text = 'Help',
-            { id = 'about', text = 'About Luigi', icon = 'icon/16px/Book.png', key = 'f1', },
-            { id = 'aboutDemo', text = 'About Luigi Demo', icon = 'icon/16px/Book Red.png', key = 'f2' },
-            { id = 'license', text = 'License', key = 'f3'  },
-        },
-    },
-    { type = 'panel', id = 'toolbar', style = 'toolbar', flow = 'x',
-        { type = 'button', id = 'newButton', style = 'toolButton', key = 'z',
-            icon = 'icon/32px/Blueprint.png' },
-        { type = 'button', id = 'loadButton', style = 'toolButton',
-            icon = 'icon/32px/Calendar.png' },
-        { type = 'button', id = 'saveButton', style = 'toolButton',
-            icon = 'icon/32px/Harddrive.png' },
-    },
-    { flow = 'x',
-        { id = 'leftSideBox', width = 200, minwidth = 64, scroll = true,
-            { text = 'Hi, I\'m centered middle. ', style = 'listThing',
-                align = 'middle center' },
-            { text = 'Hi, I\'m right bottom.\nAlso two lines, woopdy woop.Hi, I\'m right bottom.\nAlso two lines, woopdy woop.Hi, I\'m right bottom.\nAlso two lines, woopdy woop.', style = 'listThing',
-                align = 'bottom right', slices = 'luigi/theme/light/button.png' },
-            { text = 'Hi, I\'m centered top. ', style = 'listThing',
-                align = 'top center' },
-            { text = 'A man, a plan, a canal: Panama!', style = 'listThing' },
-        },
-        { type = 'sash', width = 4, },
-        { id = 'mainCanvas' },
-        { type = 'sash', width = 4, },
-        { type = 'panel', id = 'rightSideBox', width = 200, minwidth = 64,
-            { type = 'panel', text = 'A slider', align = 'bottom', height = 24, padding = 4 },
-            { type = 'slider', height = 32, margin = 4, id = 'slidey', value = 0 },
-            { type = 'panel', text = 'A stepper', align = 'bottom', height = 24, padding = 4 },
-            { type = 'stepper', height = 32, margin = 4,
-                { value = 1, text = 'Thing One' },
-                { value = 2, text = 'Thing Two' },
-                { value = 3, text = 'Thing Three' },
-            },
-            { type = 'panel', text = 'A progress bar', align = 'bottom', height = 24, padding = 4 },
-            { type = 'progress', height = 32, margin = 4, id = 'progressBar', },
-            { type = 'panel', text = 'A check box', align = 'bottom', height = 24, padding = 4 },
-            { type = 'check', text = 'Check it out', height = 32, padding = 4, id = 'checkBox', },
-            { type = 'panel', text = 'Some radio widgets', align = 'bottom', height = 24, padding = 4 },
-            { type = 'radio', text = 'One fish', height = 32, padding = 4, },
-            { type = 'radio', text = 'Two fish', height = 32, padding = 4, },
-            { type = 'radio', text = 'Red fish', height = 32, padding = 4, },
-            { type = 'radio', text = 'Blue fish', height = 32, padding = 4, },
-        },
-    },
-    { type = 'sash', height = 4, },
-    { type = 'panel', flow = 'x', height = 48, padding = 2,
-        { type = 'text', id = 'aTextField', text = 'Testing «ταБЬℓσ»: 1<2 & 4+1>3, now 20% off!', font = 'font/liberation/LiberationMono-Regular.ttf' },
-        { type = 'button', key='return', width = 80, id = 'aButton', text = 'Styling!',
-    font = 'font/liberation/LiberationMono-Regular.ttf' },
-    },
-    { type = 'panel', id = 'statusbar', height = 24, padding = 4, color = { 255, 0, 0 } },
-}
-
-local layout = Layout(mainForm)
+local layout = Layout(require 'layout.main')
 
 layout:setStyle(style)
 -- layout:setTheme(require 'luigi.theme.light')
@@ -160,7 +52,7 @@ layout.aButton:onPress(function (event)
     foo:show()
 end)
 
-layout.mainCanvas.font = 'font/liberation/LiberationMono-Regular.ttf'
+layout.mainCanvas.font = 'font/DejaVuSansMono.ttf'
 
 layout.mainCanvas.text = [[
     Lorem ipsum dolor sit amet, consectetur adipisicing elit.
@@ -194,7 +86,9 @@ layout.themeLight:onPress(function (event) Backend.quit() end)
 
 -- license dialog
 
-local licenseDialog = Layout(require 'dialog.license')
+local licenseDialog = Layout(require 'layout.license')
+
+licenseDialog:setStyle(style)
 
 licenseDialog.closeButton:onPress(function()
     licenseDialog:hide()
