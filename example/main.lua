@@ -5,29 +5,9 @@ local style = require 'style'
 local layout = Layout(require 'layout.main')
 
 layout:setStyle(style)
--- layout:setTheme(require 'luigi.theme.light')
-
-layout.leftSideBox:addChild {
-    text = 'Alright man this is a great song\nwith a really long title...',
-    style = 'listThing',
-    align = 'middle right'
-}
 
 layout.slidey:onChange(function (event)
     layout.progressBar.value = event.value
-end)
-
-layout:onMove(function (event)
-    local w = event.target
-    layout.statusbar.text = (tostring(w.type)) .. ' ' ..
-        (w.id or '(unnamed)') .. ' ' ..
-        w:getX() .. ', ' .. w:getY() .. ' | ' ..
-        w:getWidth() .. 'x' .. w:getHeight()
-end)
-
-layout.newButton:onMove(function (event)
-    layout.statusbar.text = 'Create a new thing'
-    return false
 end)
 
 layout.newButton:onPress(function (event)
@@ -60,31 +40,29 @@ layout.mainCanvas.align = 'top'
 
 layout.mainCanvas.wrap = true
 
--- license dialog
+-- help dialogs
 
+local aboutDialog = Layout(require 'layout.about')
 local licenseDialog = Layout(require 'layout.license')
 
+aboutDialog:setStyle(style)
 licenseDialog:setStyle(style)
+
+aboutDialog.closeButton:onPress(function()
+    aboutDialog:hide()
+end)
 
 licenseDialog.closeButton:onPress(function()
     licenseDialog:hide()
 end)
 
 layout.license:onPress(function()
+    aboutDialog:hide()
     licenseDialog:show()
 end)
 
--- about dialog
-
-local aboutDialog = Layout(require 'layout.about')
-
-aboutDialog:setStyle(style)
-
-aboutDialog.closeButton:onPress(function()
-    aboutDialog:hide()
-end)
-
 layout.about:onPress(function()
+    licenseDialog:hide()
     aboutDialog:show()
 end)
 

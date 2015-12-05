@@ -26,6 +26,7 @@ Widget.typeDecorators = {
     radio = require(ROOT .. 'widget.radio'),
     sash = require(ROOT .. 'widget.sash'),
     slider = require(ROOT .. 'widget.slider'),
+    status = require(ROOT .. 'widget.status'),
     stepper = require(ROOT .. 'widget.stepper'),
     text = require(ROOT .. 'widget.text'),
 }
@@ -59,7 +60,8 @@ local function metaIndex (self, property)
 
     -- cascading attributes
     -- TODO: custom accessors in attribute module?
-    if property == 'color' or property == 'font' or property == 'size' then
+    if property == 'color' or property == 'font' or property == 'size'
+    or property == 'status' then
         local value = self.parent and self.parent[property]
         if value ~= nil then return maybeCall(value, self) end
     end

@@ -32,7 +32,7 @@ function Attribute.type (widget, value)
 end
 
 --[[--
-widget identifier.
+Widget identifier.
 
 Should contain a unique string identifying the widget, if present.
 
@@ -100,7 +100,7 @@ function Attribute.key (widget, value)
 end
 
 --[[--
-widget value.
+Widget value.
 
 Some widget types expect the value to be of a specific type and
 within a specific range. For example, `slider` and `progress`
@@ -118,7 +118,7 @@ function Attribute.value (widget, value)
 end
 
 --[[--
-widget style.
+Widget style.
 
 Should contain a string or array of strings identifying
 style rules to be applied to the widget. When resolving
@@ -138,6 +138,21 @@ function Attribute.style (widget, value)
     widget.fontData = nil
     widget.textData = nil
     widget.reshape(widget.parent or widget)
+end
+
+--[[--
+Status message.
+
+Should contain a short, single-line string describing the
+purpose or state of the widget.
+
+This string will appear in any `status` type widgets
+in the same layout, or in the master layout if one exists.
+
+@attrib status
+--]]--
+function Attribute.status (widget, value)
+    widget.attributes.status = value
 end
 
 --[[--

@@ -255,19 +255,7 @@ function Layout:getWidgetAt (x, y, root)
     if root:isAt(x, y) then return root end
 end
 
--- Internal, called from Widget:new
---[[
-function Layout:addWidget (widget)
-    if widget.id then
-        self[widget.id] = widget
-    end
-    if widget.key then
-        self.accelerators[widget.key] = widget
-    end
-end
-]]
-
--- Add handlers for keyboard accelerators and tab focus
+-- Add handlers for keyboard accelerators, tab focus, and mouse wheel scroll
 function Layout:addDefaultHandlers ()
     self.accelerators = {}
 
@@ -331,6 +319,7 @@ function Layout:addDefaultHandlers ()
     end)
 
     self:onWheelMove(function (event)
+        if not event.hit then return end
         for widget in event.target:eachAncestor(true) do
             if widget.scroll then
                 if not widget.scrollY then
@@ -353,6 +342,14 @@ function Layout:addDefaultHandlers ()
         end -- ancestor loop
         return false
     end) -- wheel move
+
+    self:onEnter(function (event)
+        local statusWidget = (self.master or self).statusWidget
+        if not statusWidget then return end
+
+        statusWidget.text = event.target.status
+        return false
+    end)
 
 end
 

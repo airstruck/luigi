@@ -227,7 +227,8 @@ function Input:handleWheelMove (layout, x, y)
     local root = layout.root
     local mx, my = Backend.getMousePosition()
     local widget = layout:getWidgetAt(mx, my)
-
+    local hit = true
+    
     if not widget then
         hit = nil
         widget = layout.root
