@@ -13,14 +13,13 @@ local Text = require((...) .. '.text')
 local IntOut = ffi.typeof 'int[1]'
 
 -- create window and renderer
+sdl.setHint(sdl.HINT_VIDEO_ALLOW_SCREENSAVER, '1')
 
 local window = sdl.createWindow('', 0, 0, 800, 600,
     sdl.WINDOW_SHOWN + sdl.WINDOW_RESIZABLE)
 
 if window == nil then
-    io.stderr:write(ffi.string(sdl.getError()))
-    sdl.quit()
-    os.exit(1)
+    error(ffi.string(sdl.getError()))
 end
 
 ffi.gc(window, sdl.destroyWindow)
@@ -29,9 +28,7 @@ local renderer = sdl.createRenderer(window, -1,
     sdl.RENDERER_ACCELERATED + sdl.RENDERER_PRESENTVSYNC)
 
 if renderer == nil then
-    io.stderr:write(ffi.string(sdl.getError()))
-    sdl.quit()
-    os.exit(1)
+    error(ffi.string(sdl.getError()))
 end
 
 ffi.gc(renderer, sdl.destroyRenderer)
@@ -151,11 +148,13 @@ end
 
 local currentFont = Font()
 
+local lastColor
+
 -- print( text, x, y, r, sx, sy, ox, oy, kx, ky )
 Backend.print = function (text, x, y)
     if not text or text == '' then return end
     local font = currentFont.sdlFont
-    local color = sdl.Color(currentFont.color or { 0, 0, 0, 255 })
+    local color = sdl.Color(lastColor or { 0, 0, 0, 255 })
     local write = Font.SDL2_ttf.TTF_RenderUTF8_Blended
 
     local surface = write(font, text, color)
@@ -235,8 +234,6 @@ Backend.quit = function ()
     sdl.quit()
     os.exit()
 end
-
-local lastColor
 
 Backend.setColor = function (color)
     lastColor = color

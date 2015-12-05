@@ -3,7 +3,7 @@ return {
         height = 48,
     },
     toolbar = {
-        style = { 'short' },
+        style = 'short',
     },
     toolButton = {
         align = 'center middle',
@@ -16,19 +16,18 @@ return {
         slices = false,
     },
     statusbar = {
-        style = 'panel',
         align = 'left middle',
     },
     listThing = {
-        style = { 'short', 'panel' },
+        style = 'short',
         align = 'left middle',
         outline = { 200, 200, 200 },
         height = 120,
         padding = 8,
-        background = { 255, 255, 255 },
         icon = 'icon/32px/Box.png',
         wrap = true,
     },
+    -- dialog styles
     dialog = {
         type = 'submenu',
         width = 600,
@@ -43,7 +42,7 @@ return {
     },
     dialogBody = {
         wrap = true,
-        margin = 4,
+        padding = 4,
         font = 'font/DejaVuSansMono.ttf',
     },
     dialogFoot = {

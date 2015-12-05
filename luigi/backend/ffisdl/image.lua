@@ -17,9 +17,19 @@ function Image:constructor (renderer, path)
     self.sdlSurface = ffi.gc(
         SDL2_image.IMG_Load(path),
         sdl.freeSurface)
+
+    if self.sdlSurface == nil then
+        error(ffi.string(sdl.getError()))
+    end
+
     self.sdlTexture = ffi.gc(
         sdl.createTextureFromSurface(renderer, self.sdlSurface),
         sdl.destroyTexture)
+
+    if self.sdlTexture == nil then
+        error(ffi.string(sdl.getError()))
+    end
+
     self.width = self.sdlSurface.w
     self.height = self.sdlSurface.h
 end

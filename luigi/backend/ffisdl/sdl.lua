@@ -60,8 +60,7 @@ sdl.atomic_t = ffi.typeof 'SDL_atomic_t'
 sdl.version = ffi.typeof 'SDL_version'
 
 if sdl.init(sdl.INIT_VIDEO) ~= 0 then
-    io.stderr:write(ffi.string(sdl.getError()))
-    os.exit(1)
+    error(ffi.string(sdl.getError()))
 end
 
 return sdl

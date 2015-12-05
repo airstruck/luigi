@@ -45,10 +45,24 @@ function Widget.register (name, decorator)
     Widget.typeDecorators[name] = decorator
 end
 
+local function maybeCall (something, ...)
+    if type(something) == 'function' then
+        return something(...)
+    end
+    return something
+end
+
 -- look for properties in attributes, Widget, style, and theme
 local function metaIndex (self, property)
     local value = self.attributes[property]
-    if value ~= nil then return value end
+    if value ~= nil then return maybeCall(value, self) end
+
+    -- cascading attributes
+    -- TODO: custom accessors in attribute module?
+    if property == 'color' or property == 'font' or property == 'size' then
+        local value = self.parent and self.parent[property]
+        if value ~= nil then return maybeCall(value, self) end
+    end
 
     local value = Widget[property]
     if value ~= nil then return value end
@@ -56,10 +70,10 @@ local function metaIndex (self, property)
     local layout = self.layout
     local style = layout:getStyle()
     value = style and style:getProperty(self, property)
-    if value ~= nil and value ~= 'defer' then return value end
+    if value ~= nil and value ~= 'defer' then return maybeCall(value, self) end
 
     local theme = layout:getTheme()
-    return theme and theme:getProperty(self, property)
+    return theme and maybeCall(theme:getProperty(self, property), self)
 end
 
 -- setting attributes triggers special behavior

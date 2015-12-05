@@ -210,9 +210,7 @@ function Font:constructor (path, size)
         local font = SDL2_ttf.TTF_OpenFont(path, size)
 
         if font == nil then
-            io.stderr:write(ffi.string(sdl.getError()))
-            sdl.quit()
-            os.exit(1)
+            error(ffi.string(sdl.getError()))
         end
 
         fontCache[key] = font

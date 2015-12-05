@@ -183,8 +183,13 @@ return function (self)
     end
 
     self.value = self.value or self.text or ''
+    
     self.text = ''
-    self.highlight = self.highlight or { 0x80, 0x80, 0x80 }
+
+    if not self.highlight then
+        self.highlight = { 0x80, 0x80, 0x80 }
+    end
+
     self.scrollX = 0
 
     setCaretFromText(self, self.value)
@@ -262,20 +267,18 @@ return function (self)
         Backend.setFont(font)
 
         -- draw highlight
-        Backend.setColor(self.highlight)
-        Backend.drawRectangle('fill', startX, y, width, height)
-        if Backend.getTime() % 2 < 1.75 then
-            Backend.setColor(color)
-            Backend.drawRectangle('fill', endX, y, 1, height)
+        if self.focused then
+            Backend.setColor(self.highlight)
+            Backend.drawRectangle('fill', startX, y, width, height)
+            if Backend.getTime() % 2 < 1.75 then
+                Backend.setColor(color)
+                Backend.drawRectangle('fill', endX, y, 1, height)
+            end
         end
 
         -- draw text
         Backend.setColor(color)
         Backend.print(self.value, x - self.scrollX, textTop)
-        if not self.focused then
-            Backend.pop()
-            return
-        end
 
         Backend.pop()
     end)

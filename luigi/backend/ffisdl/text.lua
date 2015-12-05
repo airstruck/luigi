@@ -38,14 +38,19 @@ local function renderMulti (self, font, text, color, align, limit)
 
     local r, g, b, a
 
+    --[[
     if sdl.BYTEORDER == sdl.BIG_ENDIAN then
         r, g, b, a = 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF
     else
         r, g, b, a = 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
     end
+    --]]
+
+    -- values from SDL_ttf.c
+    r, g, b, a = 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000
 
     local surface = ffi.gc(
-        sdl.createRGBSurface(0, limit, height, 32, r, g, b, a),
+        sdl.createRGBSurface(sdl.SWSURFACE, limit, height, 32, r, g, b, a),
         sdl.freeSurface)
     self.sdlSurface = surface
 
@@ -55,6 +60,8 @@ local function renderMulti (self, font, text, color, align, limit)
             ttf.TTF_RenderUTF8_Blended(font.sdlFont, text, color),
             sdl.freeSurface)
         if lineSurface ~= nil then
+            sdl.setSurfaceBlendMode(lineSurface, sdl.BLENDMODE_NONE)
+            
             local w, h = lineSurface.w, lineSurface.h
             local top = (index - 1) * lineHeight
 

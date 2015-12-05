@@ -170,8 +170,16 @@ local function initialize (self)
         self.flow = 'x'
         self:addChild { icon = icon, width = self.height }
         self:addChild { text = text, width = textWidth }
-        self:addChild { text = key, align = 'middle right',
-            minwidth = self.height, color = keyColor, type = edgeType }
+        self:addChild {
+            type = edgeType,
+            text = key,
+            align = 'middle right',
+            minwidth = self.height,
+            color = function ()
+                local c = self.color or { 0, 0, 0 }
+                return { c[1], c[2], c[3], (c[4] or 256) / 2 }
+            end
+        }
 
         self.icon = nil
         self.text = nil
