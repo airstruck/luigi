@@ -284,7 +284,7 @@ function Layout:addDefaultHandlers ()
             else
                 self:focusNextWidget()
             end
-            return
+            return false
         end
 
         -- space/enter presses focused widget
@@ -293,7 +293,7 @@ function Layout:addDefaultHandlers ()
         or event.key == 'return' then
             self.input:handlePressStart(self, event.key, event.x, event.y,
                 widget, event.key)
-            return
+            return false
         end
 
         -- accelerators
@@ -303,6 +303,7 @@ function Layout:addDefaultHandlers ()
             acceleratedWidget.hovered = true
             self.input:handlePressStart(self, event.key, event.x, event.y,
                 acceleratedWidget, event.key)
+            return false
         end
     end)
 
@@ -314,7 +315,7 @@ function Layout:addDefaultHandlers ()
         or event.key == 'return' then
             self.input:handlePressEnd(self, event.key, event.x, event.y,
                 widget, event.key)
-            return
+            return false
         end
 
         -- accelerators
@@ -325,6 +326,7 @@ function Layout:addDefaultHandlers ()
             acceleratedWidget.hovered = false
             self.input:handlePressEnd(self, event.key, event.x, event.y,
                 acceleratedWidget, event.key)
+            return false
         end
     end)
 
@@ -349,6 +351,7 @@ function Layout:addDefaultHandlers ()
                 end
             end -- if widget.scroll
         end -- ancestor loop
+        return false
     end) -- wheel move
 
 end
