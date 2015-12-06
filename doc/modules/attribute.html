@@ -32,7 +32,8 @@
 
 <h2>Contents</h2>
 <ul>
-<li><a href="#Widget_Attributes">Widget Attributes</a></li>
+<li><a href="#Attributes">Attributes</a></li>
+<li><a href="#Keyboard_Attributes">Keyboard Attributes </a></li>
 <li><a href="#Size_Attributes">Size Attributes </a></li>
 <li><a href="#Font_Attributes">Font Attributes </a></li>
 <li><a href="#Text_Attributes">Text Attributes </a></li>
@@ -44,18 +45,19 @@
 <ul class="$(kind=='Topics' and '' or 'nowrap'">
   <li><strong>attribute</strong></li>
 </ul>
-<h2>Widget Types</h2>
+<h2>Widgets</h2>
 <ul class="$(kind=='Topics' and '' or 'nowrap'">
-  <li><a href="../widget types/button.html">button</a></li>
-  <li><a href="../widget types/check.html">check</a></li>
-  <li><a href="../widget types/menu.html">menu</a></li>
-  <li><a href="../widget types/menu.item.html">menu.item</a></li>
-  <li><a href="../widget types/progress.html">progress</a></li>
-  <li><a href="../widget types/radio.html">radio</a></li>
-  <li><a href="../widget types/sash.html">sash</a></li>
-  <li><a href="../widget types/slider.html">slider</a></li>
-  <li><a href="../widget types/stepper.html">stepper</a></li>
-  <li><a href="../widget types/text.html">text</a></li>
+  <li><a href="../widgets/button.html">button</a></li>
+  <li><a href="../widgets/check.html">check</a></li>
+  <li><a href="../widgets/menu.html">menu</a></li>
+  <li><a href="../widgets/menu.item.html">menu.item</a></li>
+  <li><a href="../widgets/progress.html">progress</a></li>
+  <li><a href="../widgets/radio.html">radio</a></li>
+  <li><a href="../widgets/sash.html">sash</a></li>
+  <li><a href="../widgets/slider.html">slider</a></li>
+  <li><a href="../widgets/status.html">status</a></li>
+  <li><a href="../widgets/stepper.html">stepper</a></li>
+  <li><a href="../widgets/text.html">text</a></li>
 </ul>
 <h2>Classes</h2>
 <ul class="$(kind=='Topics' and '' or 'nowrap'">
@@ -72,7 +74,7 @@
 <p>Widget attributes.</p>
 <p>This module defines "attributes" (special fields) that are
 recognized by all widgets. Their interpretation may vary
-depending on the <a href="http://www.lua.org/manual/5.1/manual.html#pdf-type">type</a> of widget. Some widget types may also
+depending on the <a href="../modules/attribute.html#type">type</a> of widget. Some widget types may also
 recognize additional attributes.</p>
 
 <p>Setting attributes can have side effects. For example, setting
@@ -80,23 +82,42 @@ recognize additional attributes.</p>
 to recalculate their size and position.</p>
 
 
-<h2><a href="#Widget_Attributes">Widget Attributes</a></h2>
+<h2><a href="#Attributes">Attributes</a></h2>
 <table class="function_list">
 	<tr>
+	<td class="name" nowrap><a href="#type">type</a></td>
+	<td class="summary">Type of widget.</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#id">id</a></td>
-	<td class="summary">widget identifier.</td>
+	<td class="summary">Widget identifier.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#value">value</a></td>
+	<td class="summary">Widget value.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#style">style</a></td>
+	<td class="summary">Widget style.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#status">status</a></td>
+	<td class="summary">Status message.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#scroll">scroll</a></td>
+	<td class="summary">Scroll ability.</td>
+	</tr>
+</table>
+<h2><a href="#Keyboard_Attributes">Keyboard Attributes </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#focusable">focusable</a></td>
+	<td class="summary">Focusable.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#key">key</a></td>
 	<td class="summary">Keyboard accelerator.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#value">value</a></td>
-	<td class="summary">widget value.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#style">style</a></td>
-	<td class="summary">widget style.</td>
 	</tr>
 </table>
 <h2><a href="#Size_Attributes">Size Attributes </a></h2>
@@ -184,15 +205,43 @@ to recalculate their size and position.</p>
 <br/>
 
 
-    <h2 class="section-header "><a name="Widget_Attributes"></a>Widget Attributes</h2>
+    <h2 class="section-header "><a name="Attributes"></a>Attributes</h2>
 
     <dl class="function">
+    <dt>
+    <a name = "type"></a>
+    <strong>type</strong>
+    </dt>
+    <dd>
+    Type of widget. </p>
+
+<p>Should contain a string identifying the widget's type.
+After the layout is built, may be replaced by an array
+of strings identifying multiple types. This is used
+internally by some widgets to provide information about
+the widget's state to the theme (themes describe the
+appearance of widgets according to their type).</p>
+
+<p>If a type is registered with the widget's layout, the registered
+type initializer function will run once when the widget is constructed.
+
+
+
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/Widget.html#Widget.register">Widget.register</a>
+    </ul>
+
+
+</dd>
     <dt>
     <a name = "id"></a>
     <strong>id</strong>
     </dt>
     <dd>
-    widget identifier. </p>
+    Widget identifier. </p>
 
 <p>Should contain a unique string identifying the widget, if present.</p>
 
@@ -200,6 +249,118 @@ to recalculate their size and position.</p>
 in a property having the same name as the widget's id.</p>
 
 <p>Setting this attribute re-registers the widget with its layout.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "value"></a>
+    <strong>value</strong>
+    </dt>
+    <dd>
+    Widget value. </p>
+
+<p>Some widget types expect the value to be of a specific type and
+within a specific range. For example, <a href="../widgets/slider.html#">slider</a> and <a href="../widgets/progress.html#">progress</a>
+widgets expect a normalized number, <a href="../widgets/text.html#">text</a> widgets expect
+a string, and <a href="../widgets/check.html#">check</a> and <a href="../widgets/radio.html#">radio</a> widgets expect a boolean.</p>
+
+<p>Setting this attribute bubbles the <code>Change</code> event.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "style"></a>
+    <strong>style</strong>
+    </dt>
+    <dd>
+    Widget style. </p>
+
+<p>Should contain a string or array of strings identifying
+style rules to be applied to the widget. When resolving
+any attribute with a <code>nil</code> value, these style rules are
+searched for a corresponding attribute.</p>
+
+<p>Setting this attribute resets the <code>Font</code> and <code>Text</code> object
+associated with this widget.</p>
+
+<p>Setting this attribute recalculates the size and position
+of the parent widget and its descendants.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "status"></a>
+    <strong>status</strong>
+    </dt>
+    <dd>
+
+<p>Status message. </p>
+
+<p>Should contain a string with a short message describing the
+purpose or state of the widget.</p>
+
+<p>This message will appear in the last created <a href="../widgets/status.html#">status</a> widget
+in the same layout, or in the master layout if one exists.</p>
+
+<ul>
+    <li>This attribute cascades.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "scroll"></a>
+    <strong>scroll</strong>
+    </dt>
+    <dd>
+    Scroll ability. </p>
+
+<p>Should contain <code>true</code> or <code>false</code> (or <code>nil</code>).</p>
+
+<p>If set to <code>true</code>, moving the scroll wheel over the widget will adjust
+its scroll position when the widget's contents overflow its boundary.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Keyboard_Attributes"></a>Keyboard Attributes </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "focusable"></a>
+    <strong>focusable</strong>
+    </dt>
+    <dd>
+    Focusable. </p>
+
+<p>Should contain <code>true</code> if the widget can be focused by pressing the tab key.
 
 
 
@@ -222,52 +383,6 @@ separated by dashes; for example <code>&apos;ctrl-c&apos;</code> or <code>&apos;
 as if it had been pressed with a mouse or touch interface.</p>
 
 <p>Setting this attribute re-registers the widget with its layout.
-
-
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "value"></a>
-    <strong>value</strong>
-    </dt>
-    <dd>
-    widget value. </p>
-
-<p>Some widget types expect the value to be of a specific type and
-within a specific range. For example, <a href="../widget types/slider.html#">slider</a> and <a href="../widget types/progress.html#">progress</a>
-widgets expect a normalized number, and <a href="../widget types/text.html#">text</a> widgets expect
-a string.</p>
-
-<p>Setting this attribute bubbles the <code>Change</code> event.
-
-
-
-
-
-
-
-</dd>
-    <dt>
-    <a name = "style"></a>
-    <strong>style</strong>
-    </dt>
-    <dd>
-    widget style. </p>
-
-<p>Should contain a string or array of strings identifying
-style rules to be applied to the widget. When resolving
-any attribute with a <code>nil</code> value, these style rules are
-searched for a corresponding attribute.</p>
-
-<p>Setting this attribute resets the <code>Font</code> and <code>Text</code> object
-associated with this widget.</p>
-
-<p>Setting this attribute recalculates the size and position
-of the parent widget and its descendants.
 
 
 
@@ -391,10 +506,17 @@ objects associated with the widget.
     <strong>font</strong>
     </dt>
     <dd>
-    Font path. </p>
+
+<p>Font path. </p>
 
 <p>Should contain a path to a TrueType font to use for displaying
-this widget's <a href="../widget types/text.html#">text</a>.
+this widget's <a href="../widgets/text.html#">text</a>.</p>
+
+<ul>
+    <li>This attribute cascades.</li>
+</ul>
+
+
 
 
 
@@ -408,10 +530,17 @@ this widget's <a href="../widget types/text.html#">text</a>.
     <strong>size</strong>
     </dt>
     <dd>
-    Font size. </p>
+
+<p>Font size. </p>
 
 <p>Should contain a number representing the size of the font, in points.
-Defaults to 12.
+Defaults to 12.</p>
+
+<ul>
+    <li>This attribute cascades.</li>
+</ul>
+
+
 
 
 
@@ -447,9 +576,16 @@ associated with the widget.
     <strong>color</strong>
     </dt>
     <dd>
-    Text color. </p>
 
-<p>Should contain an array with 3 or 4 values (RGB or RGBA) from 0 to 255.
+<p>Text color. </p>
+
+<p>Should contain an array with 3 or 4 values (RGB or RGBA) from 0 to 255.</p>
+
+<ul>
+    <li>This attribute cascades.</li>
+</ul>
+
+
 
 
 
@@ -463,7 +599,13 @@ associated with the widget.
     <strong>align</strong>
     </dt>
     <dd>
-    Text and icon alignment.
+    Text and icon alignment. </p>
+
+<p>Should contain a string defining vertical and horizontal alignment.
+Vertical alignment is defined by either 'top', 'middle', or 'bottom',
+and horizontal alignment is defined by either 'left', 'center', or 'right'.</p>
+
+<p>For example, <code>align = &apos;top left&apos;</code>
 
 
 
@@ -566,7 +708,7 @@ as a single line when this attribute is not set to <code>true</code>.
     Padding size. </p>
 
 <p>The padding area occupies space inside the <a href="../modules/attribute.html#outline">outline</a> and <a href="../modules/attribute.html#slices">slices</a>,
-and outside the space where the <a href="../modules/attribute.html#icon">icon</a> and <a href="../widget types/text.html#">text</a> and any
+and outside the space where the <a href="../modules/attribute.html#icon">icon</a> and <a href="../widgets/text.html#">text</a> and any
 child widgets appear.
 
 
@@ -599,7 +741,7 @@ child widgets appear.
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
-<i style="float:right;">Last updated 2015-11-29 23:24:00 </i>
+<i style="float:right;">Last updated 2015-12-06 11:22:48 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

@@ -55,14 +55,9 @@ end
 
 -- look for properties in attributes, Widget, style, and theme
 local function metaIndex (self, property)
-    local value = self.attributes[property]
-    if value ~= nil then return maybeCall(value, self) end
-
-    -- cascading attributes
-    -- TODO: custom accessors in attribute module?
-    if property == 'color' or property == 'font' or property == 'size'
-    or property == 'status' then
-        local value = self.parent and self.parent[property]
+    local A = Attribute[property]
+    if A then
+        local value = A.get and A.get(self) or self.attributes[property]
         if value ~= nil then return maybeCall(value, self) end
     end
 
@@ -80,11 +75,16 @@ end
 
 -- setting attributes triggers special behavior
 local function metaNewIndex (self, property, value)
-    if Attribute[property] then
-        return Attribute[property](self, value)
+    local A = Attribute[property]
+    if A then
+        if A.set then
+            A.set(self, value)
+        else
+            self.attributes[property] = value
+        end
+    else
+        rawset(self, property, value)
     end
-
-    rawset(self, property, value)
 end
 
 local attributeNames = {}
@@ -206,7 +206,7 @@ function Widget:focus ()
         layout.focusedWidget = nil
     end
 
-    if self.canFocus then
+    if self.focusable then
         self.focused = true
         layout.focusedWidget = self
         return true

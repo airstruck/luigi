@@ -15,7 +15,26 @@ local ROOT = (...):gsub('[^.]*$', '')
 
 local Attribute = {}
 
-function Attribute.type (widget, value)
+--[[--
+Type of widget.
+
+Should contain a string identifying the widget's type.
+After the layout is built, may be replaced by an array
+of strings identifying multiple types. This is used
+internally by some widgets to provide information about
+the widget's state to the theme (themes describe the
+appearance of widgets according to their type).
+
+If a type is registered with the widget's layout, the registered
+type initializer function will run once when the widget is constructed.
+
+@see Widget.register
+
+@attrib type
+--]]--
+Attribute.type = {}
+
+function Attribute.type.set (widget, value)
     local oldType = widget.attributes.type
 
     widget.attributes.type = value
@@ -43,7 +62,9 @@ Setting this attribute re-registers the widget with its layout.
 
 @attrib id
 --]]--
-function Attribute.id (widget, value)
+Attribute.id = {}
+
+function Attribute.id.set (widget, value)
     local layout = widget.layout.master or widget.layout
     local oldValue = widget.attributes.id
 
@@ -70,48 +91,20 @@ local function parseKeyCombo (value)
 end
 
 --[[--
-Keyboard accelerator.
-
-Should contain a string representing a key and optional modifiers,
-separated by dashes; for example `'ctrl-c'` or `'alt-shift-escape'`.
-
-Pressing this key combination bubbles a `Press` event on the widget,
-as if it had been pressed with a mouse or touch interface.
-
-Setting this attribute re-registers the widget with its layout.
-
-@attrib key
---]]--
-function Attribute.key (widget, value)
-    local layout = widget.layout.master or widget.layout
-    local oldValue = widget.attributes.key
-
-    if oldValue then
-        local mainKey, modifierFlags = parseKeyCombo(oldValue)
-        layout.accelerators[modifierFlags][mainKey] = nil
-    end
-
-    if value then
-        local mainKey, modifierFlags = parseKeyCombo(value)
-        layout.accelerators[modifierFlags][mainKey] = widget
-    end
-
-    widget.attributes.key = value
-end
-
---[[--
 Widget value.
 
 Some widget types expect the value to be of a specific type and
 within a specific range. For example, `slider` and `progress`
-widgets expect a normalized number, and `text` widgets expect
-a string.
+widgets expect a normalized number, `text` widgets expect
+a string, and `check` and `radio` widgets expect a boolean.
 
 Setting this attribute bubbles the `Change` event.
 
 @attrib value
 --]]--
-function Attribute.value (widget, value)
+Attribute.value = {}
+
+function Attribute.value.set (widget, value)
     local oldValue = widget.value
     widget.attributes.value = value
     widget:bubbleEvent('Change', { value = value, oldValue = oldValue })
@@ -133,7 +126,9 @@ of the parent widget and its descendants.
 
 @attrib style
 --]]--
-function Attribute.style (widget, value)
+Attribute.style = {}
+
+function Attribute.style.set (widget, value)
     widget.attributes.style = value
     widget.fontData = nil
     widget.textData = nil
@@ -143,16 +138,20 @@ end
 --[[--
 Status message.
 
-Should contain a short, single-line string describing the
+Should contain a string with a short message describing the
 purpose or state of the widget.
 
-This string will appear in any `status` type widgets
+This message will appear in the last created `status` widget
 in the same layout, or in the master layout if one exists.
+
+- This attribute cascades.
 
 @attrib status
 --]]--
-function Attribute.status (widget, value)
-    widget.attributes.status = value
+Attribute.status = {}
+
+function Attribute.status.get (widget, value)
+    return widget.attributes.status or widget.parent and widget.parent.status
 end
 
 --[[--
@@ -165,8 +164,53 @@ its scroll position when the widget's contents overflow its boundary.
 
 @attrib scroll
 --]]--
-function Attribute.scroll (widget, value)
-    widget.attributes.scroll = value
+Attribute.scroll = {}
+
+--[[--
+Keyboard Attributes.
+
+@section keyboard
+--]]--
+
+--[[--
+Focusable.
+
+Should contain `true` if the widget can be focused by pressing the tab key.
+
+@attrib focusable
+--]]--
+Attribute.focusable = {}
+
+--[[--
+Keyboard accelerator.
+
+Should contain a string representing a key and optional modifiers,
+separated by dashes; for example `'ctrl-c'` or `'alt-shift-escape'`.
+
+Pressing this key combination bubbles a `Press` event on the widget,
+as if it had been pressed with a mouse or touch interface.
+
+Setting this attribute re-registers the widget with its layout.
+
+@attrib key
+--]]--
+Attribute.key = {}
+
+function Attribute.key.set (widget, value)
+    local layout = widget.layout.master or widget.layout
+    local oldValue = widget.attributes.key
+
+    if oldValue then
+        local mainKey, modifierFlags = parseKeyCombo(oldValue)
+        layout.accelerators[modifierFlags][mainKey] = nil
+    end
+
+    if value then
+        local mainKey, modifierFlags = parseKeyCombo(value)
+        layout.accelerators[modifierFlags][mainKey] = widget
+    end
+
+    widget.attributes.key = value
 end
 
 --[[--
@@ -197,7 +241,9 @@ with this widget.
 
 @attrib flow
 --]]--
-function Attribute.flow (widget, value)
+Attribute.flow = {}
+
+function Attribute.flow.set (widget, value)
     widget.attributes.flow = value
     widget.textData = nil
     widget.reshape(widget.parent or widget)
@@ -215,7 +261,9 @@ with this widget.
 
 @attrib width
 --]]--
-function Attribute.width (widget, value)
+Attribute.width = {}
+
+function Attribute.width.set (widget, value)
     value = value and math.max(value, widget.minwidth or 0)
     widget.attributes.width = value
     if widget.wrap then
@@ -232,7 +280,9 @@ To get the calculated height, use `Widget:getHeight`.
 
 @attrib height
 --]]--
-function Attribute.height (widget, value)
+Attribute.height = {}
+
+function Attribute.height.set (widget, value)
     value = value and math.max(value, widget.minheight or 0)
     widget.attributes.height = value
     widget.reshape(widget.parent or widget)
@@ -243,7 +293,9 @@ Minimum width.
 
 @attrib minwidth
 --]]--
-function Attribute.minwidth (widget, value)
+Attribute.minwidth = {}
+
+function Attribute.minwidth.set (widget, value)
     widget.attributes.minwidth = value
     widget.reshape(widget.parent or widget)
 end
@@ -253,7 +305,9 @@ Minimum height.
 
 @attrib minheight
 --]]--
-function Attribute.minheight (widget, value)
+Attribute.minheight = {}
+
+function Attribute.minheight.set (widget, value)
     widget.attributes.minheight = value
     widget.reshape(widget.parent or widget)
 end
@@ -273,12 +327,20 @@ Font path.
 Should contain a path to a TrueType font to use for displaying
 this widget's `text`.
 
+- This attribute cascades.
+
 @attrib font
 --]]--
-function Attribute.font (widget, value)
+Attribute.font = {}
+
+function Attribute.font.set (widget, value)
     widget.attributes.font = value
     widget.fontData = nil
     widget.textData = nil
+end
+
+function Attribute.font.get (widget)
+    return widget.attributes.font or widget.parent and widget.parent.font
 end
 
 --[[--
@@ -287,12 +349,20 @@ Font size.
 Should contain a number representing the size of the font, in points.
 Defaults to 12.
 
+- This attribute cascades.
+
 @attrib size
 --]]--
-function Attribute.size (widget, value)
+Attribute.size = {}
+
+function Attribute.size.set (widget, value)
     widget.attributes.size = value
     widget.fontData = nil
     widget.textData = nil
+end
+
+function Attribute.size.get (widget)
+    return widget.attributes.size or widget.parent and widget.parent.size
 end
 
 --[[--
@@ -309,7 +379,9 @@ Text to display.
 
 @attrib text
 --]]--
-function Attribute.text (widget, value)
+Attribute.text = {}
+
+function Attribute.text.set (widget, value)
     widget.attributes.text = value
     widget.textData = nil
 end
@@ -319,18 +391,35 @@ Text color.
 
 Should contain an array with 3 or 4 values (RGB or RGBA) from 0 to 255.
 
+- This attribute cascades.
+
 @attrib color
 --]]--
-function Attribute.color (widget, value)
+Attribute.color = {}
+
+function Attribute.color.set (widget, value)
     widget.attributes.color = value
     widget.textData = nil
 end
+
+function Attribute.color.get (widget)
+    return widget.attributes.color or widget.parent and widget.parent.color
+end
+
 --[[--
 Text and icon alignment.
 
+Should contain a string defining vertical and horizontal alignment.
+Vertical alignment is defined by either 'top', 'middle', or 'bottom',
+and horizontal alignment is defined by either 'left', 'center', or 'right'.
+
+For example, `align = 'top left'`
+
 @attrib align
 --]]--
-function Attribute.align (widget, value)
+Attribute.align = {}
+
+function Attribute.align.set (widget, value)
     widget.attributes.align = value
     widget.textData = nil
 end
@@ -344,7 +433,9 @@ as a single line when this attribute is not set to `true`.
 
 @attrib wrap
 --]]--
-function Attribute.wrap (widget, value)
+Attribute.wrap = {}
+
+function Attribute.wrap.set (widget, value)
     widget.attributes.wrap = value
     widget.textData = nil
 end
@@ -362,9 +453,7 @@ Should contain an array with 3 or 4 values (RGB or RGBA) from 0 to 255.
 
 @attrib background
 --]]--
-function Attribute.background (widget, value)
-    widget.attributes.background = value
-end
+Attribute.background = {}
 
 --[[--
 Outline color.
@@ -373,9 +462,7 @@ Should contain an array with 3 or 4 values (RGB or RGBA) from 0 to 255.
 
 @attrib outline
 --]]--
-function Attribute.outline (widget, value)
-    widget.attributes.outline = value
-end
+Attribute.outline = {}
 
 --[[--
 Slice image.
@@ -384,9 +471,7 @@ Should contain a path to an image with "slices" to display for this widget.
 
 @attrib slices
 --]]--
-function Attribute.slices (widget, value)
-    widget.attributes.slices = value
-end
+Attribute.slices = {}
 
 --[[--
 Margin size.
@@ -395,7 +480,9 @@ The margin area occupies space outside of the `outline` and `slices`.
 
 @attrib margin
 --]]--
-function Attribute.margin (widget, value)
+Attribute.margin = {}
+
+function Attribute.margin.set (widget, value)
     widget.attributes.margin = value
     widget.textData = nil
     widget:reshape()
@@ -410,7 +497,9 @@ child widgets appear.
 
 @attrib padding
 --]]--
-function Attribute.padding (widget, value)
+Attribute.padding = {}
+
+function Attribute.padding.set (widget, value)
     widget.attributes.padding = value
     widget.textData = nil
     widget:reshape()
@@ -423,7 +512,9 @@ Should contain a path to an image file.
 
 @attrib icon
 --]]--
-function Attribute.icon (widget, value)
+Attribute.icon = {}
+
+function Attribute.icon.set (widget, value)
     widget.attributes.icon = value
     widget.textData = nil
 end

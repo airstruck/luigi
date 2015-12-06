@@ -143,8 +143,8 @@ local function deleteCharacterLeft (self)
     end
 
     -- delete character to the left
-    local offset = utf8.offset(text, -1, first) or 0
-    local left = text:sub(1, offset)
+    local offset = utf8.offset(text, -1, last + 1) or 0
+    local left = text:sub(1, offset - 1)
     text = left .. text:sub(first + 1)
     self.value = text
     setCaretFromText(self, left)
@@ -183,7 +183,7 @@ return function (self)
     end
 
     self.value = self.value or self.text or ''
-    
+
     self.text = ''
 
     if not self.highlight then

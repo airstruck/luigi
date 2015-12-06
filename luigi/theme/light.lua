@@ -14,7 +14,7 @@ return function (config)
             slices = RESOURCE .. 'button.png',
             minwidth = 24,
             minheight = 24,
-            canFocus = true
+            focusable = true
         },
         button_hovered = {
             slices = RESOURCE .. 'button_hovered.png'
@@ -94,7 +94,7 @@ return function (config)
             padding = 6,
             minwidth = 24,
             minheight = 24,
-            canFocus = true,
+            focusable = true,
             cursor = 'ibeam',
             highlight = highlight,
         },
@@ -102,7 +102,7 @@ return function (config)
             slices = RESOURCE .. 'text_focused.png',
         },
         check = {
-            canFocus = true,
+            focusable = true,
         },
         ['check.unchecked'] = {
             icon = RESOURCE .. 'check_unchecked.png',
@@ -123,7 +123,7 @@ return function (config)
             icon = RESOURCE .. 'check_checked_focused.png',
         },
         radio = {
-            canFocus = true,
+            focusable = true,
         },
         ['radio.unchecked'] = {
             icon = RESOURCE .. 'radio_unchecked.png',

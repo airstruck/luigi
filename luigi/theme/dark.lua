@@ -6,8 +6,8 @@ return function (config)
     local backColor = config.backColor or { 40, 40, 40 }
     local lineColor = config.lineColor or { 60, 60, 60 }
     local textColor = config.textColor or { 240, 240, 240 }
-    local highlight = config.highlight or { 0xFF, 0x66, 0x00 }
-
+    local highlight = config.highlight or { 0x00, 0x5c, 0x94 }
+    
     return {
         button = {
             align = 'center middle',
@@ -15,7 +15,7 @@ return function (config)
             slices = RESOURCE .. 'button.png',
             minwidth = 24,
             minheight = 24,
-            canFocus = true,
+            focusable = true,
             color = textColor,
         },
         button_hovered = {
@@ -100,7 +100,7 @@ return function (config)
             padding = 6,
             minwidth = 24,
             minheight = 24,
-            canFocus = true,
+            focusable = true,
             cursor = 'ibeam',
             highlight = highlight,
             color = textColor,
@@ -109,7 +109,7 @@ return function (config)
             slices = RESOURCE .. 'text_focused.png',
         },
         check = {
-            canFocus = true,
+            focusable = true,
             color = textColor,
         },
         ['check.unchecked'] = {
@@ -131,7 +131,7 @@ return function (config)
             icon = RESOURCE .. 'check_checked_focused.png',
         },
         radio = {
-            canFocus = true,
+            focusable = true,
             color = textColor,
         },
         ['radio.unchecked'] = {
