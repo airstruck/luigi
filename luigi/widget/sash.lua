@@ -2,12 +2,24 @@
 A sash.
 
 Dragging this widget resizes the widgets adjacent to it.
-A sash must be adjacent to a widget with a specified size
-in the same direction as the parent element's `flow`.
+A sash should be adjacent to a widget with a specified size
+in the same direction as the parent element's @{attribute.flow|flow}.
 
 For example, if the parent of the sash is `flow = 'x'`
-then either or both of the siblings next to the sash
-must have a specified `width` property.
+then either or both of the siblings adjacent to the sash
+should have a specified @{attribute.width|width} attribute.
+
+@usage
+    -- create a layout containing two widgets separated by a sash
+    local layout = Layout {
+        type = 'panel', flow = 'x',
+        { text = 'This is the left side', wrap = true, width = 100 },
+        { type = 'sash' },
+        { text = 'This is the right side', wrap = true },
+    }
+
+    -- show the layout
+    layout:show()
 
 @widget sash
 --]]--

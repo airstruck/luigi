@@ -8,12 +8,11 @@ return {
     toolButton = {
         align = 'center middle',
         width = 48,
-    },
-    toolButton_focused = {
-        slices = 'defer',
-    },
-    toolButton_not_hovered = {
-        slices = false,
+        slices = function (self)
+            return self.focused and 'defer'
+                or self.hovered and 'defer'
+                or false
+        end
     },
     statusbar = {
         align = 'left middle',
@@ -32,7 +31,6 @@ return {
         type = 'submenu',
         width = 600,
         height = 400,
-        float = true,
     },
     dialogHead = {
         type = 'panel',
