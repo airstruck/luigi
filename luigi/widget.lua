@@ -67,7 +67,7 @@ local function metaIndex (self, property)
     local layout = self.layout
     local style = layout:getStyle()
     value = style and maybeCall(style:getProperty(self, property), self)
-    if value ~= nil and value ~= 'defer' then return value end
+    if value ~= nil then return value end
 
     local theme = layout:getTheme()
     return theme and maybeCall(theme:getProperty(self, property), self)

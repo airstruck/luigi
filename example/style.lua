@@ -9,9 +9,10 @@ return {
         align = 'center middle',
         width = 48,
         slices = function (self)
-            return self.focused and 'defer'
-                or self.hovered and 'defer'
-                or false
+            if self.focused or self.hovered or self.pressed then
+                return nil -- fall back to theme default
+            end
+            return false -- no slices
         end
     },
     statusbar = {
