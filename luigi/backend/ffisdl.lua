@@ -12,6 +12,8 @@ local Text = require((...) .. '.text')
 
 local IntOut = ffi.typeof 'int[1]'
 
+local stack = {}
+
 -- create window and renderer
 sdl.setHint(sdl.HINT_VIDEO_ALLOW_SCREENSAVER, '1')
 
@@ -257,6 +259,12 @@ Backend.setScissor = function (x, y, w, h)
     sdl.renderSetClipRect(renderer, lastScissor)
 end
 
+Backend.getScissor = function ()
+    if lastScissor ~= nil then
+        return lastScissor.x, lastScissor.y, lastScissor.w, lastScissor.h
+    end
+end
+
 function Backend.hide (layout)
     for _, item in ipairs(layout.hooks) do
         Hooker.unhook(item)
@@ -269,15 +277,14 @@ local function hook (layout, key, method, hookLast)
         callback, key, method, hookLast)
 end
 
-local stack = {}
-
 Backend.pop = function ()
     local history = stack[#stack]
-    local color = history.color or { 0, 0, 0, 255 }
+    lastColor = history.color or { 0, 0, 0, 255 }
+    lastScissor = history.scissor
 
     sdl.setRenderDrawColor(renderer,
-        color[1], color[2], color[3], color[4] or 255)
-    sdl.renderSetClipRect(renderer, history.scissor) -- Backend.setScissor(history.scissor)
+        lastColor[1], lastColor[2], lastColor[3], lastColor[4] or 255)
+    sdl.renderSetClipRect(renderer, lastScissor) -- Backend.setScissor(history.scissor)
     stack[#stack] = nil
 end
 

@@ -9,6 +9,7 @@ return {
         type = 'button',
         align = 'center middle',
         width = 48,
+        height = 48,
         slices = function (self)
             if self.focused or self.hovered or self.pressed then
                 return nil -- fall back to theme default

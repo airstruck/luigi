@@ -21,13 +21,22 @@ return function (self)
         self[index] = nil
     end
 
-    local decrement = self:addChild { type = 'stepper.left' }
+    local before = self:addChild { type = 'stepper.left' }
     local view = self:addChild()
-    local increment = self:addChild { type = 'stepper.right' }
+    local after = self:addChild { type = 'stepper.right' }
 
     self:onReshape(function (event)
-        decrement.width = decrement:getHeight()
-        increment.width = increment:getHeight()
+        if self.flow == 'x' then
+            before.height = false
+            after.height = false
+            before.width = 0
+            after.width = 0
+        else
+            before.width = false
+            after.width = false
+            before.height = 0
+            after.height = 0
+        end
     end)
 
     local function updateValue ()
@@ -35,25 +44,33 @@ return function (self)
         self.value = item.value
         view[1] = nil
         view:addChild(item)
-        item:reshape()
+        view:reshape()
     end
 
-    decrement:onPress(function (event)
+    local function decrement ()
         if not self.items then return end
         self.index = self.index - 1
         if self.index < 1 then
             self.index = #self.items
         end
         updateValue()
-    end)
+    end
 
-    increment:onPress(function (event)
+    local function increment ()
         if not self.items then return end
         self.index = self.index + 1
         if self.index > #self.items then
             self.index = 1
         end
         updateValue()
+    end
+
+    before:onPress(function (event)
+        if self.flow == 'x' then decrement() else increment() end
+    end)
+
+    after:onPress(function (event)
+        if self.flow == 'x' then increment() else decrement() end
     end)
 
     updateValue()

@@ -8,7 +8,7 @@ between 0 and 1 (inclusive) to change the width of the bar.
 --]]--
 
 return function (self)
-    self.value = 0
+    self.value = self.value or 0
 
     local pad = self:addChild {
         width = 0,
@@ -35,7 +35,7 @@ return function (self)
             y1 = y1 + min
             bar.width = false
             bar.height = false
-            pad.height = h - (self.value * (y2 - y1) + min)
+            pad.height = math.ceil(h - (self.value * (y2 - y1) + min))
         end
     end)
 end

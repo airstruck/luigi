@@ -283,7 +283,9 @@ To get the calculated height, use `Widget:getHeight`.
 Attribute.height = {}
 
 function Attribute.height.set (widget, value)
-    value = value and math.max(value, widget.minheight or 0)
+    if value ~= 'auto' then
+        value = value and math.max(value, widget.minheight or 0)
+    end
     widget.attributes.height = value
     widget.reshape(widget.parent or widget)
 end
@@ -415,6 +417,8 @@ and horizontal alignment is defined by either 'left', 'center', or 'right'.
 
 For example, `align = 'top left'`
 
+- This attribute cascades.
+
 @attrib align
 --]]--
 Attribute.align = {}
@@ -422,6 +426,10 @@ Attribute.align = {}
 function Attribute.align.set (widget, value)
     widget.attributes.align = value
     widget.textData = nil
+end
+
+function Attribute.align.get (widget)
+    return widget.attributes.align or widget.parent and widget.parent.align
 end
 
 --[[--

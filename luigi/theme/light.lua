@@ -55,11 +55,11 @@ return function (config)
     end
 
     local function getSashHeight (self)
-        return self.parent.flow ~= 'x' and 4
+        return self.parent and self.parent.flow ~= 'x' and 4
     end
 
     local function getSashWidth (self)
-        return self.parent.flow == 'x' and 4
+        return self.parent and self.parent.flow == 'x' and 4
     end
 
     local function getTextSlices (self)
@@ -75,10 +75,10 @@ return function (config)
             color = textColor,
             minheight = 28,
             minwidth = 28,
+            align = 'center middle',
         },
         button = {
             type = 'control',
-            align = 'center middle',
             padding = 6,
             slices = getButtonSlices,
             minwidth = 24,
@@ -92,11 +92,13 @@ return function (config)
             color = textColor,
             icon = getCheckOrRadioIcon,
             padding = 4,
+            align = 'left middle',
         },
         label = {
             type = 'control',
             background = backColor,
             padding = 4,
+            align = 'left middle',
         },
         menu = {
             height = 24,
@@ -131,6 +133,7 @@ return function (config)
             color = textColor,
             icon = getCheckOrRadioIcon,
             padding = 4,
+            align = 'left middle',
         },
         sash = {
             background = getSashBackground,
@@ -153,7 +156,6 @@ return function (config)
             slices = resources .. 'button_pressed.png',
         },
         ['stepper.item'] = {
-            type = 'control',
             align = 'center middle',
             color = textColor,
         },

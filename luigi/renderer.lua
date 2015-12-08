@@ -11,6 +11,25 @@ local Renderer = Base:extend()
 local imageCache = {}
 local sliceCache = {}
 
+
+
+local function intersectScissor (x, y, w, h)
+    local sx, sy, sw, sh = Backend.getScissor()
+    if not sx then
+        return Backend.setScissor(x, y, w, h)
+    end
+    local x1 = math.max(sx, x)
+    local y1 = math.max(sy, y)
+    local x2 = math.min(sx + sw, x + w)
+    local y2 = math.min(sy + sh, y + h)
+    if x2 > x1 and y2 > y1 then
+        Backend.setScissor(x1, y1, x2 - x1, y2 - y1)
+    else
+        -- HACK
+        Backend.setScissor(-100, -100, 1, 1)
+    end
+end
+
 function Renderer:loadImage (path)
     if not imageCache[path] then
         imageCache[path] = Backend.Image(path)
@@ -194,8 +213,6 @@ function Renderer:renderIconAndText (widget)
         return
     end
 
-    local parentY = widget.parent and widget.parent:getY() or 0
-
     -- calculate position for icon and text based on alignment and padding
     local iconX, iconY, x1, y1, x2, y2 = self:positionIcon(
         widget, x, y, x + w, y + h)
@@ -239,14 +256,12 @@ function Renderer:renderIconAndText (widget)
     end
 
     Backend.push()
-    Backend.setScissor(x, math.max(y, parentY), w, h)
+
+    intersectScissor(x, y, w, h)
 
     -- draw the icon
     if icon then
         iconX, iconY = math.floor(iconX), math.floor(iconY)
-        if widget.tint then
-            Backend.setColor(widget.tint)
-        end
         Backend.draw(icon, iconX, iconY)
     end
 
@@ -277,9 +292,9 @@ function Renderer:render (widget)
 
         Backend.push()
 
-        if widget.parent then
-            local parentY = widget.parent:getY()
-            Backend.setScissor(x, math.max(y, parentY), w, h)
+        local parent = widget.parent
+        if parent then
+            intersectScissor(x, y, w, h)
         else
             Backend.setScissor()
         end
@@ -288,10 +303,9 @@ function Renderer:render (widget)
         self:renderOutline(widget)
         self:renderSlices(widget)
         self:renderIconAndText(widget)
+        self:renderChildren(widget)
 
         Backend.pop()
-
-        return self:renderChildren(widget)
 
     end)
     Event.Display:emit(widget, { target = widget })

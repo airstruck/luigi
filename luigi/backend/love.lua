@@ -73,6 +73,8 @@ end
 
 Backend.setScissor = love.graphics.setScissor
 
+Backend.getScissor = love.graphics.getScissor
+
 function Backend.hide (layout)
     for _, item in ipairs(layout.hooks) do
         Hooker.unhook(item)

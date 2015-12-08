@@ -291,15 +291,11 @@ function Widget:addChild (data)
     return child
 end
 
-local function clamp (value, min, max)
-    return value < min and min or value > max and max or value
-end
-
 local function checkReshape (widget)
     if widget.needsReshape then
         widget.position = {}
         widget.dimensions = {}
-        widget.needsReshape = false
+        widget.needsReshape = nil
     end
 end
 
@@ -313,19 +309,21 @@ function Widget:calculateDimension (name)
     local min = (name == 'width') and (self.minwidth or 0)
         or (self.minheight or 0)
 
-    local windowWidth, windowHeight = Backend.getWindowSize()
-
-    local max = name == 'width' and windowWidth or windowHeight
-
     if self[name] then
-        self.dimensions[name] = clamp(self[name], min, max)
+        if self[name] == 'auto' then
+            self.dimensions[name] = self:calculateDimensionMinimum(name)
+            return self.dimensions[name]
+        end
+        self.dimensions[name] = math.max(self[name], min)
         return self.dimensions[name]
     end
 
     local parent = self.parent
 
     if not parent then
-        self.dimensions[name] = max
+        local windowWidth, windowHeight = Backend.getWindowSize()
+        local size = name == 'width' and windowWidth or windowHeight
+        self.dimensions[name] = size
         return self.dimensions[name]
     end
 
@@ -333,21 +331,23 @@ function Widget:calculateDimension (name)
     parentDimension = parentDimension - (parent.margin or 0) * 2
     parentDimension = parentDimension - (parent.padding or 0) * 2
     local parentFlow = parent.flow or 'y'
-    if (parentFlow == 'y' and name == 'width') or
-        (parentFlow == 'x' and name == 'height')
-    then
-        self.dimensions[name] = clamp(parentDimension, min, max)
+    if (parentFlow ~= 'x' and name == 'width')
+    or (parentFlow == 'x' and name == 'height') then
+        self.dimensions[name] = math.max(parentDimension, min)
         return self.dimensions[name]
     end
     local claimed = 0
     local unsized = 1
     for i, widget in ipairs(self.parent) do
         if widget ~= self then
-            if widget[name] then
-                claimed = claimed + widget:calculateDimension(name)
-                if claimed > parentDimension then
-                    claimed = parentDimension
+            local value = widget[name]
+            if value == 'auto' then
+                if not widget.dimensions[name] then
+                    widget.dimensions[name] = widget:calculateDimensionMinimum(name)
                 end
+                claimed = claimed + widget.dimensions[name]
+            elseif value then
+                claimed = claimed + value
             else
                 unsized = unsized + 1
             end
@@ -355,13 +355,13 @@ function Widget:calculateDimension (name)
     end
     local size = (parentDimension - claimed) / unsized
 
-    size = clamp(size, min, max)
+    size = math.max(size, min)
     self.dimensions[name] = size
     return size
 end
 
 local function calculateRootPosition (self, axis)
-    local value = (axis == 'x' and self.left) or (axis == 'y' and self.top)
+    local value = (axis == 'x' and self.left) or (axis ~= 'x' and self.top)
 
     if value then
         self.position[axis] = value
@@ -370,9 +370,9 @@ local function calculateRootPosition (self, axis)
 
     local ww, wh = Backend.getWindowSize()
 
-    if axis == 'x' and self.width then
+    if axis == 'x' and type(self.width) == 'number' then
         value = (ww - self.width) / 2
-    elseif axis == 'y' and self.height then
+    elseif axis ~= 'x' and type(self.height) == 'number' then
         value = (wh - self.height) / 2
     else
         value = 0
@@ -394,7 +394,7 @@ function Widget:calculatePosition (axis)
         return calculateRootPosition(self, axis)
     else
         scroll = axis == 'x' and (parent.scrollX or 0)
-            or axis == 'y' and (parent.scrollY or 0)
+            or axis ~= 'x' and (parent.scrollY or 0)
     end
     local parentPos = parent:calculatePosition(axis)
     local p = parentPos - scroll
@@ -413,6 +413,24 @@ function Widget:calculatePosition (axis)
     end
     self.position[axis] = 0
     return 0
+end
+
+function Widget:calculateDimensionMinimum (name)
+    local space = (self.margin or 0) * 2 + (self.padding or 0) * 2
+    local min = name == 'width' and 'minwidth' or 'minheight'
+    local value = space
+
+    for _, child in ipairs(self) do
+        if (name == 'width' and self.flow == 'x')
+        or (name == 'height' and self.flow ~= 'x') then
+            value = value + child:calculateDimensionMinimum(name)
+        else
+            value = math.max(value, child:calculateDimensionMinimum(name))
+        end
+    end
+    local dim = self[name]
+    dim = type(dim) == 'number' and dim
+    return math.max(value, dim or 0, self[min] or 0)
 end
 
 --[[--

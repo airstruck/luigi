@@ -44,8 +44,6 @@ local function setDimension (widget, name, size)
         or (widget.minheight or 0)
 
     widget[name] = math.max(size, min)
-
-    return widget[name]
 end
 
 
@@ -79,10 +77,9 @@ return function (self)
         end
         if nextSize then
             setDimension(nextSibling, dimension,
-                nextSibling:calculatePosition(axis) +
-                nextSibling:calculateDimension(dimension) - event[axis])
+                nextSibling:calculatePosition(axis) + nextSize - event[axis])
         end
-
+        self.parent:reshape()
     end)
 
 end
