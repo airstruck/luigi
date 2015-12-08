@@ -47,30 +47,30 @@ function Widget.register (name, decorator)
 end
 
 local function maybeCall (something, ...)
-    if type(something) == 'function' then
-        return something(...)
-    end
     return something
 end
 
 -- look for properties in attributes, Widget, style, and theme
 local function metaIndex (self, property)
+    -- look in widget's own attributes
     local A = Attribute[property]
     if A then
         local value = A.get and A.get(self) or self.attributes[property]
-        if value ~= nil then return maybeCall(value, self) end
+        if type(value) == 'function' then value = value(self) end
+        if value ~= nil then return value end
     end
 
+    -- look in Widget class properties
     local value = Widget[property]
     if value ~= nil then return value end
 
+    -- look in style
     local layout = self.layout
-    local style = layout:getStyle()
-    value = style and maybeCall(style:getProperty(self, property), self)
+    value = layout:getStyle():getProperty(self, property)
     if value ~= nil then return value end
 
-    local theme = layout:getTheme()
-    return theme and maybeCall(theme:getProperty(self, property), self)
+    -- look in theme
+    return layout:getTheme():getProperty(self, property)
 end
 
 -- setting attributes triggers special behavior

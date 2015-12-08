@@ -27,6 +27,9 @@ function Style:getProperty (object, property, original)
                 local rule = rules[lookupValue]
                 if rule then
                     local value = self:getProperty(rule, property, original)
+                    if type(value) == 'function' then
+                        value = value(original)
+                    end
                     if value ~= nil then return value end
                 end
             end -- lookup values

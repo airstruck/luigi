@@ -6,6 +6,7 @@ return {
         style = 'short',
     },
     toolButton = {
+        type = 'button',
         align = 'center middle',
         width = 48,
         slices = function (self)

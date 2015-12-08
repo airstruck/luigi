@@ -8,21 +8,18 @@ number between 0 and 1, inclusive.
 --]]--
 
 return function (self)
-
     local function clamp (value)
         return value < 0 and 0 or value > 1 and 1 or value
     end
 
     self.value = clamp(self.value or 0.5)
     self.step = self.step or 0.01
-    self.flow = 'x' -- TODO: support vertical slider
 
     local spacer = self:addChild()
 
     local thumb = self:addChild {
         type = 'button',
         align = 'middle center',
-        width = 0,
         margin = 0,
     }
 
@@ -46,9 +43,15 @@ return function (self)
     local function press (event)
         local x1, y1, w, h = self:getRectangle(true, true)
         local x2, y2 = x1 + w, y1 + h
-        local halfThumb = thumb:getWidth() / 2
-        x1, x2 = x1 + halfThumb, x2 - halfThumb
-        self.value = clamp((event.x - x1) / (x2 - x1))
+        if self.flow == 'x' then
+            local halfThumb = thumb:getWidth() / 2
+            x1, x2 = x1 + halfThumb, x2 - halfThumb
+            self.value = clamp((event.x - x1) / (x2 - x1))
+        else
+            local halfThumb = thumb:getHeight() / 2
+            y1, y2 = y1 + halfThumb, y2 - halfThumb
+            self.value = 1 - clamp((event.y - y1) / (y2 - y1))
+        end
         thumb:focus()
     end
 
@@ -68,11 +71,22 @@ return function (self)
     end)
 
     self:onReshape(function (event)
-        -- TODO: eliminate redundancy with `press`
         local x1, y1, w, h = self:getRectangle(true, true)
         local x2, y2 = x1 + w, y1 + h
-        local halfThumb = thumb:getWidth() / 2
-        x1, x2 = x1 + halfThumb, x2 - halfThumb
-        spacer.width = self.value * (x2 - x1)
+        if self.flow == 'x' then
+            thumb.width = 0
+            thumb.height = false
+            local halfThumb = thumb:getWidth() / 2
+            x1, x2 = x1 + halfThumb, x2 - halfThumb
+            spacer.width = self.value * (x2 - x1)
+            spacer.height = false
+        else
+            thumb.width = false
+            thumb.height = 0
+            local halfThumb = thumb:getHeight() / 2
+            y1, y2 = y1 + halfThumb, y2 - halfThumb
+            spacer.width = false
+            spacer.height = (1 - self.value) * (y2 - y1)
+        end
     end)
 end

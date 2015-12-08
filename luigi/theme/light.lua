@@ -38,6 +38,14 @@ return function (config)
         end
     end
 
+    local function getControlHeight (self)
+        return self.flow == 'x' and 32
+    end
+
+    local function getControlWidth (self)
+        return self.flow ~= 'x' and 32
+    end
+
     local function getMenuItemBackground (self)
         return self.active and highlight
     end
@@ -46,13 +54,30 @@ return function (config)
         return self.hovered and highlight or lineColor
     end
 
+    local function getSashHeight (self)
+        return self.parent.flow ~= 'x' and 4
+    end
+
+    local function getSashWidth (self)
+        return self.parent.flow == 'x' and 4
+    end
+
     local function getTextSlices (self)
         return self.focused and resources .. 'text_focused.png'
             or resources .. 'text.png'
     end
 
     return {
+        control = {
+            flow = 'x',
+            height = getControlHeight,
+            width = getControlWidth,
+            color = textColor,
+            minheight = 28,
+            minwidth = 28,
+        },
         button = {
+            type = 'control',
             align = 'center middle',
             padding = 6,
             slices = getButtonSlices,
@@ -61,18 +86,23 @@ return function (config)
             focusable = true,
             color = textColor,
         },
-
-        ['stepper.left'] = {
-            type = 'button',
-            icon = resources .. 'triangle_left.png',
+        check = {
+            type = 'control',
+            focusable = true,
+            color = textColor,
+            icon = getCheckOrRadioIcon,
+            padding = 4,
         },
-
-        ['stepper.right'] = {
-            type = 'button',
-            icon = resources .. 'triangle_right.png',
+        label = {
+            type = 'control',
+            background = backColor,
+            padding = 4,
         },
         menu = {
             height = 24,
+        },
+        ['menu.expander'] = {
+            icon = resources .. 'triangle_right.png',
         },
         ['menu.item'] = {
             padding = 4,
@@ -80,7 +110,59 @@ return function (config)
             color = textColor,
             background = getMenuItemBackground,
         },
-        ['menu.expander'] = {
+        panel = {
+            background = backColor,
+            color = textColor,
+        },
+        progress = {
+            type = 'control',
+            slices = resources .. 'button_pressed.png',
+            padding = 0,
+        },
+        ['progress.bar'] = {
+            type = 'control',
+            slices = resources .. 'progress.png',
+            padding = 0,
+            minwidth = 12,
+        },
+        radio = {
+            type = 'control',
+            focusable = true,
+            color = textColor,
+            icon = getCheckOrRadioIcon,
+            padding = 4,
+        },
+        sash = {
+            background = getSashBackground,
+            height = getSashHeight,
+            width = getSashWidth,
+        },
+        slider = {
+            type = 'control',
+            slices = resources .. 'button_pressed.png',
+            padding = 0,
+        },
+        status = {
+            type = 'panel',
+            align = 'left middle',
+            padding = 4,
+            height = 22,
+        },
+        stepper = {
+            type = 'control',
+            slices = resources .. 'button_pressed.png',
+        },
+        ['stepper.item'] = {
+            type = 'control',
+            align = 'center middle',
+            color = textColor,
+        },
+        ['stepper.left'] = {
+            type = 'button',
+            icon = resources .. 'triangle_left.png',
+        },
+        ['stepper.right'] = {
+            type = 'button',
             icon = resources .. 'triangle_right.png',
         },
         submenu = {
@@ -89,60 +171,14 @@ return function (config)
             slices = resources .. 'submenu.png',
             color = textColor,
         },
-        sash = {
-            background = getSashBackground
-        },
-        slider = {
-            slices = resources .. 'button_pressed.png',
-            padding = 0,
-            minwidth = 24,
-            minheight = 24
-        },
-        panel = {
-            background = backColor,
-            color = textColor,
-        },
-        progress = {
-            slices = resources .. 'button_pressed.png',
-            padding = 0,
-            minwidth = 24,
-            minheight = 24
-        },
-        ['progress.bar'] = {
-            slices = resources .. 'progress.png',
-            padding = 0,
-            minwidth = 12,
-        },
-        stepper = {
-            slices = resources .. 'button_pressed.png',
-        },
-        ['stepper.item'] = {
-            align = 'center middle',
-            color = textColor,
-        },
-        status = {
-            type = 'panel',
-        },
         text = {
+            type = 'control',
             align = 'left middle',
             slices = getTextSlices,
             padding = 6,
-            minwidth = 24,
-            minheight = 24,
             focusable = true,
             cursor = 'ibeam',
             highlight = highlight,
-            color = textColor,
-        },
-        check = {
-            focusable = true,
-            color = textColor,
-            icon = getCheckOrRadioIcon
-        },
-        radio = {
-            focusable = true,
-            color = textColor,
-            icon = getCheckOrRadioIcon
         },
     }
 

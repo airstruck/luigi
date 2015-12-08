@@ -10,6 +10,11 @@ layout.slidey:onChange(function (event)
     layout.progressBar.value = event.value
 end)
 
+layout.flowToggle:onChange(function (event)
+    layout.flowTest.flow = event.value and 'x' or 'y'
+    layout.slidey.flow = event.value and 'y' or 'x'
+end)
+
 layout.newButton:onPress(function (event)
     print('creating a new thing!')
 end)
