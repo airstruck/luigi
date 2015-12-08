@@ -13,6 +13,7 @@ end)
 layout.flowToggle:onChange(function (event)
     layout.flowTest.flow = event.value and 'x' or 'y'
     layout.slidey.flow = event.value and 'y' or 'x'
+    layout.progressBar.flow = event.value and 'y' or 'x'
 end)
 
 layout.newButton:onPress(function (event)
