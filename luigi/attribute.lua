@@ -298,7 +298,14 @@ Minimum width.
 Attribute.minwidth = {}
 
 function Attribute.minwidth.set (widget, value)
-    widget.attributes.minwidth = value
+    local attributes = widget.attributes
+    attributes.minwidth = value
+    if type(value) == 'number' then
+        local current = attributes.width
+        if type(current) == 'number' then
+            attributes.width = math.max(current, value)
+        end
+    end
     widget.reshape(widget.parent or widget)
 end
 
@@ -310,7 +317,14 @@ Minimum height.
 Attribute.minheight = {}
 
 function Attribute.minheight.set (widget, value)
-    widget.attributes.minheight = value
+    local attributes = widget.attributes
+    attributes.minheight = value
+    if type(value) == 'number' then
+        local current = attributes.height
+        if type(current) == 'number' then
+            attributes.height = math.max(current, value)
+        end
+    end
     widget.reshape(widget.parent or widget)
 end
 

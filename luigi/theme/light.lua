@@ -98,7 +98,8 @@ return function (config)
             type = 'control',
             background = backColor,
             padding = 4,
-            align = 'left middle',
+            align = 'left bottom',
+            height = 14,
         },
         menu = {
             height = 24,

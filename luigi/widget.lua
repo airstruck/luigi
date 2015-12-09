@@ -347,7 +347,9 @@ function Widget:calculateDimension (name)
                 end
                 claimed = claimed + widget.dimensions[name]
             elseif value then
-                claimed = claimed + value
+                local min = (name == 'width') and (widget.minwidth or 0)
+                    or (widget.minheight or 0)
+                claimed = claimed + math.max(value, min)
             else
                 unsized = unsized + 1
             end
@@ -416,9 +418,15 @@ function Widget:calculatePosition (axis)
 end
 
 function Widget:calculateDimensionMinimum (name)
-    local space = (self.margin or 0) * 2 + (self.padding or 0) * 2
-    local min = name == 'width' and 'minwidth' or 'minheight'
-    local value = space
+    local dim = self[name]
+    local min = (name == 'width') and (self.minwidth or 0)
+        or (self.minheight or 0)
+
+    if type(dim) == 'number' then
+        return math.max(dim, min)
+    end
+
+    local value = 0
 
     for _, child in ipairs(self) do
         if (name == 'width' and self.flow == 'x')
@@ -428,9 +436,13 @@ function Widget:calculateDimensionMinimum (name)
             value = math.max(value, child:calculateDimensionMinimum(name))
         end
     end
-    local dim = self[name]
-    dim = type(dim) == 'number' and dim
-    return math.max(value, dim or 0, self[min] or 0)
+
+    if value > 0 then
+        local space = (self.margin or 0) * 2 + (self.padding or 0) * 2
+        value = value + space
+    end
+
+    return math.max(value, min)
 end
 
 --[[--

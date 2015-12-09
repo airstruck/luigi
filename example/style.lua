@@ -36,24 +36,25 @@ return {
         height = 400,
     },
     dialogHead = {
-        type = 'panel',
-        height = 40,
-        size = 16,
         align = 'middle center',
+        height = 22,
+        size = 16,
+        type = 'panel',
     },
     dialogBody = {
-        wrap = true,
-        padding = 4,
+        align = 'left middle',
         font = 'font/DejaVuSansMono.ttf',
+        padding = 4,
+        wrap = true,
     },
     dialogFoot = {
-        type = 'panel',
         flow = 'x',
-        height = 40,
+        height = 'auto',
+        type = 'panel',
+        padding = 4,
     },
     dialogButton = {
         type = 'button',
         width = 100,
-        margin = 4,
     }
 }
