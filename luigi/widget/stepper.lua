@@ -21,9 +21,9 @@ return function (self)
         self[index] = nil
     end
 
-    local before = self:addChild { type = 'stepper.left' }
-    local view = self:addChild()
-    local after = self:addChild { type = 'stepper.right' }
+    local before = self:addChild { type = 'stepper.before' }
+    local view = self:addChild { type = 'stepper.view' }
+    local after = self:addChild { type = 'stepper.after' }
 
     self:onReshape(function (event)
         if self.flow == 'x' then

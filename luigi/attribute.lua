@@ -264,7 +264,9 @@ with this widget.
 Attribute.width = {}
 
 function Attribute.width.set (widget, value)
-    value = value and math.max(value, widget.minwidth or 0)
+    if value ~= 'auto' then
+        value = value and math.max(value, widget.minwidth or 0)
+    end
     widget.attributes.width = value
     if widget.wrap then
         widget.textData = nil
@@ -453,6 +455,8 @@ Should contain `true` for multiline text, or `false` or `nil`
 for a single line. Even text containing line breaks will display
 as a single line when this attribute is not set to `true`.
 
+- This attribute cascades.
+
 @attrib wrap
 --]]--
 Attribute.wrap = {}
@@ -460,6 +464,10 @@ Attribute.wrap = {}
 function Attribute.wrap.set (widget, value)
     widget.attributes.wrap = value
     widget.textData = nil
+end
+
+function Attribute.wrap.get (widget)
+    return widget.attributes.wrap or widget.parent and widget.parent.wrap
 end
 
 --[[--

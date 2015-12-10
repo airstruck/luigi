@@ -32,8 +32,12 @@ local function setDimension (widget, name, size)
     local parentDimension = widget.parent:calculateDimension(name)
     local claimed = 0
     for i, sibling in ipairs(widget.parent) do
-        if sibling ~= widget and sibling[name] then
-            claimed = claimed + sibling[name]
+        local value = sibling[name]
+        if sibling ~= widget and value then
+            if value == 'auto' then
+                value = sibling:calculateDimensionMinimum(name)
+            end
+            claimed = claimed + value
         end
     end
     if claimed + size > parentDimension then
@@ -71,11 +75,13 @@ return function (self)
         local prevSize = prevSibling and prevSibling[dimension]
         local nextSize = nextSibling and nextSibling[dimension]
 
-        if prevSize then
+        if prevSize or not nextSize then
             setDimension(prevSibling, dimension,
                 event[axis] - prevSibling:calculatePosition(axis))
-        end
-        if nextSize then
+        elseif nextSize then
+            if nextSize == 'auto' then
+                nextSize = nextSibling:calculateDimensionMinimum(dimension)
+            end
             setDimension(nextSibling, dimension,
                 nextSibling:calculatePosition(axis) + nextSize - event[axis])
         end

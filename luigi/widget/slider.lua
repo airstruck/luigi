@@ -12,15 +12,13 @@ return function (self)
         return value < 0 and 0 or value > 1 and 1 or value
     end
 
-    self.value = clamp(self.value or 0.5)
+    self.value = clamp(self.value or 0)
     self.step = self.step or 0.01
 
     local spacer = self:addChild()
 
     local thumb = self:addChild {
-        type = 'button',
-        align = 'middle center',
-        margin = 0,
+        type = 'slider.thumb',
     }
 
     local function unpress ()

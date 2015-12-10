@@ -1,10 +1,12 @@
 local Layout = require 'luigi.layout'
 
-local style = require 'style'
-
 local layout = Layout(require 'layout.main')
+local aboutDialog = Layout(require 'layout.about')
+local licenseDialog = Layout(require 'layout.license')
 
-layout:setStyle(style)
+layout:setStyle(require 'style')
+aboutDialog:setStyle(require 'style')
+licenseDialog:setStyle(require 'style')
 
 layout.slidey:onChange(function (event)
     layout.progressBar.value = event.value
@@ -14,33 +16,19 @@ layout.flowToggle:onChange(function (event)
     layout.slidey.flow = event.value and 'y' or 'x'
     layout.progressBar.flow = event.value and 'y' or 'x'
     layout.stepper.flow = event.value and 'y' or 'x'
+    local height = layout.flowTest:getHeight()
     layout.flowTest.flow = event.value and 'x' or 'y'
+    layout.flowTest.height = height
 end)
 
 layout.newButton:onPress(function (event)
     print('creating a new thing!')
 end)
 
-layout.mainCanvas.font = 'font/DejaVuSansMono.ttf'
-
 layout.mainCanvas.text = [[
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+This program demonstrates some features of the Luigi UI library.
 
-Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-   Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-
-Excepteur sint         occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-One
-two
-Three
-four
-
-five
-six
-seven
-eight
+Luigi is a widget toolkit that runs under Love or LuaJIT.
 ]]
 
 layout.mainCanvas.align = 'top'
@@ -49,18 +37,9 @@ layout.mainCanvas.wrap = true
 
 -- help dialogs
 
-local aboutDialog = Layout(require 'layout.about')
-local licenseDialog = Layout(require 'layout.license')
-
-aboutDialog:setStyle(style)
-licenseDialog:setStyle(style)
-
-aboutDialog.closeButton:onPress(function()
-    aboutDialog:hide()
-end)
-
-licenseDialog.closeButton:onPress(function()
+layout.about:onPress(function()
     licenseDialog:hide()
+    aboutDialog:show()
 end)
 
 layout.license:onPress(function()
@@ -68,9 +47,12 @@ layout.license:onPress(function()
     licenseDialog:show()
 end)
 
-layout.about:onPress(function()
+aboutDialog.closeButton:onPress(function()
+    aboutDialog:hide()
+end)
+
+licenseDialog.closeButton:onPress(function()
     licenseDialog:hide()
-    aboutDialog:show()
 end)
 
 -- menu/view/theme
@@ -90,12 +72,12 @@ layout.themeDark:onPress(function (event)
 end)
 
 -- menu/file/quit
--- uses Backend for compat with love or ffisdl
+-- uses Backend for compat with Love or LuaJIT/SDL
 local Backend = require 'luigi.backend'
-layout.menuQuit:onPress(function (event) Backend.quit() end)
+layout.menuQuit:onPress(Backend.quit)
 
 -- show the main layout
 layout:show()
 
--- only needed when using ffisdl backend
+-- only needed when using LuaJIT/SDL
 Backend.run()

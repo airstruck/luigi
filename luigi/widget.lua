@@ -302,24 +302,31 @@ end
 function Widget:calculateDimension (name)
     checkReshape(self)
 
+    -- If dimensions are already calculated, return them.
     if self.dimensions[name] then
         return self.dimensions[name]
     end
 
+    -- Get minimum width/height from attributes.
     local min = (name == 'width') and (self.minwidth or 0)
         or (self.minheight or 0)
 
+    -- If width/height attribute is found (in widget, style or theme)
     if self[name] then
+        -- and if width/height is "auto" then shrink to fit content
         if self[name] == 'auto' then
             self.dimensions[name] = self:calculateDimensionMinimum(name)
             return self.dimensions[name]
         end
+        -- else width/height should be a number; use that value,
+        -- clamped to minimum.
         self.dimensions[name] = math.max(self[name], min)
         return self.dimensions[name]
     end
 
+    -- If the widget is a layout root (and has no width/height),
+    -- it's the same size as the window.
     local parent = self.parent
-
     if not parent then
         local windowWidth, windowHeight = Backend.getWindowSize()
         local size = name == 'width' and windowWidth or windowHeight
@@ -327,15 +334,24 @@ function Widget:calculateDimension (name)
         return self.dimensions[name]
     end
 
+    -- Widgets expand to fit their parents when no width/height is specified.
     local parentDimension = parent:calculateDimension(name)
     parentDimension = parentDimension - (parent.margin or 0) * 2
     parentDimension = parentDimension - (parent.padding or 0) * 2
+
+    -- If the dimension is in the opposite direction of the parent flow
+    -- (for example if parent.flow is 'x' and the dimension is 'height'),
+    -- then return the parent dimension.
     local parentFlow = parent.flow or 'y'
     if (parentFlow ~= 'x' and name == 'width')
     or (parentFlow == 'x' and name == 'height') then
         self.dimensions[name] = math.max(parentDimension, min)
         return self.dimensions[name]
     end
+
+    -- If the dimension is in the same direction as the parent flow
+    -- (for example if parent.flow is 'x' and the dimension is 'width'),
+    -- then return an equal portion of the unclaimed space in the parent.
     local claimed = 0
     local unsized = 1
     for i, widget in ipairs(self.parent) do
@@ -399,9 +415,7 @@ function Widget:calculatePosition (axis)
             or axis ~= 'x' and (parent.scrollY or 0)
     end
     local parentPos = parent:calculatePosition(axis)
-    local p = parentPos - scroll
-    p = p + (parent.margin or 0)
-    p = p + (parent.padding or 0)
+    local p = parentPos - scroll + (parent.margin or 0) + (parent.padding or 0)
     local parentFlow = parent.flow or 'y'
     for i, widget in ipairs(parent) do
         if widget == self then

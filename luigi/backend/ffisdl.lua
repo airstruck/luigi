@@ -35,6 +35,8 @@ end
 
 ffi.gc(renderer, sdl.destroyRenderer)
 
+sdl.setRenderDrawBlendMode(renderer, sdl.BLENDMODE_BLEND)
+
 local Backend = {}
 
 Backend.sdl = sdl

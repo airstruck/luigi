@@ -182,7 +182,7 @@ return function (self)
         self.fontData = Backend.Font(self.font, self.size)
     end
 
-    self.value = self.value or self.text or ''
+    self.value = tostring(self.value or self.text or '')
 
     self.text = ''
 

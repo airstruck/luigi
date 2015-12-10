@@ -62,6 +62,16 @@ return function (config)
         return self.parent and self.parent.flow == 'x' and 4
     end
 
+    local function getStepperBeforeIcon (self)
+        return self.parent.flow == 'x' and resources .. 'triangle_left.png'
+            or resources .. 'triangle_up.png'
+    end
+
+    local function getStepperAfterIcon (self)
+        return self.parent.flow == 'x' and resources .. 'triangle_right.png'
+            or resources .. 'triangle_down.png'
+    end
+
     local function getTextSlices (self)
         return self.focused and resources .. 'text_focused.png'
             or resources .. 'text.png'
@@ -73,36 +83,40 @@ return function (config)
             height = getControlHeight,
             width = getControlWidth,
             color = textColor,
-            minheight = 28,
-            minwidth = 28,
+            minheight = 36,
+            minwidth = 36,
             align = 'center middle',
+            margin = 2,
+            color = textColor,
         },
         button = {
             type = 'control',
             padding = 6,
             slices = getButtonSlices,
-            minwidth = 24,
-            minheight = 24,
             focusable = true,
-            color = textColor,
         },
         check = {
             type = 'control',
             focusable = true,
-            color = textColor,
             icon = getCheckOrRadioIcon,
+            margin = 0,
             padding = 4,
             align = 'left middle',
+            minheight = 24,
         },
         label = {
             type = 'control',
-            background = backColor,
-            padding = 4,
             align = 'left bottom',
-            height = 14,
+            margin = 0,
+            padding = 4,
+            minheight = 24,
+            height = 24,
         },
         menu = {
+            flow = 'x',
             height = 24,
+            background = backColor,
+            color = textColor,
         },
         ['menu.expander'] = {
             icon = resources .. 'triangle_right.png',
@@ -110,31 +124,31 @@ return function (config)
         ['menu.item'] = {
             padding = 4,
             align = 'left middle',
-            color = textColor,
             background = getMenuItemBackground,
         },
         panel = {
+            padding = 2,
             background = backColor,
             color = textColor,
         },
         progress = {
             type = 'control',
             slices = resources .. 'button_pressed.png',
-            padding = 0,
         },
         ['progress.bar'] = {
-            type = 'control',
             slices = resources .. 'progress.png',
-            padding = 0,
             minwidth = 12,
+            minheight= 22,
         },
         radio = {
             type = 'control',
             focusable = true,
             color = textColor,
             icon = getCheckOrRadioIcon,
+            margin = 0,
             padding = 4,
             align = 'left middle',
+            minheight = 24,
         },
         sash = {
             background = getSashBackground,
@@ -144,10 +158,17 @@ return function (config)
         slider = {
             type = 'control',
             slices = resources .. 'button_pressed.png',
-            padding = 0,
+        },
+        ['slider.thumb'] = {
+            type = 'button',
+            align = 'middle center',
+            margin = 0,
+            minwidth = 32,
+            minheight = 32,
         },
         status = {
-            type = 'panel',
+            background = backColor,
+            color = textColor,
             align = 'left middle',
             padding = 4,
             height = 22,
@@ -156,17 +177,26 @@ return function (config)
             type = 'control',
             slices = resources .. 'button_pressed.png',
         },
+        ['stepper.after'] = {
+            type = 'button',
+            icon = getStepperAfterIcon,
+            margin = 0,
+            minwidth = 32,
+            minheight = 32,
+        },
+        ['stepper.before'] = {
+            type = 'button',
+            icon = getStepperBeforeIcon,
+            margin = 0,
+            minwidth = 32,
+            minheight = 32,
+        },
         ['stepper.item'] = {
             align = 'center middle',
             color = textColor,
         },
-        ['stepper.left'] = {
-            type = 'button',
-            icon = resources .. 'triangle_left.png',
-        },
-        ['stepper.right'] = {
-            type = 'button',
-            icon = resources .. 'triangle_right.png',
+        ['stepper.view'] = {
+            margin = 4,
         },
         submenu = {
             padding = 10,

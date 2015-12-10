@@ -3,12 +3,14 @@ local Multiline = {}
 function Multiline.wrap (font, text, limit)
     local lines = {{ width = 0 }}
     local advance = 0
+    local lastSpaceAdvance = 0
 
     local function append (word, space)
         local wordAdvance = font:getAdvance(word)
         local spaceAdvance = font:getAdvance(space)
         local words = lines[#lines]
         if advance + wordAdvance > limit then
+            words.width = (words.width or 0) - lastSpaceAdvance
             advance = wordAdvance + spaceAdvance
             lines[#lines + 1] = { width = advance, word, space }
         else
@@ -17,6 +19,7 @@ function Multiline.wrap (font, text, limit)
             words[#words + 1] = word
             words[#words + 1] = space
         end
+        lastSpaceAdvance = spaceAdvance
     end
 
     local function appendFrag (frag, isFirst)

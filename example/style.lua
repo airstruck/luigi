@@ -1,9 +1,10 @@
 return {
-    short = {
-        height = 48,
-    },
     toolbar = {
-        style = 'short',
+        type = 'panel',
+        margin = 0,
+        padding = 0,
+        height = 'auto',
+        flow = 'x',
     },
     toolButton = {
         type = 'button',
@@ -21,11 +22,12 @@ return {
         align = 'left middle',
     },
     listThing = {
-        style = 'short',
         align = 'left middle',
-        outline = { 200, 200, 200 },
+        outline = { 128, 128, 128, 128 },
+        background = { 128, 128, 128, 64 },
         height = 120,
         padding = 8,
+        margin = 2,
         icon = 'icon/32px/Box.png',
         wrap = true,
     },
@@ -37,7 +39,7 @@ return {
     },
     dialogHead = {
         align = 'middle center',
-        height = 22,
+        height = 36,
         size = 16,
         type = 'panel',
     },
@@ -51,7 +53,6 @@ return {
         flow = 'x',
         height = 'auto',
         type = 'panel',
-        padding = 4,
     },
     dialogButton = {
         type = 'button',
