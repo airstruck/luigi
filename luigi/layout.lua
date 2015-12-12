@@ -265,6 +265,16 @@ function Layout:addDefaultHandlers ()
 
     self:onKeyPress(function (event)
 
+        -- keyboard accelerators
+        local entry = self.accelerators[event.modifierFlags]
+        local acceleratedWidget = entry and entry[event.key]
+        if acceleratedWidget then
+            acceleratedWidget.hovered = true
+            self.input:handlePressStart(self, event.key, event.x, event.y,
+                acceleratedWidget, event.key)
+            return false
+        end
+
         -- tab/shift-tab cycles focused widget
         if event.key == 'tab' then
             if Backend.isKeyDown('lshift', 'rshift') then
@@ -281,16 +291,6 @@ function Layout:addDefaultHandlers ()
         or event.key == 'return' then
             self.input:handlePressStart(self, event.key, event.x, event.y,
                 widget, event.key)
-            return false
-        end
-
-        -- accelerators
-        local entry = self.accelerators[event.modifierFlags]
-        local acceleratedWidget = entry and entry[event.key]
-        if acceleratedWidget then
-            acceleratedWidget.hovered = true
-            self.input:handlePressStart(self, event.key, event.x, event.y,
-                acceleratedWidget, event.key)
             return false
         end
     end)
