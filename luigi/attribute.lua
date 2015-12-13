@@ -157,9 +157,7 @@ in the same layout, or in the master layout if one exists.
 --]]--
 Attribute.status = {}
 
-function Attribute.status.get (widget, value)
-    return cascade(widget, 'status')
-end
+Attribute.status.get = cascade
 
 --[[--
 Scroll ability.
@@ -364,9 +362,7 @@ function Attribute.font.set (widget, value)
     widget.textData = nil
 end
 
-function Attribute.font.get (widget)
-    return cascade(widget, 'font')
-end
+Attribute.font.get = cascade
 
 --[[--
 Font size.
@@ -386,9 +382,7 @@ function Attribute.size.set (widget, value)
     widget.textData = nil
 end
 
-function Attribute.size.get (widget)
-    return cascade(widget, 'size')
-end
+Attribute.size.get = cascade
 
 --[[--
 Text Attributes.
@@ -427,9 +421,7 @@ function Attribute.color.set (widget, value)
     widget.textData = nil
 end
 
-function Attribute.color.get (widget)
-    return cascade(widget, 'color')
-end
+Attribute.color.get = cascade
 
 --[[--
 Text and icon alignment.
@@ -451,9 +443,7 @@ function Attribute.align.set (widget, value)
     widget.textData = nil
 end
 
-function Attribute.align.get (widget)
-    return cascade(widget, 'align')
-end
+Attribute.align.get = cascade
 
 --[[--
 Wrap text onto multiple lines.
@@ -473,9 +463,7 @@ function Attribute.wrap.set (widget, value)
     widget.textData = nil
 end
 
-function Attribute.wrap.get (widget)
-    return cascade(widget, 'wrap')
-end
+Attribute.wrap.get = cascade
 
 --[[--
 Visual Attributes.

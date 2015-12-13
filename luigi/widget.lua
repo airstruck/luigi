@@ -55,7 +55,8 @@ local function metaIndex (self, property)
     -- look in widget's own attributes
     local A = Attribute[property]
     if A then
-        local value = A.get and A.get(self) or self.attributes[property]
+        local value = A.get and A.get(self, property)
+            or self.attributes[property]
         if type(value) == 'function' then value = value(self) end
         if value ~= nil then return value end
     end
@@ -78,7 +79,7 @@ local function metaNewIndex (self, property, value)
     local A = Attribute[property]
     if A then
         if A.set then
-            A.set(self, value)
+            A.set(self, value, property)
         else
             self.attributes[property] = value
         end
