@@ -15,6 +15,13 @@ local ROOT = (...):gsub('[^.]*$', '')
 
 local Attribute = {}
 
+local function cascade (widget, attribute)
+    local value = widget.attributes[attribute]
+    if value ~= nil then return value end
+    local parent = widget.parent
+    return parent and parent[attribute]
+end
+
 --[[--
 Type of widget.
 
@@ -151,7 +158,7 @@ in the same layout, or in the master layout if one exists.
 Attribute.status = {}
 
 function Attribute.status.get (widget, value)
-    return widget.attributes.status or widget.parent and widget.parent.status
+    return cascade(widget, 'status')
 end
 
 --[[--
@@ -358,7 +365,7 @@ function Attribute.font.set (widget, value)
 end
 
 function Attribute.font.get (widget)
-    return widget.attributes.font or widget.parent and widget.parent.font
+    return cascade(widget, 'font')
 end
 
 --[[--
@@ -380,7 +387,7 @@ function Attribute.size.set (widget, value)
 end
 
 function Attribute.size.get (widget)
-    return widget.attributes.size or widget.parent and widget.parent.size
+    return cascade(widget, 'size')
 end
 
 --[[--
@@ -421,7 +428,7 @@ function Attribute.color.set (widget, value)
 end
 
 function Attribute.color.get (widget)
-    return widget.attributes.color or widget.parent and widget.parent.color
+    return cascade(widget, 'color')
 end
 
 --[[--
@@ -445,7 +452,7 @@ function Attribute.align.set (widget, value)
 end
 
 function Attribute.align.get (widget)
-    return widget.attributes.align or widget.parent and widget.parent.align
+    return cascade(widget, 'align')
 end
 
 --[[--
@@ -467,7 +474,7 @@ function Attribute.wrap.set (widget, value)
 end
 
 function Attribute.wrap.get (widget)
-    return widget.attributes.wrap or widget.parent and widget.parent.wrap
+    return cascade(widget, 'wrap')
 end
 
 --[[--

@@ -33,7 +33,7 @@ return function (self)
         local key = event.key
         if key == 'left' or key == 'down' then
             self.value = clamp(self.value - self.step)
-        elseif event.key == 'right' or key == 'up' then
+        elseif key == 'right' or key == 'up' then
             self.value = clamp(self.value + self.step)
         end
     end)
