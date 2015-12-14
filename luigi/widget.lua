@@ -53,7 +53,7 @@ end
 -- look for properties in attributes, Widget, style, and theme
 local function metaIndex (self, property)
     -- look in widget's own attributes
-    local A = Attribute[property]
+    local A = self.attributeDescriptors[property] or Attribute[property]
     if A then
         local value = A.get and A.get(self, property)
             or self.attributes[property]
@@ -76,7 +76,7 @@ end
 
 -- setting attributes triggers special behavior
 local function metaNewIndex (self, property, value)
-    local A = Attribute[property]
+    local A = self.attributeDescriptors[property] or Attribute[property]
     if A then
         if A.set then
             A.set(self, value, property)
@@ -121,6 +121,7 @@ local function metaCall (Widget, layout, self)
     self.position = { x = nil, y = nil }
     self.dimensions = { width = nil, height = nil }
     self.attributes = {}
+    self.attributeDescriptors = {}
 
     setmetatable(self, { __index = metaIndex, __newindex = metaNewIndex })
 
@@ -135,6 +136,26 @@ local function metaCall (Widget, layout, self)
         self[k].parent = self
     end
 
+    return self
+end
+
+--[[--
+Define a custom attribute for this widget.
+
+@tparam string name
+The name of the attribute.
+
+@tparam table descriptor
+A table, optionally containing `get` and `set` functions (see `Attribute`).
+
+@treturn Widget
+Return this widget for chaining.
+--]]--
+function Widget:defineAttribute (name, descriptor)
+    self.attributeDescriptors[name] = descriptor
+    local value = rawget(self, name)
+    rawset(self, name, nil)
+    self[name] = value
     return self
 end
 

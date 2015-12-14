@@ -15,22 +15,39 @@ standard themes, the widget's value should be indicated in some other way.
 @widget radio
 --]]--
 
--- TODO: make `group` a first-class attribute
 local groups = {}
 
-return function (self)
-    local groupName = self.group or 'default'
-
-    if not groups[groupName] then
-        groups[groupName] = {}
+local function remove (t, value)
+    for i, v in t do
+        if v == value then return table.remove(t, i) end
     end
+end
 
-    local group = groups[groupName]
-
+local function setGroup (self, value)
+    -- remove the widget from the old group
+    local oldValue = self.attributes.group
+    local oldGroup = oldValue and groups[oldValue]
+    if oldGroup then
+        remove(oldGroup, self)
+        if #oldGroup < 1 then
+            groups[oldValue] = nil
+        end
+    end
+    -- add the widget to the new group, or 'default' if no group specified
+    value = value or 'default'
+    if not groups[value] then
+        groups[value] = {}
+    end
+    local group = groups[value]
     group[#group + 1] = self
+    self.attributes.group = value
+end
+
+return function (self)
+    self:defineAttribute('group', { set = setGroup })
 
     self:onPress(function ()
-        for _, widget in ipairs(group) do
+        for _, widget in ipairs(groups[self.group]) do
             widget.value = widget == self
         end
     end)
