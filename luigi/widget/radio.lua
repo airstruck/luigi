@@ -1,11 +1,9 @@
 --[[--
-A radio button.
+A radio widget.
 
-Radio buttons change their @{attribute.value|value} attribute to
-`true` when pressed. Radio buttons should also have a `group`
-attribute. When a radio button is pressed, other radio buttons
-in the same layout with the same `group` attribute change their values
-to `false`.
+When pressed, a radio widget's @{attribute.value|value} changes to
+`true`, and the values of other radio widgets in the same `group`
+change to `false`.
 
 Changing the value of a radio button causes it to change its appearance to
 indicate its value. The standard themes use the @{attribute.icon|icon}
@@ -44,7 +42,27 @@ local function setGroup (self, value)
 end
 
 return function (self)
+--[[--
+Special Attributes
+
+@section special
+--]]--
+
+--[[--
+Widget group.
+
+Should contain a string identifying the widget's group.
+If not defined, defaults to the string `'default'`.
+
+When a radio widget is pressed, the values of other radio widgets
+in the same group change to `false`.
+
+@attrib group
+--]]--
     self:defineAttribute('group', { set = setGroup })
+--[[--
+@section end
+--]]--
 
     self:onPress(function ()
         for _, widget in ipairs(groups[self.group]) do

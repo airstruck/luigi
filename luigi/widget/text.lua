@@ -186,6 +186,25 @@ return function (self)
 
     self.text = ''
 
+--[[--
+Special Attributes
+
+@section special
+--]]--
+
+--[[--
+Highlight color.
+
+Should contain an array with 3 or 4 values (RGB or RGBA) from 0 to 255.
+
+This color is used to indicate the selected range of text.
+
+@attrib highlight
+--]]--
+    self:defineAttribute('highlight')
+--[[--
+@section end
+--]]--
     if not self.highlight then
         self.highlight = { 0x80, 0x80, 0x80 }
     end
@@ -266,14 +285,19 @@ return function (self)
         Backend.setScissor(x, y, w, h)
         Backend.setFont(font)
 
-        -- draw highlight
         if self.focused then
+            -- draw highlighted selection
             Backend.setColor(self.highlight)
             Backend.drawRectangle('fill', startX, y, width, height)
+            -- draw cursor selection
             if Backend.getTime() % 2 < 1.75 then
                 Backend.setColor(color)
                 Backend.drawRectangle('fill', endX, y, 1, height)
             end
+        else
+            Backend.setColor { color[1], color[2], color[3],
+                (color[4] or 256) / 8 }
+            Backend.drawRectangle('fill', startX, y, width, height)
         end
 
         -- draw text

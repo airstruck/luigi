@@ -4,6 +4,7 @@ Widget class.
 @classmod Widget
 --]]--
 
+local STRICT = false
 local ROOT = (...):gsub('[^.]*$', '')
 
 local Backend = require(ROOT .. 'backend')
@@ -15,7 +16,95 @@ local Widget = {}
 
 Event.injectBinders(Widget)
 
+--[[--
+API Properties
+
+These properties may be useful when creating user interfaces,
+and are a formal part of the API.
+
+@section api
+--]]--
+
+--[[--
+Whether this widget has keyboard focus.
+
+Can be used by styles and themes. This value is automatically set by
+the `Input` class, and should generally be treated as read-only.
+--]]--
+Widget.focused = false
+
+--[[--
+Whether the pointer is within this widget.
+
+Can be used by styles and themes. This value is automatically set by
+the `Input` class, and should generally be treated as read-only.
+--]]--
+Widget.hovered = false
+
+--[[--
+Whether the pointer was pressed on this widget and not yet released.
+
+Can be used by styles and themes. This value is automatically set by
+the `Input` class, and should generally be treated as read-only.
+--]]--
+Widget.pressed = false
+
+--[[--
+Used by some widgets to store unseen children.
+--]]--
+Widget.items = false
+-- TODO: make this a custom attribute, or
+-- maybe add a `visibile` attribute instead
+
+--[[--
+Internal Properties
+
+These properties are used internally, but are not likely to be useful
+when creating user interfaces; they are not a formal part of the API
+and may change at any time.
+
+@section internal
+--]]--
+
+--[[--
+Identifies this object as a widget.
+
+Can be used to determine whether an unknown object is a widget.
+--]]--
 Widget.isWidget = true
+
+--[[--
+Whether the widget is currently being reshaped.
+
+Used internally by `reshape` to prevent stack overflows when handling
+`Reshape` events.
+--]]--
+Widget.isReshaping = false
+
+--[[--
+Whether this widget has a type.
+
+Used by the @{attribute.type|type} attribute to determine whether to
+run the type initializer when the widget's type is set. After a type
+initializer has run, `hasType` becomes `true` and no other type
+initializers should run on the widget.
+--]]--
+Widget.hasType = false
+
+--[[--
+The `Font` object associated with the widget.
+--]]--
+Widget.fontData = false
+
+--[[--
+The `Text` object associated with the widget.
+--]]--
+Widget.textData = false
+
+
+--[[--
+@section end
+--]]--
 
 Widget.typeDecorators = {
     button = require(ROOT .. 'widget.button'),
@@ -84,7 +173,11 @@ local function metaNewIndex (self, property, value)
             self.attributes[property] = value
         end
     else
-        rawset(self, property, value)
+        if STRICT and Widget[property] == nil then
+            error(property .. ' is not a valid widget property.')
+        else
+            rawset(self, property, value)
+        end
     end
 end
 
@@ -152,7 +245,7 @@ A table, optionally containing `get` and `set` functions (see `Attribute`).
 Return this widget for chaining.
 --]]--
 function Widget:defineAttribute (name, descriptor)
-    self.attributeDescriptors[name] = descriptor
+    self.attributeDescriptors[name] = descriptor or {}
     local value = rawget(self, name)
     rawset(self, name, nil)
     self[name] = value
@@ -313,17 +406,7 @@ function Widget:addChild (data)
     return child
 end
 
-local function checkReshape (widget)
-    if widget.needsReshape then
-        widget.position = {}
-        widget.dimensions = {}
-        widget.needsReshape = nil
-    end
-end
-
 function Widget:calculateDimension (name)
-    checkReshape(self)
-
     -- If dimensions are already calculated, return them.
     if self.dimensions[name] then
         return self.dimensions[name]
@@ -423,8 +506,6 @@ local function calculateRootPosition (self, axis)
 end
 
 function Widget:calculatePosition (axis)
-    checkReshape(self)
-
     if self.position[axis] then
         return self.position[axis]
     end
@@ -605,13 +686,25 @@ The point's Y coordinate.
 true if the point is within the widget, else false.
 --]]--
 function Widget:isAt (x, y)
-    checkReshape(self)
-
     local x1, y1, w, h = self:getRectangle()
     local x2, y2 = x1 + w, y1 + h
     return (x1 <= x) and (x2 >= x) and (y1 <= y) and (y2 >= y)
 end
 
+--[[--
+Iterate widget's ancestors.
+
+@tparam boolean includeSelf
+Whether to include this widget as the first result.
+
+@treturn function
+Returns an iterator function that returns widgets.
+
+@usage
+for ancestor in myWidget:eachAncestor(true) do
+    print(widget.type or 'generic')
+end
+--]]--
 function Widget:eachAncestor (includeSelf)
     local instance = includeSelf and self or self.parent
     return function()
@@ -634,11 +727,12 @@ on the parent widget.
 function Widget:reshape ()
     if self.isReshaping then return end
     self.isReshaping = true
-    self.needsReshape = true
+
+    self.position = {}
+    self.dimensions = {}
+
     self.textData = nil
-    Event.Reshape:emit(self, {
-        target = self
-    })
+    Event.Reshape:emit(self, { target = self })
     for i, widget in ipairs(self) do
         if widget.reshape then
             widget:reshape()
