@@ -2,8 +2,8 @@
 A stepper.
 
 This widget is composed of two buttons and a content area.
-Upon creation, this widget's children are moved into an
-`items` property. The items are displayed one at a time in
+Upon creation, this widget's children are moved into the
+`items` attribute. The items are displayed one at a time in
 the content area. Pressing the buttons cycles through the
 item displayed in the content area.
 
@@ -11,6 +11,34 @@ item displayed in the content area.
 --]]--
 
 return function (self)
+
+--[[--
+Special Attributes
+
+@section special
+--]]--
+
+--[[--
+Content items.
+
+Contains an array of child widgets to be displayed.
+
+@attrib items
+--]]--
+    self:defineAttribute('items', {})
+
+--[[--
+Child item index.
+
+Contains the index in `items` of the item being displayed.
+
+@attrib index
+--]]--
+    self:defineAttribute('index', {})
+--[[--
+@section end
+--]]--
+
     self.items = {}
     self.index = 1
     self.flow = 'x' -- TODO: support vertical stepper

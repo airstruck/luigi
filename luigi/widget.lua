@@ -50,13 +50,6 @@ the `Input` class, and should generally be treated as read-only.
 Widget.pressed = false
 
 --[[--
-Used by some widgets to store unseen children.
---]]--
-Widget.items = false
--- TODO: make this a custom attribute, or
--- maybe add a `visibile` attribute instead
-
---[[--
 Internal Properties
 
 These properties are used internally, but are not likely to be useful
@@ -133,10 +126,6 @@ An initialization function for this type of widget.
 --]]--
 function Widget.register (name, decorator)
     Widget.typeDecorators[name] = decorator
-end
-
-local function maybeCall (something, ...)
-    return something
 end
 
 -- look for properties in attributes, Widget, style, and theme
