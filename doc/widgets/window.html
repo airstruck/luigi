@@ -1,0 +1,392 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css">
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<h1>LUIGI</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Widgets</h2>
+<ul class="nowrap">
+  <li><a href="../widgets/button.html">button</a></li>
+  <li><a href="../widgets/check.html">check</a></li>
+  <li><a href="../widgets/menu.html">menu</a></li>
+  <li><a href="../widgets/menu.item.html">menu.item</a></li>
+  <li><a href="../widgets/progress.html">progress</a></li>
+  <li><a href="../widgets/radio.html">radio</a></li>
+  <li><a href="../widgets/sash.html">sash</a></li>
+  <li><a href="../widgets/slider.html">slider</a></li>
+  <li><a href="../widgets/status.html">status</a></li>
+  <li><a href="../widgets/stepper.html">stepper</a></li>
+  <li><a href="../widgets/text.html">text</a></li>
+  <li><strong>window</strong></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/attribute.html">attribute</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Event.html">Event</a></li>
+  <li><a href="../classes/Layout.html">Layout</a></li>
+  <li><a href="../classes/Widget.html">Widget</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<div id="content_top">
+<h1>Widget <code>window</code></h1>
+<p>Window widget.</p>
+<p>Set properties of the window with this widget's attributes.
+This widget should only be used as the root widget of a layout.</p>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">
+<span class="comment">-- create a new window
+</span><span class="keyword">local</span> window = Layout {
+    <span class="global">type</span> = <span class="string">'window'</span>,
+    icon = <span class="string">'logo.png'</span>,
+    text = <span class="string">'Window Example'</span>,
+    width = <span class="number">800</span>,
+    height = <span class="number">600</span>,
+    { icon = <span class="string">'logo.png'</span>, text = <span class="string">'Window Example'</span>, align = <span class="string">'middle center'</span> },
+    { <span class="global">type</span> = <span class="string">'panel'</span>, flow = <span class="string">'x'</span>, height = <span class="string">'auto'</span>,
+        {}, <span class="comment">-- spacer
+</span>        { <span class="global">type</span> = <span class="string">'button'</span>, id = <span class="string">'quitButton'</span>, text = <span class="string">'Quit'</span> }
+    }
+}
+
+<span class="comment">-- handle quit button
+</span>window.quitButton:onPress(<span class="keyword">function</span> ()
+    <span class="global">os</span>.exit()
+<span class="keyword">end</span>)
+
+<span class="comment">-- show the window
+</span>window:show()</pre>
+    </ul>
+
+
+<h2><a href="#Special_Attributes">Special Attributes </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#maximized">maximized</a></td>
+	<td class="summary">Maximized.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#minimized">minimized</a></td>
+	<td class="summary">Minimized.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#borderless">borderless</a></td>
+	<td class="summary">Borderless.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#fullscreen">fullscreen</a></td>
+	<td class="summary">Fullscreen.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#grab">grab</a></td>
+	<td class="summary">Mouse grab.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#icon">icon</a></td>
+	<td class="summary">Window icon.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#maxwidth">maxwidth</a></td>
+	<td class="summary">Maximum width of the window's client area.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#maxheight">maxheight</a></td>
+	<td class="summary">Maximum height of the window's client area.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#minwidth">minwidth</a></td>
+	<td class="summary">Minimum width of the window's client area.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#minheight">minheight</a></td>
+	<td class="summary">Minimum height of the window's client area.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#top">top</a></td>
+	<td class="summary">Position of the window's top edge.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#left">left</a></td>
+	<td class="summary">Position of the window's left edge.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#width">width</a></td>
+	<td class="summary">Width of the window's content area.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#height">height</a></td>
+	<td class="summary">Height of the window's content area.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#title">title</a></td>
+	<td class="summary">Title of the window.</td>
+	</tr>
+</table>
+
+
+</div>
+
+    <h2 class="section-header "><a name="Special_Attributes"></a>Special Attributes </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "maximized"></a>
+    <strong>maximized</strong>
+    </dt>
+    <dd>
+    Maximized.  Set to <code>true</code> to make the window as large as possible.
+Set to <code>false</code> to restore the size and position.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "minimized"></a>
+    <strong>minimized</strong>
+    </dt>
+    <dd>
+    Minimized.  Set to <code>true</code> to minimize the window to an iconic representation.
+Set to <code>false</code> to restore the size and position.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "borderless"></a>
+    <strong>borderless</strong>
+    </dt>
+    <dd>
+    Borderless.  Set to <code>true</code> or <code>false</code> to change the border state of the window.
+You can't change the border state of a fullscreen window.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "fullscreen"></a>
+    <strong>fullscreen</strong>
+    </dt>
+    <dd>
+    Fullscreen.  Set to <code>true</code> or <code>false</code> to change the fullscreen state
+of the window.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "grab"></a>
+    <strong>grab</strong>
+    </dt>
+    <dd>
+    Mouse grab.  Set to <code>true</code> or <code>false</code> to change the window's input grab mode.
+When input is grabbed the mouse is confined to the window.</p>
+
+<p>If the caller enables a grab while another window is currently grabbed,
+the other window loses its grab in favor of the caller's window.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "icon"></a>
+    <strong>icon</strong>
+    </dt>
+    <dd>
+    Window icon.  Should be a string containing a path to an image.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "maxwidth"></a>
+    <strong>maxwidth</strong>
+    </dt>
+    <dd>
+    Maximum width of the window's client area.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "maxheight"></a>
+    <strong>maxheight</strong>
+    </dt>
+    <dd>
+    Maximum height of the window's client area.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "minwidth"></a>
+    <strong>minwidth</strong>
+    </dt>
+    <dd>
+    Minimum width of the window's client area.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "minheight"></a>
+    <strong>minheight</strong>
+    </dt>
+    <dd>
+    Minimum height of the window's client area.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "top"></a>
+    <strong>top</strong>
+    </dt>
+    <dd>
+    Position of the window's top edge.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "left"></a>
+    <strong>left</strong>
+    </dt>
+    <dd>
+    Position of the window's left edge.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "width"></a>
+    <strong>width</strong>
+    </dt>
+    <dd>
+    Width of the window's content area.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "height"></a>
+    <strong>height</strong>
+    </dt>
+    <dd>
+    Height of the window's content area.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "title"></a>
+    <strong>title</strong>
+    </dt>
+    <dd>
+    Title of the window.
+
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2015-12-17 04:20:17 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

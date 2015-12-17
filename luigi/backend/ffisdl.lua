@@ -15,9 +15,10 @@ local IntOut = ffi.typeof 'int[1]'
 local stack = {}
 
 -- create window and renderer
-sdl.setHint(sdl.HINT_VIDEO_ALLOW_SCREENSAVER, '1')
+sdl.enableScreenSaver()
 
-local window = sdl.createWindow('', 0, 0, 800, 600,
+local window = sdl.createWindow('',
+    sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, 800, 600,
     sdl.WINDOW_SHOWN + sdl.WINDOW_RESIZABLE)
 
 if window == nil then
@@ -337,20 +338,52 @@ function Backend.show (layout)
     end)
 end
 
+function Backend.getWindowMaximized ()
+    local flags = sdl.getWindowFlags(window)
+    return bit.band(flags, sdl.WINDOW_MAXIMIZED) ~= 0
+end
+
 function Backend.setWindowMaximized (maximized)
-    return maximized and sdl.maximizeWindow(window) or sdl.restoreWindow(window)
+    if maximized then
+        sdl.maximizeWindow(window)
+    else
+        sdl.restoreWindow(window)
+    end
+end
+
+function Backend.getWindowMinimized ()
+    local flags = sdl.getWindowFlags(window)
+    return bit.band(flags, sdl.WINDOW_MINIMIZED) ~= 0
 end
 
 function Backend.setWindowMinimized (minimized)
-    return minimized and sdl.minimizeWindow(window) or sdl.restoreWindow(window)
+    if minimized then
+        sdl.minimizeWindow(window)
+    else
+        sdl.restoreWindow(window)
+    end
+end
+
+function Backend.getWindowBorderless ()
+    local flags = sdl.getWindowFlags(window)
+    return bit.band(flags, sdl.WINDOW_BORDERLESS) ~= 0
 end
 
 function Backend.setWindowBorderless (borderless)
     return sdl.setWindowBordered(window, not borderless)
 end
 
+function Backend.getWindowFullscreen ()
+    local flags = sdl.getWindowFlags(window)
+    return bit.band(flags, sdl.WINDOW_FULLSCREEN) ~= 0
+end
+
 function Backend.setWindowFullscreen (fullscreen)
     return sdl.setWindowFullscreen(window, not not fullscreen)
+end
+
+function Backend.getWindowGrab ()
+    return sdl.getWindowGrab(window)
 end
 
 function Backend.setWindowGrab (grab)
@@ -366,56 +399,108 @@ function Backend.setWindowIcon (icon)
     if surface == nil then
         error(ffi.string(sdl.getError()))
     end
-    
+
     sdl.setWindowIcon(window, surface)
+end
+
+function Backend.getWindowMaxwidth ()
+    local w, h = IntOut(), IntOut()
+    sdl.getWindowMaximumSize(window, w, h)
+    return w[0]
 end
 
 function Backend.setWindowMaxwidth (maxwidth)
     local w, h = IntOut(), IntOut()
     sdl.getWindowMaximumSize(window, w, h)
-    sdl.setWindowMaximumSize(window, maxwidth, h[0] ~= nil and h[0] or math.huge)
+    sdl.setWindowMaximumSize(window, maxwidth, h[0] or 16384)
+end
+
+function Backend.getWindowMaxheight ()
+    local w, h = IntOut(), IntOut()
+    sdl.getWindowMaximumSize(window, w, h)
+    return h[0]
 end
 
 function Backend.setWindowMaxheight (maxheight)
     local w, h = IntOut(), IntOut()
     sdl.getWindowMaximumSize(window, w, h)
-    sdl.setWindowMaximumSize(window, w[0] ~= nil and w[0] or math.huge, maxheight)
+    sdl.setWindowMaximumSize(window, w[0] or 16384, maxheight)
+end
+
+function Backend.getWindowMinwidth ()
+    local w, h = IntOut(), IntOut()
+    sdl.getWindowMinimumSize(window, w, h)
+    return w[0]
 end
 
 function Backend.setWindowMinwidth (minwidth)
     local w, h = IntOut(), IntOut()
     sdl.getWindowMinimumSize(window, w, h)
-    sdl.setWindowMinimumSize(window, minwidth, h[0] ~= nil and h[0] or 0)
+    sdl.setWindowMinimumSize(window, minwidth,  h[0] or 0)
+end
+
+function Backend.getWindowMinheight ()
+    local w, h = IntOut(), IntOut()
+    sdl.getWindowMinimumSize(window, w, h)
+    return h[0]
 end
 
 function Backend.setWindowMinheight (minheight)
     local w, h = IntOut(), IntOut()
     sdl.getWindowMinimumSize(window, w, h)
-    sdl.setWindowMinimumSize(window, w[0] ~= nil and w[0] or 0, minheight)
+    sdl.setWindowMinimumSize(window, w[0] or 0, minheight)
+end
+
+function Backend.getWindowTop ()
+    local x, y = IntOut(), IntOut()
+    sdl.getWindowPosition(window, x, y)
+    return y[0]
 end
 
 function Backend.setWindowTop (top)
     local x, y = IntOut(), IntOut()
     sdl.getWindowPosition(window, x, y)
-    sdl.setWindowPosition(window, x[0] ~= nil and x[0] or 0, top)
+    sdl.setWindowPosition(window, x[0] or 0, top)
+end
+
+function Backend.getWindowLeft ()
+    local x, y = IntOut(), IntOut()
+    sdl.getWindowPosition(window, x, y)
+    return x[0]
 end
 
 function Backend.setWindowLeft (left)
     local x, y = IntOut(), IntOut()
     sdl.getWindowPosition(window, x, y)
-    sdl.setWindowPosition(window, left, y[0] ~= nil and y[0] or 0)
+    sdl.setWindowPosition(window, left, y[0] or 0)
+end
+
+function Backend.getWindowWidth ()
+    local w, h = IntOut(), IntOut()
+    sdl.getWindowSize(window, w, h)
+    return w[0]
 end
 
 function Backend.setWindowWidth (width)
     local w, h = IntOut(), IntOut()
     sdl.getWindowSize(window, w, h)
-    sdl.setWindowSize(window, width, h[0] ~= nil and h[0] or 600)
+    sdl.setWindowSize(window, width, h[0] or 600)
+end
+
+function Backend.getWindowHeight ()
+    local w, h = IntOut(), IntOut()
+    sdl.getWindowSize(window, w, h)
+    return h[0]
 end
 
 function Backend.setWindowHeight (height)
     local w, h = IntOut(), IntOut()
     sdl.getWindowSize(window, w, h)
-    sdl.setWindowSize(window, w[0] ~= nil and w[0] or 800, height)
+    sdl.setWindowSize(window, w[0] or 800, height)
+end
+
+function Backend.getWindowTitle (title)
+    return sdl.getWindowTitle(window)
 end
 
 function Backend.setWindowTitle (title)

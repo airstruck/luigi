@@ -7,7 +7,7 @@ This widget should only be used as the root widget of a layout.
 @usage
 -- create a new window
 local window = Layout {
-    type = 'window', 
+    type = 'window',
     icon = 'logo.png',
     text = 'Window Example',
     width = 800,
@@ -42,244 +42,210 @@ Special Attributes
 --]]--
 
 --[[--
-Maximized.
+Maximized. Set to `true` to make the window as large as possible.
+Set to `false` to restore the size and position.
 
 @attrib maximized
 --]]--
-    local maximized
-    
     self:defineAttribute('maximized', {
         set = function (_, value)
-            if not value then return end
-            maximized = value
-            Backend.setWindowMaximized(maximized)
-        end, 
-        get = function () return maximized end
+            if value == nil then return end
+            Backend.setWindowMaximized(value)
+        end,
+        get = Backend.getWindowMaximized
     })
 
 --[[--
-Minimized.
+Minimized. Set to `true` to minimize the window to an iconic representation.
+Set to `false` to restore the size and position.
 
 @attrib minimized
 --]]--
-    local minimized
-    
     self:defineAttribute('minimized', {
         set = function (_, value)
-            if not value then return end
-            minimized = value
-            Backend.setWindowMinimized(minimized)
-        end, 
-        get = function () return minimized end
+            if value == nil then return end
+            Backend.setWindowMinimized(value)
+        end,
+        get = Backend.getWindowMinimized
     })
 
 --[[--
-Borderless.
+Borderless. Set to `true` or `false` to change the border state of the window.
+You can't change the border state of a fullscreen window.
 
 @attrib borderless
 --]]--
-    local borderless
-    
     self:defineAttribute('borderless', {
         set = function (_, value)
-            if not value then return end
-            borderless = value
-            Backend.setWindowBorderless(borderless)
-        end, 
-        get = function () return borderless end
+            if value == nil then return end
+            Backend.setWindowBorderless(value)
+        end,
+        get = Backend.getWindowBorderless
     })
 
 --[[--
-Fullscreen.
+Fullscreen. Set to `true` or `false` to change the fullscreen state
+of the window.
 
 @attrib fullscreen
 --]]--
-    local fullscreen
-    
     self:defineAttribute('fullscreen', {
         set = function (_, value)
-            if not value then return end
-            fullscreen = value
-            Backend.setWindowFullscreen(fullscreen)
-        end, 
-        get = function () return fullscreen end
+            if value == nil then return end
+            Backend.setWindowFullscreen(value)
+        end,
+        get = Backend.getWindowFullscreen
     })
 
 --[[--
-Grab mouse.
+Mouse grab. Set to `true` or `false` to change the window's input grab mode.
+When input is grabbed the mouse is confined to the window.
+
+If the caller enables a grab while another window is currently grabbed,
+the other window loses its grab in favor of the caller's window.
 
 @attrib grab
 --]]--
-    local grab
-    
     self:defineAttribute('grab', {
         set = function (_, value)
-            if not value then return end
-            grab = value
-            Backend.setWindowGrab(grab)
-        end, 
-        get = function () return grab end
+            if value == nil then return end
+            Backend.setWindowGrab(value)
+        end,
+        get = Backend.getWindowGrab
     })
 
 --[[--
-Icon.
+Window icon. Should be a string containing a path to an image.
 
 @attrib icon
 --]]--
     local icon
-    
+
     self:defineAttribute('icon', {
         set = function (_, value)
-            if not value then return end
+            if value == nil then return end
             icon = value
-            Backend.setWindowIcon(icon)
-        end, 
+            Backend.setWindowIcon(value)
+        end,
         get = function () return icon end
     })
 
     self.attributes.icon = nil
 --[[--
-Maximum width.
+Maximum width of the window's client area.
 
 @attrib maxwidth
 --]]--
-    local maxwidth
-
     self:defineAttribute('maxwidth', {
         set = function (_, value)
-            if not value then return end
-            maxwidth = value
-            Backend.setWindowMaxwidth(maxwidth)
-        end, 
-        get = function () return maxwidth end
+            if value == nil then return end
+            Backend.setWindowMaxwidth(value)
+        end,
+        get = Backend.getWindowMaxwidth
     })
 
 --[[--
-Maximum height.
+Maximum height of the window's client area.
 
 @attrib maxheight
 --]]--
-    local maxheight
-
     self:defineAttribute('maxheight', {
         set = function (_, value)
-            if not value then return end
-            maxheight = value
-            Backend.setWindowMaxheight(maxheight)
-        end, 
-        get = function () return maxheight end
+            if value == nil then return end
+            Backend.setWindowMaxheight(value)
+        end,
+        get = Backend.getWindowMaxheight
     })
 
 --[[--
-Minimum width.
+Minimum width of the window's client area.
 
 @attrib minwidth
 --]]--
-    local minwidth
-
     self:defineAttribute('minwidth', {
         set = function (_, value)
-            if not value then return end
-            minwidth = value
-            Backend.setWindowMinwidth(minwidth)
-        end, 
-        get = function () return minwidth end
+            if value == nil then return end
+            Backend.setWindowMinwidth(value)
+        end,
+        get = Backend.getWindowMinwidth
     })
 
 --[[--
-Minimum height.
+Minimum height of the window's client area.
 
 @attrib minheight
 --]]--
-    local minheight
-
     self:defineAttribute('minheight', {
         set = function (_, value)
-            if not value then return end
-            minheight = value
-            Backend.setWindowMinheight(minheight)
-        end, 
-        get = function () return minheight end
+            if value == nil then return end
+            Backend.setWindowMinheight(value)
+        end,
+        get = Backend.getWindowMinheight
     })
 
 --[[--
-Top position.
+Position of the window's top edge.
 
 @attrib top
 --]]--
-    local top
-
     self:defineAttribute('top', {
         set = function (_, value)
-            if not value then return end
-            top = value
-            Backend.setWindowTop(top)
-        end, 
-        get = function () return top end
+            if value == nil then return end
+            Backend.setWindowTop(value)
+        end,
+        get = Backend.getWindowTop
     })
 
 --[[--
-Left position.
+Position of the window's left edge.
 
 @attrib left
 --]]--
-    local left
-
     self:defineAttribute('left', {
         set = function (_, value)
-            if not value then return end
-            left = value
-            Backend.setWindowLeft(left)
-        end, 
-        get = function () return left end
+            if value == nil then return end
+            Backend.setWindowLeft(value)
+        end,
+        get = Backend.getWindowLeft
     })
 
 --[[--
-Width.
+Width of the window's content area.
 
 @attrib width
 --]]--
-    local width
-
     self:defineAttribute('width', {
         set = function (_, value)
-            if not value then return end
-            width = value
-            Backend.setWindowWidth(width)
-        end, 
-        get = function () return width end
+            if value == nil then return end
+            Backend.setWindowWidth(value)
+        end,
+        get = Backend.getWindowWidth
     })
 
 --[[--
-Height.
+Height of the window's content area.
 
 @attrib height
 --]]--
-    local height
-
     self:defineAttribute('height', {
         set = function (_, value)
-            if not value then return end
-            height = value
-            Backend.setWindowHeight(height)
-        end, 
-        get = function () return height end
+            if value == nil then return end
+            Backend.setWindowHeight(value)
+        end,
+        get = Backend.getWindowHeight
     })
 
 --[[--
-Title.
+Title of the window.
 
 @attrib title
 --]]--
-    local title
-
     self:defineAttribute('title', {
         set = function (_, value)
-            if not value then return end
-            title = value
-            Backend.setWindowTitle(title)
-        end, 
-        get = function () return title end
+            if value == nil then return end
+            Backend.setWindowTitle(value)
+        end,
+        get = Backend.getWindowTitle
     })
 
 --[[--

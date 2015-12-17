@@ -214,8 +214,15 @@ function Input:handleReshape (layout, width, height)
     local root = layout.root
 
     root:reshape()
-    root.dimensions.width = width
-    root.dimensions.height = height
+
+    if root.type ~= 'window' then
+        if not root.width then
+            root.dimensions.width = width
+        end
+        if not root.height then
+            root.dimensions.height = height
+        end
+    end
 
     Event.Reshape:emit(layout, { target = layout })
 end
