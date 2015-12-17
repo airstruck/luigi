@@ -111,6 +111,7 @@ Widget.typeDecorators = {
     status = require(ROOT .. 'widget.status'),
     stepper = require(ROOT .. 'widget.stepper'),
     text = require(ROOT .. 'widget.text'),
+    window = require(ROOT .. 'widget.window'),
 }
 
 --[[--
@@ -244,8 +245,8 @@ A table, optionally containing `get` and `set` functions (see `Attribute`).
 Return this widget for chaining.
 --]]--
 function Widget:defineAttribute (name, descriptor)
+    local value = self[name]
     self.attributeDescriptors[name] = descriptor or {}
-    local value = rawget(self, name)
     rawset(self, name, nil)
     self[name] = value
     return self

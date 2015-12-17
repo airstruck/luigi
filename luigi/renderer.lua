@@ -128,7 +128,7 @@ end
 
 -- returns icon coordinates and rectangle with remaining space
 function Renderer:positionIcon (widget, x1, y1, x2, y2)
-    if not widget.icon then
+    if not widget.attributes.icon then
         return nil, nil, x1, y1, x2, y2
     end
 
@@ -219,7 +219,7 @@ function Renderer:renderIconAndText (widget)
     local font, textX, textY = self:positionText(
         widget, x1, y1, x2, y2)
 
-    local icon = widget.icon and self:loadImage(widget.icon)
+    local icon = widget.attributes.icon and self:loadImage(widget.icon)
     local text = widget.text
     local align = widget.align or ''
     local padding = widget.padding or 0
