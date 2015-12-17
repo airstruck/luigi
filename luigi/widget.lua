@@ -114,6 +114,12 @@ Widget.typeDecorators = {
 }
 
 --[[--
+Static Functions
+
+@section static
+--]]--
+
+--[[--
 Register a custom widget type.
 
 @static
@@ -127,6 +133,10 @@ An initialization function for this type of widget.
 function Widget.register (name, decorator)
     Widget.typeDecorators[name] = decorator
 end
+
+--[[--
+@section end
+--]]--
 
 -- look for properties in attributes, Widget, style, and theme
 local function metaIndex (self, property)
