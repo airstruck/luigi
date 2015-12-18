@@ -634,6 +634,13 @@ function Widget:getContentHeight ()
     return height
 end
 
+function Widget:getFont ()
+    if not self.fontData then
+        self.fontData = Font(self.font, self.size)
+    end
+    return self.fontData
+end
+    
 --[[--
 Get x/y/width/height values describing a rectangle within the widget.
 

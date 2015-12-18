@@ -51,6 +51,7 @@ Set to `false` to restore the size and position.
         set = function (_, value)
             if value == nil then return end
             Backend.setWindowMaximized(value)
+            self.layout.root:reshape()
         end,
         get = Backend.getWindowMaximized
     })
@@ -79,6 +80,7 @@ You can't change the border state of a fullscreen window.
         set = function (_, value)
             if value == nil then return end
             Backend.setWindowBorderless(value)
+            self.layout.root:reshape()
         end,
         get = Backend.getWindowBorderless
     })
@@ -93,6 +95,7 @@ of the window.
         set = function (_, value)
             if value == nil then return end
             Backend.setWindowFullscreen(value)
+            self.layout.root:reshape()
         end,
         get = Backend.getWindowFullscreen
     })
@@ -127,10 +130,8 @@ Window icon. Should be a string containing a path to an image.
             icon = value
             Backend.setWindowIcon(value)
         end,
-        get = function () return icon end
+        -- get = function () return false end
     })
-
-    self.attributes.icon = nil
 --[[--
 Maximum width of the window's client area.
 
@@ -193,7 +194,7 @@ Position of the window's top edge.
             if value == nil then return end
             Backend.setWindowTop(value)
         end,
-        get = Backend.getWindowTop
+        -- get = Backend.getWindowTop
     })
 
 --[[--
@@ -206,7 +207,7 @@ Position of the window's left edge.
             if value == nil then return end
             Backend.setWindowLeft(value)
         end,
-        get = Backend.getWindowLeft
+        -- get = Backend.getWindowLeft
     })
 
 --[[--
@@ -218,6 +219,7 @@ Width of the window's content area.
         set = function (_, value)
             if value == nil then return end
             Backend.setWindowWidth(value)
+            self.layout.root:reshape()
         end,
         get = Backend.getWindowWidth
     })
@@ -231,6 +233,7 @@ Height of the window's content area.
         set = function (_, value)
             if value == nil then return end
             Backend.setWindowHeight(value)
+            self.layout.root:reshape()
         end,
         get = Backend.getWindowHeight
     })

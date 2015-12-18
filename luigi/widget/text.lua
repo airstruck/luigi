@@ -277,7 +277,7 @@ This color is used to indicate the selected range of text.
         local startX, endX = self.startX or 0, self.endX or 0
         local x, y, w, h = self:getRectangle(true, true)
         local width, height = endX - startX, h
-        local font = self.fontData
+        local font = self:getFont()
         local color = self.color or { 0, 0, 0, 255 }
         local textTop = math.floor(y + (h - font:getLineHeight()) / 2)
 

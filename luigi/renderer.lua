@@ -11,8 +11,6 @@ local Renderer = Base:extend()
 local imageCache = {}
 local sliceCache = {}
 
-
-
 local function intersectScissor (x, y, w, h)
     local sx, sy, sw, sh = Backend.getScissor()
     if not sx then
@@ -128,7 +126,7 @@ end
 
 -- returns icon coordinates and rectangle with remaining space
 function Renderer:positionIcon (widget, x1, y1, x2, y2)
-    if not widget.attributes.icon then
+    if not widget.icon then
         return nil, nil, x1, y1, x2, y2
     end
 
@@ -167,11 +165,7 @@ function Renderer:positionText (widget, x1, y1, x2, y2)
         return nil, nil, x1, y1, x2, y2
     end
 
-    if not widget.fontData then
-        widget.fontData = Font(widget.font, widget.size)
-    end
-
-    local font = widget.fontData
+    local font = widget:getFont()
     local align = widget.align or ''
     local horizontal = 'left'
 
@@ -206,12 +200,9 @@ function Renderer:positionText (widget, x1, y1, x2, y2)
 end
 
 function Renderer:renderIconAndText (widget)
+    if not (widget.icon or widget.text) then return end
     local x, y, w, h = widget:getRectangle(true, true)
-
-    -- if the drawable area has no width or height, don't render
-    if w < 1 or h < 1 then
-        return
-    end
+    if w < 1 or h < 1 then return end
 
     -- calculate position for icon and text based on alignment and padding
     local iconX, iconY, x1, y1, x2, y2 = self:positionIcon(
@@ -219,7 +210,7 @@ function Renderer:renderIconAndText (widget)
     local font, textX, textY = self:positionText(
         widget, x1, y1, x2, y2)
 
-    local icon = widget.attributes.icon and self:loadImage(widget.icon)
+    local icon = widget.icon and self:loadImage(widget.icon)
     local text = widget.text
     local align = widget.align or ''
     local padding = widget.padding or 0
