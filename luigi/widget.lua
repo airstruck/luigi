@@ -10,6 +10,7 @@ local ROOT = (...):gsub('[^.]*$', '')
 local Backend = require(ROOT .. 'backend')
 local Event = require(ROOT .. 'event')
 local Attribute = require(ROOT .. 'attribute')
+local Painter = require(ROOT .. 'painter')
 local Font = Backend.Font
 
 local Widget = {}
@@ -215,6 +216,7 @@ local function metaCall (Widget, layout, self)
     self.dimensions = { width = nil, height = nil }
     self.attributes = {}
     self.attributeDescriptors = {}
+    self.painter = Painter(self)
 
     setmetatable(self, { __index = metaIndex, __newindex = metaNewIndex })
 
@@ -483,7 +485,7 @@ function Widget:calculateDimension (name)
     return size
 end
 
-local function calculateRootPosition (self, axis)
+function Widget:calculateRootPosition (axis)
     local value = (axis == 'x' and self.left) or (axis ~= 'x' and self.top)
 
     if value then
@@ -512,7 +514,7 @@ function Widget:calculatePosition (axis)
     local parent = self.parent
     local scroll = 0
     if not parent then
-        return calculateRootPosition(self, axis)
+        return self:calculateRootPosition(axis)
     else
         scroll = axis == 'x' and (parent.scrollX or 0)
             or axis ~= 'x' and (parent.scrollY or 0)
@@ -640,7 +642,7 @@ function Widget:getFont ()
     end
     return self.fontData
 end
-    
+
 --[[--
 Get x/y/width/height values describing a rectangle within the widget.
 
@@ -720,6 +722,10 @@ function Widget:eachAncestor (includeSelf)
         instance = widget.parent
         return widget
     end
+end
+
+function Widget:paint ()
+    return self.painter:paint()
 end
 
 --[[--

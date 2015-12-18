@@ -35,6 +35,14 @@ local ROOT = (...):gsub('[^.]*.[^.]*$', '')
 local Backend = require(ROOT .. 'backend')
 
 return function (self)
+
+    function self:calculateRootPosition (axis)
+        self.position[axis] = 0
+        return 0
+    end
+
+    function self.painter:paintIconAndText () end
+
 --[[--
 Special Attributes
 
@@ -130,7 +138,7 @@ Window icon. Should be a string containing a path to an image.
             icon = value
             Backend.setWindowIcon(value)
         end,
-        -- get = function () return false end
+        get = function () return icon end
     })
 --[[--
 Maximum width of the window's client area.
@@ -194,7 +202,7 @@ Position of the window's top edge.
             if value == nil then return end
             Backend.setWindowTop(value)
         end,
-        -- get = Backend.getWindowTop
+        get = Backend.getWindowTop
     })
 
 --[[--
@@ -207,7 +215,7 @@ Position of the window's left edge.
             if value == nil then return end
             Backend.setWindowLeft(value)
         end,
-        -- get = Backend.getWindowLeft
+        get = Backend.getWindowLeft
     })
 
 --[[--

@@ -3,7 +3,6 @@ local Backend = require 'luigi.backend'
 
 local window = Layout {
     type = 'window',
-    background = { 255, 255, 255 },
     icon = 'logo.png',
     title = 'Test window',
     width = 300,

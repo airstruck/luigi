@@ -3,7 +3,6 @@ local ROOT = (...):gsub('[^.]*$', '')
 local Backend = require(ROOT .. 'backend')
 local Base = require(ROOT .. 'base')
 local Event = require(ROOT .. 'event')
-local Renderer = require(ROOT .. 'renderer')
 
 local Input = Base:extend()
 
@@ -17,7 +16,7 @@ end
 
 function Input:handleDisplay (layout)
     local root = layout.root
-    if root then Renderer:render(root) end
+    if root then root:paint() end
     Event.Display:emit(layout)
 end
 
@@ -215,7 +214,7 @@ function Input:handleReshape (layout, width, height)
 
     root:reshape()
 
-    if root.type ~= 'window' then
+    if root.type ~= 'window' then -- FIXME: move stuff below to a Widget method
         if not root.width then
             root.dimensions.width = width
         end

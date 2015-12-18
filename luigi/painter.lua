@@ -6,7 +6,7 @@ local Event = require(ROOT .. 'event')
 local Font = Backend.Font
 local Text = Backend.Text
 
-local Renderer = Base:extend()
+local Painter = Base:extend()
 
 local imageCache = {}
 local sliceCache = {}
@@ -28,7 +28,11 @@ local function intersectScissor (x, y, w, h)
     end
 end
 
-function Renderer:loadImage (path)
+function Painter:constructor (widget)
+    self.widget = widget
+end
+
+function Painter:loadImage (path)
     if not imageCache[path] then
         imageCache[path] = Backend.Image(path)
     end
@@ -38,7 +42,7 @@ end
 
 -- TODO: make slices a seperate drawable
 
-function Renderer:loadSlices (path)
+function Painter:loadSlices (path)
     local slices = sliceCache[path]
 
     if not slices then
@@ -69,8 +73,8 @@ function Renderer:loadSlices (path)
     return slices
 end
 
-function Renderer:renderSlices (widget)
-
+function Painter:paintSlices ()
+    local widget = self.widget
     local path = widget.slices
     if not path then return end
 
@@ -104,7 +108,8 @@ function Renderer:renderSlices (widget)
     Backend.draw(batch)
 end
 
-function Renderer:renderBackground (widget)
+function Painter:paintBackground ()
+    local widget = self.widget
     if not widget.background then return end
     local x, y, w, h = widget:getRectangle(true)
 
@@ -114,7 +119,8 @@ function Renderer:renderBackground (widget)
     Backend.pop()
 end
 
-function Renderer:renderOutline (widget)
+function Painter:paintOutline ()
+    local widget = self.widget
     if not widget.outline then return end
     local x, y, w, h = widget:getRectangle(true)
 
@@ -125,7 +131,8 @@ function Renderer:renderOutline (widget)
 end
 
 -- returns icon coordinates and rectangle with remaining space
-function Renderer:positionIcon (widget, x1, y1, x2, y2)
+function Painter:positionIcon (x1, y1, x2, y2)
+    local widget = self.widget
     if not widget.icon then
         return nil, nil, x1, y1, x2, y2
     end
@@ -160,7 +167,8 @@ function Renderer:positionIcon (widget, x1, y1, x2, y2)
 end
 
 -- returns text coordinates
-function Renderer:positionText (widget, x1, y1, x2, y2)
+function Painter:positionText (x1, y1, x2, y2)
+    local widget = self.widget
     if not widget.text or x1 >= x2 then
         return nil, nil, x1, y1, x2, y2
     end
@@ -199,16 +207,17 @@ function Renderer:positionText (widget, x1, y1, x2, y2)
     return font, x1, y
 end
 
-function Renderer:renderIconAndText (widget)
+function Painter:paintIconAndText ()
+    local widget = self.widget
     if not (widget.icon or widget.text) then return end
     local x, y, w, h = widget:getRectangle(true, true)
     if w < 1 or h < 1 then return end
 
     -- calculate position for icon and text based on alignment and padding
     local iconX, iconY, x1, y1, x2, y2 = self:positionIcon(
-        widget, x, y, x + w, y + h)
+        x, y, x + w, y + h)
     local font, textX, textY = self:positionText(
-        widget, x1, y1, x2, y2)
+        x1, y1, x2, y2)
 
     local icon = widget.icon and self:loadImage(widget.icon)
     local text = widget.text
@@ -265,36 +274,37 @@ function Renderer:renderIconAndText (widget)
     Backend.pop()
 end
 
-function Renderer:renderChildren (widget)
+function Painter:paintChildren ()
+    local widget = self.widget
     for i, child in ipairs(widget) do
-        self:render(child)
+        child:paint()
     end
 end
 
-function Renderer:render (widget)
+function Painter:paint ()
+    local widget = self.widget
     Event.PreDisplay:emit(widget, { target = widget }, function()
 
         local x, y, w, h = widget:getRectangle()
 
-        -- if the drawable area has no width or height, don't render
+        -- if the drawable area has no width or height, don't paint
         if w < 1 or h < 1 then
             return
         end
 
         Backend.push()
 
-        local parent = widget.parent
-        if parent then
+        if widget.parent then
             intersectScissor(x, y, w, h)
         else
             Backend.setScissor()
         end
 
-        self:renderBackground(widget)
-        self:renderOutline(widget)
-        self:renderSlices(widget)
-        self:renderIconAndText(widget)
-        self:renderChildren(widget)
+        self:paintBackground()
+        self:paintOutline()
+        self:paintSlices()
+        self:paintIconAndText()
+        self:paintChildren()
 
         Backend.pop()
 
@@ -302,4 +312,4 @@ function Renderer:render (widget)
     Event.Display:emit(widget, { target = widget })
 end
 
-return Renderer
+return Painter
