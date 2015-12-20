@@ -129,9 +129,7 @@ function Input:handlePressedMove (layout, x, y)
                     x = x, y = y
                 })
             else
-                if button == 'left' then
-                    originWidget.pressed = (widget == originWidget) or nil
-                end
+                originWidget.pressed[button] = (widget == originWidget) or nil
                 if passedWidget then
                     passedWidget:bubbleEvent('PressLeave', {
                         hit = hit,
@@ -165,8 +163,8 @@ function Input:handlePressStart (layout, button, x, y, widget, accelerator)
     if hit then
         self.pressedWidgets[button] = widget
         self.passedWidgets[button] = widget
+        widget.pressed[button] = true
         if button == 'left' then
-            widget.pressed = true
             widget:focus()
         end
     end
@@ -188,8 +186,8 @@ function Input:handlePressEnd (layout, button, x, y, widget, accelerator)
     end
     local originWidget = self.pressedWidgets[button]
     if not originWidget then return end
-    if hit and button == 'left' then
-        originWidget.pressed = nil
+    if hit then
+        originWidget.pressed[button] = nil
     end
     widget:bubbleEvent('PressEnd', {
         hit = hit,

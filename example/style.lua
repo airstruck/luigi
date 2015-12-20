@@ -12,7 +12,7 @@ return {
         width = 48,
         height = 48,
         slices = function (self)
-            if self.focused or self.hovered or self.pressed then
+            if self.focused or self.hovered or self.pressed.left then
                 return nil -- fall back to theme default
             end
             return false -- no slices

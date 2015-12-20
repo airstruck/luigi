@@ -36,14 +36,14 @@ return function (config)
     local text = resources .. 'text.png'
 
     local function getButtonSlices (self)
-        return self.pressed and button_pressed
+        return self.pressed.left and button_pressed
             or self.focused and button_focused
             or self.hovered and button_hovered
             or button
     end
 
     local function getCheckIcon (self)
-        if self.pressed then
+        if self.pressed.left then
             return self.value and check_checked_pressed
                 or check_unchecked_pressed
         end
@@ -67,7 +67,7 @@ return function (config)
     end
 
     local function getRadioIcon (self)
-        if self.pressed then
+        if self.pressed.left then
             return self.value and radio_checked_pressed
                 or radio_unchecked_pressed
         end

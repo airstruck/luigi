@@ -48,7 +48,7 @@ Whether the pointer was pressed on this widget and not yet released.
 Can be used by styles and themes. This value is automatically set by
 the `Input` class, and should generally be treated as read-only.
 --]]--
-Widget.pressed = false
+Widget.pressed = nil
 
 --[[--
 Internal Properties
@@ -88,12 +88,12 @@ Widget.hasType = false
 --[[--
 The `Font` object associated with the widget.
 --]]--
-Widget.fontData = false
+Widget.fontData = nil
 
 --[[--
 The `Text` object associated with the widget.
 --]]--
-Widget.textData = false
+Widget.textData = nil
 
 
 --[[--
@@ -216,6 +216,7 @@ local function metaCall (Widget, layout, self)
     self.dimensions = { width = nil, height = nil }
     self.attributes = {}
     self.attributeDescriptors = {}
+    self.pressed = {}
     self.painter = Painter(self)
 
     setmetatable(self, { __index = metaIndex, __newindex = metaNewIndex })

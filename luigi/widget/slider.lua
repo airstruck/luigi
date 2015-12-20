@@ -23,7 +23,7 @@ return function (self)
 
     local function unpress (event)
         if event.button ~= 'left' then return end
-        thumb.pressed = false -- don't make the thumb appear pushed in
+        thumb.pressed.left = nil -- don't make the thumb appear pushed in
         return false -- don't press thumb on focused keyboard activation
     end
 
