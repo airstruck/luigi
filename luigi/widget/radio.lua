@@ -64,7 +64,8 @@ in the same group change to `false`.
 @section end
 --]]--
 
-    self:onPress(function ()
+    self:onPress(function (event)
+        if event.button ~= 'left' then return end
         for _, widget in ipairs(groups[self.group]) do
             widget.value = widget == self
         end

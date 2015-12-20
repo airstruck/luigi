@@ -302,6 +302,18 @@ local isMouseDown = function ()
     return sdl.getMouseState(nil, nil) > 0
 end
 
+local buttonIds = {
+    [sdl.BUTTON_LEFT] = 'left',
+    [sdl.BUTTON_MIDDLE] = 'middle',
+    [sdl.BUTTON_RIGHT] = 'right',
+    -- [sdl.BUTTON_X1] = 'x1',
+    -- [sdl.BUTTON_X2] = 'x2',
+}
+
+local function getMouseButtonId (value)
+    return value and buttonIds[value] or value
+end
+
 function Backend.show (layout)
     local input = layout.input
 
@@ -312,10 +324,10 @@ function Backend.show (layout)
         return input:handleReshape(layout, width, height)
     end)
     hook(layout, 'mousepressed', function (x, y, button)
-        return input:handlePressStart(layout, button, x, y)
+        return input:handlePressStart(layout, getMouseButtonId(button), x, y)
     end)
     hook(layout, 'mousereleased', function (x, y, button)
-        return input:handlePressEnd(layout, button, x, y)
+        return input:handlePressEnd(layout, getMouseButtonId(button), x, y)
     end)
     hook(layout, 'mousemoved', function (x, y, dx, dy)
         if isMouseDown() then

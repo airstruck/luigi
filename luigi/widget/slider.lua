@@ -21,7 +21,8 @@ return function (self)
         type = 'slider.thumb',
     }
 
-    local function unpress ()
+    local function unpress (event)
+        if event.button ~= 'left' then return end
         thumb.pressed = false -- don't make the thumb appear pushed in
         return false -- don't press thumb on focused keyboard activation
     end
@@ -39,6 +40,7 @@ return function (self)
     end)
 
     local function press (event)
+        if event.button ~= 'left' then return end
         local x1, y1, w, h = self:getRectangle(true, true)
         local x2, y2 = x1 + w, y1 + h
         if self.flow == 'x' then

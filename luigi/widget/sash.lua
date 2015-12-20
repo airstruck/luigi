@@ -63,6 +63,7 @@ return function (self)
     end)
 
     self:onPressDrag(function (event)
+        if event.button ~= 'left' then return end
         local axis = self.parent.flow
         if axis == 'x' then
             dimension = 'width'

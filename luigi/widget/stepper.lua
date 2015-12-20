@@ -94,10 +94,12 @@ Contains the index in `items` of the item being displayed.
     end
 
     before:onPress(function (event)
+        if event.button ~= 'left' then return end
         if self.flow == 'x' then decrement() else increment() end
     end)
 
     after:onPress(function (event)
+        if event.button ~= 'left' then return end
         if self.flow == 'x' then increment() else decrement() end
     end)
 

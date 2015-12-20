@@ -12,7 +12,7 @@ local function renderSingle (self, x, y, font, text, color)
     love.graphics.push('all')
     love.graphics.setColor(color or { 0, 0, 0 })
     love.graphics.setFont(font.loveFont)
-    love.graphics.print(text, x, y)
+    love.graphics.print(text, math.floor(x), math.floor(y))
     love.graphics.pop()
 
     self.height = font:getLineHeight()
@@ -34,11 +34,14 @@ local function renderMulti (self, x, y, font, text, color, align, limit)
         local w = line.width
 
         if align == 'left' then
-            love.graphics.print(text, x, top + y)
+            love.graphics.print(text,
+                math.floor(x), math.floor(top + y))
         elseif align == 'right' then
-            love.graphics.print(text, limit - w + x, top + y)
+            love.graphics.print(text,
+                math.floor(limit - w + x), math.floor(top + y))
         elseif align == 'center' then
-            love.graphics.print(text, (limit - w) / 2 + x, top + y)
+            love.graphics.print(text,
+                math.floor((limit - w) / 2 + x), math.floor(top + y))
         end
     end
 

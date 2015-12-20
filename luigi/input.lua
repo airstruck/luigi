@@ -111,10 +111,10 @@ function Input:handlePressedMove (layout, x, y)
         hit = nil
         widget = layout.root
     end
-    for button = 1, 3 do
+    for _, button in ipairs { 'left', 'middle', 'right' } do
         local originWidget = self.pressedWidgets[button]
-        local passedWidget = self.passedWidgets[button]
         if originWidget then
+            local passedWidget = self.passedWidgets[button]
             originWidget:bubbleEvent('PressDrag', {
                 hit = hit,
                 newTarget = widget,
@@ -129,7 +129,9 @@ function Input:handlePressedMove (layout, x, y)
                     x = x, y = y
                 })
             else
-                originWidget.pressed = (widget == originWidget) or nil
+                if button == 'left' then
+                    originWidget.pressed = (widget == originWidget) or nil
+                end
                 if passedWidget then
                     passedWidget:bubbleEvent('PressLeave', {
                         hit = hit,
@@ -161,10 +163,12 @@ function Input:handlePressStart (layout, button, x, y, widget, accelerator)
         widget = layout.root
     end
     if hit then
-        widget.pressed = true
         self.pressedWidgets[button] = widget
         self.passedWidgets[button] = widget
-        widget:focus()
+        if button == 'left' then
+            widget.pressed = true
+            widget:focus()
+        end
     end
     widget:bubbleEvent('PressStart', {
         hit = hit,
@@ -184,7 +188,7 @@ function Input:handlePressEnd (layout, button, x, y, widget, accelerator)
     end
     local originWidget = self.pressedWidgets[button]
     if not originWidget then return end
-    if hit then
+    if hit and button == 'left' then
         originWidget.pressed = nil
     end
     widget:bubbleEvent('PressEnd', {

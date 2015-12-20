@@ -13,7 +13,8 @@ standard themes, the widget's value should be indicated in some other way.
 --]]--
 
 return function (self)
-    self:onPress(function ()
+    self:onPress(function (event)
+        if event.button ~= 'left' then return end
         self.value = not self.value
     end)
 

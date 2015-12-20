@@ -270,7 +270,7 @@ function Layout:addDefaultHandlers ()
         local acceleratedWidget = entry and entry[event.key]
         if acceleratedWidget then
             acceleratedWidget.hovered = true
-            self.input:handlePressStart(self, event.key, event.x, event.y,
+            self.input:handlePressStart(self, 'left', event.x, event.y,
                 acceleratedWidget, event.key)
             return false
         end
@@ -289,7 +289,7 @@ function Layout:addDefaultHandlers ()
         local widget = self.focusedWidget
         if widget and event.key == 'space' or event.key == ' '
         or event.key == 'return' then
-            self.input:handlePressStart(self, event.key, event.x, event.y,
+            self.input:handlePressStart(self, 'left', event.x, event.y,
                 widget, event.key)
             return false
         end
@@ -297,23 +297,23 @@ function Layout:addDefaultHandlers ()
 
     self:onKeyRelease(function (event)
 
-        -- space / enter presses focused widget
-        local widget = self.focusedWidget
-        if widget and event.key == 'space' or event.key == ' '
-        or event.key == 'return' then
-            self.input:handlePressEnd(self, event.key, event.x, event.y,
-                widget, event.key)
-            return false
-        end
-
         -- accelerators
         local entry = self.accelerators[event.modifierFlags]
         local acceleratedWidget = entry and entry[event.key]
 
         if acceleratedWidget then
             acceleratedWidget.hovered = false
-            self.input:handlePressEnd(self, event.key, event.x, event.y,
+            self.input:handlePressEnd(self, 'left', event.x, event.y,
                 acceleratedWidget, event.key)
+            return false
+        end
+
+        -- space / enter presses focused widget
+        local widget = self.focusedWidget
+        if widget and event.key == 'space' or event.key == ' '
+        or event.key == 'return' then
+            self.input:handlePressEnd(self, 'left', event.x, event.y,
+                widget, event.key)
             return false
         end
     end)

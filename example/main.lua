@@ -76,8 +76,6 @@ end)
 local Backend = require 'luigi.backend'
 layout.menuQuit:onPress(Backend.quit)
 
-Backend.setWindowIcon('logo.png')
-
 -- show the main layout
 layout:show()
 

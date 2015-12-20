@@ -29,7 +29,7 @@ local function scrollToCaret (self)
 end
 
 local function findCaretFromText (self, text)
-    local font = self.fontData
+    local font = self:getFont()
     local x = self:getRectangle(true, true)
     return #text, font:getAdvance(text) + x - self.scrollX
 end
@@ -178,12 +178,7 @@ local function insertText (self, newText)
 end
 
 return function (self)
-    if not self.fontData then
-        self.fontData = Backend.Font(self.font, self.size)
-    end
-
     self.value = tostring(self.value or self.text or '')
-
     self.text = ''
 
 --[[--
@@ -201,12 +196,14 @@ This color is used to indicate the selected range of text.
 
 @attrib highlight
 --]]--
+
     self:defineAttribute('highlight')
+
 --[[--
 @section end
 --]]--
     if not self.highlight then
-        self.highlight = { 0x80, 0x80, 0x80 }
+        self.highlight = { 0x80, 0x80, 0x80, 0x80 }
     end
 
     self.scrollX = 0
@@ -214,11 +211,13 @@ This color is used to indicate the selected range of text.
     setCaretFromText(self, self.value)
 
     self:onPressStart(function (event)
+        if event.button ~= 'left' then return end
         self.startIndex, self.startX = findCaretFromPoint(self, event.x)
         self.endIndex, self.endX = self.startIndex, self.startX
     end)
 
     self:onPressDrag(function (event)
+        if event.button ~= 'left' then return end
         self.endIndex, self.endX = findCaretFromPoint(self, event.x)
         scrollToCaret(self)
     end)

@@ -8,46 +8,74 @@ return function (config)
     local textColor = config.textColor or { 0, 0, 0 }
     local highlight = config.highlight or { 0x19, 0xAE, 0xFF }
 
+    local button_pressed = resources .. 'button_pressed.png'
+    local button_focused = resources .. 'button_focused.png'
+    local button_hovered = resources .. 'button_hovered.png'
+    local button = resources .. 'button.png'
+
+    local check_checked_pressed = resources .. 'check_checked_pressed.png'
+    local check_unchecked_pressed = resources .. 'check_unchecked_pressed.png'
+    local check_checked_focused = resources .. 'check_checked_focused.png'
+    local check_unchecked_focused = resources .. 'check_unchecked_focused.png'
+    local check_checked = resources .. 'check_checked.png'
+    local check_unchecked = resources .. 'check_unchecked.png'
+
+    local radio_checked_pressed = resources .. 'radio_checked_pressed.png'
+    local radio_unchecked_pressed = resources .. 'radio_unchecked_pressed.png'
+    local radio_checked_focused = resources .. 'radio_checked_focused.png'
+    local radio_unchecked_focused = resources .. 'radio_unchecked_focused.png'
+    local radio_checked = resources .. 'radio_checked.png'
+    local radio_unchecked = resources .. 'radio_unchecked.png'
+
+    local triangle_left = resources .. 'triangle_left.png'
+    local triangle_up = resources .. 'triangle_up.png'
+    local triangle_right = resources .. 'triangle_right.png'
+    local triangle_down = resources .. 'triangle_down.png'
+
+    local text_focused = resources .. 'text_focused.png'
+    local text = resources .. 'text.png'
+
     local function getButtonSlices (self)
-        return self.pressed and resources .. 'button_pressed.png'
-            or self.focused and resources .. 'button_focused.png'
-            or self.hovered and resources .. 'button_hovered.png'
-            or resources .. 'button.png'
+        return self.pressed and button_pressed
+            or self.focused and button_focused
+            or self.hovered and button_hovered
+            or button
     end
 
-    local function getCheckOrRadioIcon (self)
-        local prefix = resources .. self.type
+    local function getCheckIcon (self)
         if self.pressed then
-            if self.value then
-                return prefix .. '_checked_pressed.png'
-            else
-                return prefix .. '_unchecked_pressed.png'
-            end
-        elseif self.focused then
-            if self.value then
-                return prefix .. '_checked_focused.png'
-            else
-                return prefix .. '_unchecked_focused.png'
-            end
-        else
-            if self.value then
-                return prefix .. '_checked.png'
-            else
-                return prefix .. '_unchecked.png'
-            end
+            return self.value and check_checked_pressed
+                or check_unchecked_pressed
         end
+        if self.focused then
+            return self.value and check_checked_focused
+                or check_unchecked_focused
+        end
+        return self.value and check_checked or check_unchecked
     end
 
     local function getControlHeight (self)
-        return self.flow == 'x' and 32
+        return self.flow == 'x' and self.minheight
     end
 
     local function getControlWidth (self)
-        return self.flow ~= 'x' and 32
+        return self.flow ~= 'x' and self.minwidth
     end
 
     local function getMenuItemBackground (self)
         return self.active and highlight
+    end
+
+    local function getRadioIcon (self)
+        if self.pressed then
+            return self.value and radio_checked_pressed
+                or radio_unchecked_pressed
+        end
+        if self.focused then
+            return self.value and radio_checked_focused
+                or radio_unchecked_focused
+        end
+        return self.value and radio_checked or radio_unchecked
     end
 
     local function getSashBackground (self)
@@ -63,22 +91,22 @@ return function (config)
     end
 
     local function getStepperBeforeIcon (self)
-        return self.parent.flow == 'x' and resources .. 'triangle_left.png'
-            or resources .. 'triangle_up.png'
+        return self.parent.flow == 'x' and triangle_left or triangle_up
     end
 
     local function getStepperAfterIcon (self)
-        return self.parent.flow == 'x' and resources .. 'triangle_right.png'
-            or resources .. 'triangle_down.png'
+        return self.parent.flow == 'x' and triangle_right or triangle_down
     end
 
     local function getTextSlices (self)
-        return self.focused and resources .. 'text_focused.png'
-            or resources .. 'text.png'
+        return self.focused and text_focused or text
     end
 
     return {
-        control = {
+
+        -- generic types for widgets to inherit
+
+        Control = {
             flow = 'x',
             height = getControlHeight,
             width = getControlWidth,
@@ -89,28 +117,29 @@ return function (config)
             margin = 2,
             color = textColor,
         },
+
+        Line = {
+            minheight = 24,
+            margin = 0,
+            padding = 4,
+            align = 'left middle',
+        },
+
+        -- widget types
+
         button = {
-            type = 'control',
+            type = { 'Control' },
             padding = 6,
             slices = getButtonSlices,
             focusable = true,
         },
         check = {
-            type = 'control',
+            type = { 'Line', 'Control' },
             focusable = true,
-            icon = getCheckOrRadioIcon,
-            margin = 0,
-            padding = 4,
-            align = 'left middle',
-            minheight = 24,
+            icon = getCheckIcon,
         },
         label = {
-            type = 'control',
-            align = 'left bottom',
-            margin = 0,
-            padding = 4,
-            minheight = 24,
-            height = 24,
+            type = { 'Line', 'Control' },
         },
         menu = {
             flow = 'x',
@@ -132,23 +161,18 @@ return function (config)
             color = textColor,
         },
         progress = {
-            type = 'control',
+            type = { 'Control' },
             slices = resources .. 'button_pressed.png',
         },
         ['progress.bar'] = {
             slices = resources .. 'progress.png',
             minwidth = 12,
-            minheight= 22,
+            minheight = 22,
         },
         radio = {
-            type = 'control',
+            type = { 'Line', 'Control' },
             focusable = true,
-            color = textColor,
-            icon = getCheckOrRadioIcon,
-            margin = 0,
-            padding = 4,
-            align = 'left middle',
-            minheight = 24,
+            icon = getRadioIcon,
         },
         sash = {
             background = getSashBackground,
@@ -156,36 +180,32 @@ return function (config)
             width = getSashWidth,
         },
         slider = {
-            type = 'control',
+            type = { 'Control' },
             slices = resources .. 'button_pressed.png',
         },
         ['slider.thumb'] = {
-            type = 'button',
+            type = { 'button' },
             align = 'middle center',
             margin = 0,
             minwidth = 32,
             minheight = 32,
         },
         status = {
-            background = backColor,
-            color = textColor,
-            align = 'left middle',
-            padding = 4,
-            height = 22,
+            type = { 'Line', 'Control' },
         },
         stepper = {
-            type = 'control',
+            type = { 'Control' },
             slices = resources .. 'button_pressed.png',
         },
         ['stepper.after'] = {
-            type = 'button',
+            type = { 'button' },
             icon = getStepperAfterIcon,
             margin = 0,
             minwidth = 32,
             minheight = 32,
         },
         ['stepper.before'] = {
-            type = 'button',
+            type = { 'button' },
             icon = getStepperBeforeIcon,
             margin = 0,
             minwidth = 32,
@@ -205,7 +225,7 @@ return function (config)
             color = textColor,
         },
         text = {
-            type = 'control',
+            type = { 'Control' },
             align = 'left middle',
             slices = getTextSlices,
             padding = 6,

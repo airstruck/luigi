@@ -87,6 +87,7 @@ local function deactivateSiblings (target)
 end
 
 local function activate (event, ignoreIfNoneOpen)
+    if event.button and event.button ~= 'left' then return end
     local target = event.target
 
     while target.parent
@@ -120,12 +121,13 @@ local function registerLayoutEvents (self)
             if self.parentMenu == self.rootMenu then
                 deactivateSiblings(self.rootMenu[1])
             end
-        else
+        elseif event.button == 'left' then
             activate(event)
         end
     end)
 
     menuLayout:onPress(function (event)
+        if event.button ~= 'left' then return end
         for widget in event.target:eachAncestor(true) do
             if widget.type == 'menu.item' and #widget.items == 0 then
                 menuLayout:hide()
@@ -135,6 +137,7 @@ local function registerLayoutEvents (self)
     end)
 
     menuLayout:onPressEnd(function (event)
+        if event.button ~= 'left' then return end
         for widget in event.target:eachAncestor(true) do
             if widget.type == 'menu.item' and #widget.items == 0
             and event.target ~= event.origin then

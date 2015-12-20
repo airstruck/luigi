@@ -90,16 +90,22 @@ local getMouseButtonId, isMouseDown
 
 if love._version_minor < 10 then
     getMouseButtonId = function (value)
-        return value == 'l' and 1
-            or value == 'r' and 2
-            or value == 'm' and 3
+        return value == 'l' and 'left'
+            or value == 'r' and 'right'
+            or value == 'm' and 'middle'
+            or value == 'x1' and 4
+            or value == 'x2' and 5
+            or value
     end
     isMouseDown = function ()
         return love.mouse.isDown('l', 'r', 'm')
     end
 else
     getMouseButtonId = function (value)
-        return value
+        return value == 1 and 'left'
+            or value == 2 and 'right'
+            or value == 3 and 'middle'
+            or value
     end
     isMouseDown = function ()
         return love.mouse.isDown(1, 2, 3)
