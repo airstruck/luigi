@@ -50,16 +50,4 @@ function Font:getAdvance (text)
     return (self.loveFont:getWidth(text))
 end
 
-if love._version_minor < 10 then
-    function Font:getWrappedHeight (text)
-        local _, lines = self.loveFont:getWrap(text, self.width)
-        return lines * self.loveFont:getHeight()
-    end
-else
-    function Font:getWrappedHeight (text)
-        local _, lines = self.loveFont:getWrap(text, self.width)
-        return #lines * self.loveFont:getHeight()
-    end
-end
-
 return Font

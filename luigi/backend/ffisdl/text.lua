@@ -77,7 +77,7 @@ local function renderMulti (self, font, text, color, align, limit)
         sdl.setTextureAlphaMod(self.sdlTexture, alphaMod)
     end
 
-    self.width, self.height = surface.w, surface.h
+    self.width, self.height = limit, height
 end
 
 function Text:constructor (renderer, font, text, color, align, limit)

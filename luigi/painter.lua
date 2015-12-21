@@ -267,7 +267,9 @@ function Painter:paintIconAndText ()
 
     -- draw the text
     if text and textX and textY and w > 1 then
-        textX, textY = math.floor(textX), math.floor(textY)
+        widget.innerHeight = textY - y + widget.textData:getHeight()
+        textX = math.floor(textX - (widget.scrollX or 0))
+        textY = math.floor(textY - (widget.scrollY or 0))
         Backend.draw(widget.textData, textX, textY)
     end
 

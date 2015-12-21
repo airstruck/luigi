@@ -43,9 +43,10 @@ the `Input` class, and should generally be treated as read-only.
 Widget.hovered = false
 
 --[[--
-Whether the pointer was pressed on this widget and not yet released.
+Table of mouse buttons pressed on this widget and not yet released,
+keyed by mouse button name with booleans as values.
 
-Can be used by styles and themes. This value is automatically set by
+Can be used by styles and themes. Values are automatically set by
 the `Input` class, and should generally be treated as read-only.
 --]]--
 Widget.pressed = nil
@@ -614,9 +615,16 @@ Gets the combined width of the widget's children.
 The content width.
 --]]--
 function Widget:getContentWidth ()
+    if not self.layout.isReady then return 0 end
     local width = 0
-    for _, child in ipairs(self) do
-        width = width + child:getWidth()
+    if self.flow == 'x' then
+        for _, child in ipairs(self) do
+            width = width + child:getWidth()
+        end
+    else
+        for _, child in ipairs(self) do
+            width = math.max(width, child:getWidth())
+        end
     end
     return width
 end
@@ -630,9 +638,16 @@ Gets the combined height of the widget's children.
 The content height.
 --]]--
 function Widget:getContentHeight ()
+    if not self.layout.isReady then return 0 end
     local height = 0
-    for _, child in ipairs(self) do
-        height = height + child:getHeight()
+    if self.flow ~= 'x' then
+        for _, child in ipairs(self) do
+            height = height + child:getHeight()
+        end
+    else
+        for _, child in ipairs(self) do
+            height = math.max(height, child:getHeight())
+        end
     end
     return height
 end
@@ -738,21 +753,39 @@ fires a Reshape event (does not bubble). Called recursively for each child.
 When setting a widget's width or height, this function is automatically called
 on the parent widget.
 --]]--
-function Widget:reshape ()
+function Widget:reshape (keepText)
     if self.isReshaping then return end
     self.isReshaping = true
+
+    self:scrollBy(0, 0)
 
     self.position = {}
     self.dimensions = {}
 
-    self.textData = nil
+    if not keepText then self.textData = nil end
+
     Event.Reshape:emit(self, { target = self })
     for i, widget in ipairs(self) do
         if widget.reshape then
-            widget:reshape()
+            widget:reshape(keepText)
         end
     end
     self.isReshaping = nil
+end
+
+function Widget:scrollBy (x, y)
+    if not self.scroll then return end
+    if not self.scrollY then self.scrollY = 0 end
+    local scrollY = self.scrollY - y * 10
+    local inner = math.max(self:getContentHeight(), self.innerHeight or 0)
+    local maxY = inner - self:getHeight()
+        + (self.padding or 0) * 2 + (self.margin or 0) * 2
+    scrollY = math.max(math.min(scrollY, maxY), 0)
+    if scrollY ~= self.scrollY then
+        self.scrollY = scrollY
+        self:reshape(true)
+        return true
+    end
 end
 
 return setmetatable(Widget, { __call = metaCall })

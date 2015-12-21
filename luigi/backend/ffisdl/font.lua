@@ -245,20 +245,4 @@ function Font:getAdvance (text)
     return w[0]
 end
 
-function Font:getWrappedHeight (text)
-    --[[
-    -- TTF_Font *font, const char *text, int wrapLength, int *w, int *h, int *lineCount
-    local w, h, lineCount = IntOut(), IntOut(), IntOut()
-
-    SDL2_ttf.TTF_SizeUTF8_Wrapped(self.sdlFont, text, self.width,
-        w, h, lineCount)
-
-    return self:getLineHeight() * lineCount
-    --]]
-
-    local w, h = IntOut(), IntOut()
-    SDL2_ttf.TTF_SizeUTF8(self.sdlFont, text, w, h)
-    return h[0]
-end
-
 return Font

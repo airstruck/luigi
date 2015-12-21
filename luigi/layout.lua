@@ -56,6 +56,8 @@ function Layout:constructor (data, master)
     self.root = data
 
     Widget(self, data)
+
+    self.isReady = true
 end
 
 local function clearWidget (widget)
@@ -321,24 +323,7 @@ function Layout:addDefaultHandlers ()
     self:onWheelMove(function (event)
         if not event.hit then return end
         for widget in event.target:eachAncestor(true) do
-            if widget.scroll then
-                if not widget.scrollY then
-                    widget.scrollY = 0
-                end
-                local scrollY = widget.scrollY - event.y * 10
-                local maxY = widget:getContentHeight() - widget:getHeight()
-                if scrollY > maxY then
-                    scrollY = maxY
-                end
-                if scrollY < 0 then
-                    scrollY = 0
-                end
-                if scrollY ~= widget.scrollY then
-                    widget.scrollY = scrollY
-                    widget:reshape()
-                    return false
-                end
-            end -- if widget.scroll
+            if widget:scrollBy(nil, event.y) then return false end
         end -- ancestor loop
         return false
     end) -- wheel move
