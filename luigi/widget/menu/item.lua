@@ -13,6 +13,15 @@ local Backend = require(ROOT .. 'backend')
 
 local Layout, Event
 
+local function checkMouseButton (layout, event)
+    local button = event.button
+    if not button then return false end
+    if layout.isContextMenu then
+        return button == 'left' or button == 'right'
+    end
+    return button == 'left'
+end
+
 local function addLayoutChildren (self)
     local root = self.menuLayout.root
     local textWidth = 0
@@ -87,7 +96,7 @@ local function deactivateSiblings (target)
 end
 
 local function activate (event, ignoreIfNoneOpen)
-    if event.button and event.button ~= 'left' then return end
+    -- if event.button and event.button ~= 'left' then return end
     local target = event.target
 
     while target.parent
@@ -97,6 +106,8 @@ local function activate (event, ignoreIfNoneOpen)
             return
         end
     end
+
+    -- if not checkMouseButton(event) then return end
 
     local wasSiblingOpen = deactivateSiblings(target)
     local ignore = ignoreIfNoneOpen and not wasSiblingOpen
@@ -121,13 +132,14 @@ local function registerLayoutEvents (self)
             if self.parentMenu == self.rootMenu then
                 deactivateSiblings(self.rootMenu[1])
             end
-        elseif event.button == 'left' then
+        elseif checkMouseButton(menuLayout, event) then
             activate(event)
         end
     end)
 
     menuLayout:onPress(function (event)
-        if event.button ~= 'left' then return end
+        -- if event.button ~= 'left' then return end
+        if not checkMouseButton(menuLayout, event) then return end
         for widget in event.target:eachAncestor(true) do
             if widget.type == 'menu.item' and #widget.items == 0 then
                 menuLayout:hide()
@@ -137,7 +149,8 @@ local function registerLayoutEvents (self)
     end)
 
     menuLayout:onPressEnd(function (event)
-        if event.button ~= 'left' then return end
+        -- if event.button ~= 'left' then return end
+        if not checkMouseButton(menuLayout, event) then return end
         for widget in event.target:eachAncestor(true) do
             if widget.type == 'menu.item' and #widget.items == 0
             and event.target ~= event.origin then

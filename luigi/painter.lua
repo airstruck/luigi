@@ -3,7 +3,6 @@ local ROOT = (...):gsub('[^.]*$', '')
 local Backend = require(ROOT .. 'backend')
 local Base = require(ROOT .. 'base')
 local Event = require(ROOT .. 'event')
-local Font = Backend.Font
 local Text = Backend.Text
 
 local Painter = Base:extend()
@@ -277,8 +276,7 @@ function Painter:paintIconAndText ()
 end
 
 function Painter:paintChildren ()
-    local widget = self.widget
-    for i, child in ipairs(widget) do
+    for i, child in ipairs(self.widget) do
         child:paint()
     end
 end

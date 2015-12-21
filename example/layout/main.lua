@@ -41,7 +41,12 @@ return { id = 'mainWindow',
     { flow = 'x',
         { id = 'leftSideBox', minwidth = 200, width = 200, scroll = true, type = 'panel',
             { style = 'listThing', align = 'middle center',
-                text = 'Try the scroll wheel on this area.' },
+                text = 'Try the scroll wheel on this area.',
+                context = {
+                    { text = 'Use sans-serif font', id = 'sans' },
+                    { text = 'Use monospace font' }
+                }
+            },
             { style = 'listThing', align = 'middle center',
                 text = 'This text is centered, and in the middle vertically.' },
             { style = 'listThing', align = 'middle left',

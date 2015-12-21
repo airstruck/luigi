@@ -265,6 +265,28 @@ function Layout:addDefaultHandlers ()
         self.accelerators[i] = {}
     end
 
+    self:onPressStart(function (event)
+        if event.button ~= 'right' then return end
+        local menu = event.target.contextMenu
+        if not menu then
+            local context = event.target.context
+            if not context then return end
+            context.text = 'foo'
+            menu = event.target:addChild {
+                type = 'menu',
+                width = 0,
+                height = 0,
+                context
+            }
+            menu[1].menuLayout.isContextMenu = true
+            event.target.contextMenu = menu
+        end
+        menu[1]:bubbleEvent('PressStart', event)
+        menu[1].menuLayout.root.left = event.x + 1
+        menu[1].menuLayout.root.top = event.y + 1
+        return false
+    end)
+
     self:onKeyPress(function (event)
 
         -- keyboard accelerators
