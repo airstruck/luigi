@@ -753,7 +753,7 @@ fires a Reshape event (does not bubble). Called recursively for each child.
 When setting a widget's width or height, this function is automatically called
 on the parent widget.
 --]]--
-function Widget:reshape (keepText)
+function Widget:reshape ()
     if self.isReshaping then return end
     self.isReshaping = true
 
@@ -762,12 +762,20 @@ function Widget:reshape (keepText)
     self.position = {}
     self.dimensions = {}
 
-    if not keepText then self.textData = nil end
+    self.textData = nil
 
     Event.Reshape:emit(self, { target = self })
-    for i, widget in ipairs(self) do
-        if widget.reshape then
-            widget:reshape(keepText)
+    for _, child in ipairs(self) do
+        if child.reshape then
+            child:reshape()
+        end
+    end
+    local items = self.items
+    if items then
+        for _, child in ipairs(items) do
+            if child.reshape then
+                child:reshape()
+            end
         end
     end
     self.isReshaping = nil
@@ -783,7 +791,7 @@ function Widget:scrollBy (x, y)
     scrollY = math.max(math.min(scrollY, maxY), 0)
     if scrollY ~= self.scrollY then
         self.scrollY = scrollY
-        self:reshape(true)
+        self:reshape()
         return true
     end
 end

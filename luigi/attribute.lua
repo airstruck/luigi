@@ -16,9 +16,9 @@ local ROOT = (...):gsub('[^.]*$', '')
 local Attribute = {}
 
 local function cascade (widget, attribute)
-    local value = widget.attributes[attribute]
+    local value = rawget(widget, 'attributes')[attribute]
     if value ~= nil then return value end
-    local parent = widget.parent
+    local parent = rawget(widget, 'parent')
     return parent and parent[attribute]
 end
 
@@ -116,6 +116,37 @@ function Attribute.value.set (widget, value)
     widget.attributes.value = value
     widget:bubbleEvent('Change', { value = value, oldValue = oldValue })
 end
+
+--[[--
+Context menu.
+
+- This attribute cascades.
+
+@attrib context
+--]]--
+Attribute.context = {}
+
+function Attribute.context.set (widget, value)
+    widget.attributes.context = value
+    for i = #widget, 1, -1 do
+        local child = widget[i]
+        if child.isContextMenu then
+            table.remove(widget, i)
+        end
+    end
+    if not value then return end
+    widget:addChild {
+        type = 'menu',
+        isContextMenu = true,
+        width = 0,
+        height = 0,
+        value
+    }
+    value.menuLayout.isContextMenu = true
+    widget.contextMenu = value
+end
+
+Attribute.context.get = cascade
 
 --[[--
 Widget style.
@@ -356,10 +387,23 @@ this widget's `text`.
 --]]--
 Attribute.font = {}
 
+local function resetFont (widget)
+    rawset(widget, 'fontData', nil)
+    rawset(widget, 'textData', nil)
+    for _, child in ipairs(widget) do
+        resetFont(child)
+    end
+    local items = widget.items
+    if items then
+        for _, child in ipairs(items) do
+            resetFont(child)
+        end
+    end
+end
+
 function Attribute.font.set (widget, value)
     widget.attributes.font = value
-    widget.fontData = nil
-    widget.textData = nil
+    resetFont(widget)
 end
 
 Attribute.font.get = cascade

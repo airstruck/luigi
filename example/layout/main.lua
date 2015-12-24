@@ -40,13 +40,12 @@ return { id = 'mainWindow',
     },
     { flow = 'x',
         { id = 'leftSideBox', minwidth = 200, width = 200, scroll = true, type = 'panel',
-            { style = 'listThing', align = 'middle center',
-                text = 'Try the scroll wheel on this area.',
-                context = {
-                    { text = 'Use sans-serif font', id = 'sans' },
-                    { text = 'Use monospace font' }
-                }
+            context = {
+                { text = 'Use sans-serif font', id = 'sans' },
+                { text = 'Use monospace font', id = 'mono' }
             },
+            { style = 'listThing', align = 'middle center',
+                text = 'Try the scroll wheel on this area.', },
             { style = 'listThing', align = 'middle center',
                 text = 'This text is centered, and in the middle vertically.' },
             { style = 'listThing', align = 'middle left',
@@ -65,11 +64,15 @@ return { id = 'mainWindow',
             { id = 'flowTest', height = 'auto',  minheight = 128,
                 {
                     { type = 'label', text = 'Slider' },
-                    { type = 'slider', id = 'slidey', width = false },
+                    { type = 'slider', id = 'slidey', width = false, },
                 },
                 {
                     { type = 'label', text = 'Stepper' },
                     { type = 'stepper', id = 'stepper', width = false, wrap = true,
+                        context = {
+                            { text = 'Use sans-serif font', id = 'sans2' },
+                            { text = 'Use monospace font', id = 'mono2'  }
+                        },
                         { value = 1, text = 'Thing One' },
                         { value = 2, text = 'Thing Two' },
                         { value = 3, text = 'Thing Three' },

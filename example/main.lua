@@ -80,6 +80,22 @@ end)
 local Backend = require 'luigi.backend'
 layout.menuQuit:onPress(Backend.quit)
 
+layout.mono:onPress(function()
+    layout.leftSideBox.font = 'font/DejaVuSansMono.ttf'
+end)
+
+layout.sans:onPress(function()
+    layout.leftSideBox.font = false
+end)
+
+layout.mono2:onPress(function()
+    layout.stepper.font = 'font/DejaVuSansMono.ttf'
+end)
+
+layout.sans2:onPress(function()
+    layout.stepper.font = false
+end)
+
 -- show the main layout
 layout:show()
 

@@ -8,8 +8,7 @@ local Input = Base:extend()
 
 local weakValueMeta = { __mode = 'v' }
 
-function Input:constructor () --(layout)
-    -- layout = layout
+function Input:constructor ()
     self.pressedWidgets = setmetatable({}, weakValueMeta)
     self.passedWidgets = setmetatable({}, weakValueMeta)
 end
@@ -225,11 +224,14 @@ function Input:handleReshape (layout, width, height)
         end
     end
 
-    Event.Reshape:emit(layout, { target = layout })
+    Event.Reshape:emit(layout, {
+        target = layout,
+        width = width,
+        height = height
+    })
 end
 
 function Input:handleWheelMove (layout, x, y)
-    local root = layout.root
     local mx, my = Backend.getMousePosition()
     local widget = layout:getWidgetAt(mx, my)
     local hit = true
@@ -239,10 +241,7 @@ function Input:handleWheelMove (layout, x, y)
         widget = layout.root
     end
 
-    widget:bubbleEvent('WheelMove', {
-        hit = hit,
-        x = x, y = y
-    })
+    widget:bubbleEvent('WheelMove', { hit = hit, x = x, y = y })
 
     return hit
 end

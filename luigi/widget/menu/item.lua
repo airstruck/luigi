@@ -39,10 +39,11 @@ local function addLayoutChildren (self)
         local childHeight = child:getHeight()
         height = height + childHeight
         if child.type == 'menu.item' then
+            local font = child:getFont()
             local pad = child.padding or 0
-            local tw = child.fontData:getAdvance(child[2].text)
+            local tw = font:getAdvance(child[2].text)
                 + pad * 2 + childHeight
-            local kw = child.fontData:getAdvance(child[3].text)
+            local kw = font:getAdvance(child[3].text)
                 + pad * 2 + childHeight
             textWidth = math.max(textWidth, tw)
             keyWidth = math.max(keyWidth, kw)
@@ -164,17 +165,13 @@ local function registerLayoutEvents (self)
 end
 
 local function initialize (self)
-    if not self.fontData then
-        self.fontData = Backend.Font(self.font, self.size)
-    end
+    local font = self:getFont()
     local pad = self.padding or 0
     local isSubmenu = self.parentMenu and self.parentMenu.parentMenu
     local text, key, icon = self.text or '', self.key or '', self.icon
-    local textWidth = self.fontData:getAdvance(text) + pad * 2
+    local textWidth = font:getAdvance(text) + pad * 2
 
     if isSubmenu then
-        local tc = self.color or { 0, 0, 0, 255 }
-        local keyColor = { tc[1], tc[2], tc[3], 0x90 }
         local edgeType
         if #self.items > 0 then
             key = ' '
@@ -182,7 +179,7 @@ local function initialize (self)
         else
             key = key:gsub('%f[%w].', string.upper) -- :gsub('-', '+')
         end
-        self.height = self.fontData:getLineHeight() + pad * 2
+        self.height = font:getLineHeight() + pad * 2
         self.flow = 'x'
         self:addChild { icon = icon, width = self.height }
         self:addChild { text = text, width = textWidth }
@@ -234,6 +231,7 @@ local function createLayout (self)
 end
 
 return function (self)
+    self.context = false
     extractChildren(self)
     initialize(self)
     registerEvents(self)

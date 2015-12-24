@@ -54,10 +54,10 @@ window.restore:onPress(function ()
     window.root.maximized = false
 end)
 window:onReshape(function (event)
-    local w, h = Backend:getWindowSize()
+    -- local w, h = Backend:getWindowSize()
     -- use widget.attributes to do a raw update, avoid firing onChange
-    window.width.attributes.value = tostring(w)
-    window.height.attributes.value = tostring(h)
+    window.width.attributes.value = tostring(event.width)
+    window.height.attributes.value = tostring(event.height)
 end)
 window:onChange(function (event)
     local target = event.target

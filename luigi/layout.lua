@@ -66,18 +66,20 @@ local function clearWidget (widget)
     widget.position = {}
     widget.dimensions = {}
     widget.type = widget.type
+    for _, child in ipairs(widget) do
+        clearWidget(child)
+    end
+    local items = widget.items
+    if items then
+        for _, item in ipairs(items) do
+            clearWidget(item)
+        end
+    end
 end
 
 local function reset (self)
     if not self.root then return end
-    local widget = self.root:getNextNeighbor()
-
     clearWidget(self.root)
-
-    while widget ~= self.root do
-        clearWidget(widget)
-        widget = widget:getNextNeighbor()
-    end
 end
 
 --[[--
@@ -266,24 +268,32 @@ function Layout:addDefaultHandlers ()
     end
 
     self:onPressStart(function (event)
+        -- show context menu on right click
         if event.button ~= 'right' then return end
-        local menu = event.target.contextMenu
-        if not menu then
-            local context = event.target.context
-            if not context then return end
-            context.text = 'foo'
-            menu = event.target:addChild {
-                type = 'menu',
-                width = 0,
-                height = 0,
-                context
-            }
-            menu[1].menuLayout.isContextMenu = true
-            event.target.contextMenu = menu
+        local menu = event.target.context
+        if not menu then return end
+        menu:bubbleEvent('PressStart', event)
+        -- make sure it fits in the window
+        -- TODO: open in a new borderless window under SDL?
+        local windowWidth, windowHeight = Backend.getWindowSize()
+        local left, top = event.x, event.y
+        local root = menu.menuLayout.root
+        -- place context menu left of cursor if there's no room to the right
+        local layoutWidth = root:getWidth()
+        if left + layoutWidth > windowWidth then
+            left = left - layoutWidth - 1
+        else
+            left = left + 1
         end
-        menu[1]:bubbleEvent('PressStart', event)
-        menu[1].menuLayout.root.left = event.x + 1
-        menu[1].menuLayout.root.top = event.y + 1
+        -- place context menu above cursor if there's no room below
+        local layoutHeight = root:getHeight()
+        if top + layoutHeight > windowHeight then
+            top = top - layoutHeight - 1
+        else
+            top = top + 1
+        end
+        root.left = left
+        root.top = top
         return false
     end)
 
