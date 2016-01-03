@@ -41,26 +41,16 @@ Contains the index in `items` of the item being displayed.
 
     self.items = {}
     self.index = 1
-    self.flow = 'x' -- TODO: support vertical stepper
-
-    local contextMenu
 
     for index, child in ipairs(self) do
         child.type = child.type or 'stepper.item'
-        if child.isContextMenu then
-            contextMenu = child
-        else
-            self.items[index] = child
-        end
+        self.items[index] = child
         self[index] = nil
     end
 
     local before = self:addChild { type = 'stepper.before' }
     local view = self:addChild { type = 'stepper.view' }
     local after = self:addChild { type = 'stepper.after' }
-    if contextMenu then
-        self:addChild(contextMenu)
-    end
 
     self:onReshape(function (event)
         if self.flow == 'x' then

@@ -239,6 +239,10 @@ end
 --[[--
 Define a custom attribute for this widget.
 
+When an attribute is defined, the current value is stored locally and
+removed from the widget's own properties and its attributes collection.
+Then, the newly-defined setter is called with the stored value.
+
 @tparam string name
 The name of the attribute.
 
@@ -249,9 +253,11 @@ A table, optionally containing `get` and `set` functions (see `Attribute`).
 Return this widget for chaining.
 --]]--
 function Widget:defineAttribute (name, descriptor)
-    local value = self[name]
+    local value = rawget(self, name)
+    if value == nil then value = self.attributes[name] end
     self.attributeDescriptors[name] = descriptor or {}
     rawset(self, name, nil)
+    self.attributes[name] = nil
     self[name] = value
     return self
 end

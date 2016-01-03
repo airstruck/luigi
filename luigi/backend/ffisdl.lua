@@ -56,8 +56,12 @@ local callback = {
 
 Backend.run = function ()
     local event = sdl.Event()
+    local tickInterval = 16 -- ~60 fps (with room)
+    local nextTick = 0
+    local sdl = sdl
 
     while true do
+
         sdl.pumpEvents()
 
         while sdl.pollEvent(event) ~= 0 do
@@ -94,8 +98,14 @@ Backend.run = function ()
         sdl.setRenderDrawColor(renderer, 0, 0, 0, 255)
         sdl.renderClear(renderer)
         callback.draw()
+
+        local now = sdl.getTicks()
+        if nextTick > now then
+            sdl.delay(nextTick - now)
+        end
+        nextTick = now + tickInterval
+
         sdl.renderPresent(renderer)
-        sdl.delay(1)
     end
 end
 
@@ -185,9 +195,7 @@ Backend.getMousePosition = function ()
 end
 
 local function SystemCursor (id)
-    local cursor = sdl.createSystemCursor(id)
-    ffi.gc(cursor, sdl.freeCursor)
-    return cursor
+    return ffi.gc(sdl.createSystemCursor(id), sdl.freeCursor)
 end
 
 local systemCursors = {
@@ -258,13 +266,17 @@ end
 local lastScissor
 
 Backend.setScissor = function (x, y, w, h)
+    -- y = y and Backend.getWindowHeight() - (y + h)
     lastScissor = x and sdl.Rect(x, y, w, h)
     sdl.renderSetClipRect(renderer, lastScissor)
 end
 
 Backend.getScissor = function ()
     if lastScissor ~= nil then
-        return lastScissor.x, lastScissor.y, lastScissor.w, lastScissor.h
+        local x, y = lastScissor.x, lastScissor.y
+        local w, h = lastScissor.w, lastScissor.h
+        -- y = y and Backend.getWindowHeight() - (y + h)
+        return x, y, w, h
     end
 end
 

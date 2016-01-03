@@ -13,10 +13,10 @@ local Backend = require(ROOT .. 'backend')
 
 local Layout, Event
 
-local function checkMouseButton (layout, event)
+local function checkMouseButton (self, event)
     local button = event.button
     if not button then return false end
-    if layout.isContextMenu then
+    if self.isContextMenu then
         return button == 'left' or button == 'right'
     end
     return button == 'left'
@@ -133,14 +133,14 @@ local function registerLayoutEvents (self)
             if self.parentMenu == self.rootMenu then
                 deactivateSiblings(self.rootMenu[1])
             end
-        elseif checkMouseButton(menuLayout, event) then
+        elseif checkMouseButton(self, event) then
             activate(event)
         end
     end)
 
     menuLayout:onPress(function (event)
         -- if event.button ~= 'left' then return end
-        if not checkMouseButton(menuLayout, event) then return end
+        if not checkMouseButton(self, event) then return end
         for widget in event.target:eachAncestor(true) do
             if widget.type == 'menu.item' and #widget.items == 0 then
                 menuLayout:hide()
@@ -151,7 +151,7 @@ local function registerLayoutEvents (self)
 
     menuLayout:onPressEnd(function (event)
         -- if event.button ~= 'left' then return end
-        if not checkMouseButton(menuLayout, event) then return end
+        if not checkMouseButton(self, event) then return end
         for widget in event.target:eachAncestor(true) do
             if widget.type == 'menu.item' and #widget.items == 0
             and event.target ~= event.origin then
@@ -231,7 +231,6 @@ local function createLayout (self)
 end
 
 return function (self)
-    self.context = false
     extractChildren(self)
     initialize(self)
     registerEvents(self)

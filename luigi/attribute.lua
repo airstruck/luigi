@@ -128,22 +128,9 @@ Attribute.context = {}
 
 function Attribute.context.set (widget, value)
     widget.attributes.context = value
-    for i = #widget, 1, -1 do
-        local child = widget[i]
-        if child.isContextMenu then
-            table.remove(widget, i)
-        end
-    end
     if not value then return end
-    widget:addChild {
-        type = 'menu',
-        isContextMenu = true,
-        width = 0,
-        height = 0,
-        value
-    }
-    value.menuLayout.isContextMenu = true
-    widget.contextMenu = value
+    value.isContextMenu = true
+    widget.layout:createWidget { type = 'menu', value }
 end
 
 Attribute.context.get = cascade
@@ -218,7 +205,7 @@ Should contain `true` if the widget can be focused by pressing the tab key.
 Attribute.focusable = {}
 
 --[[--
-Keyboard accelerator.
+Keyboard shortcut.
 
 Should contain a string representing a key and optional modifiers,
 separated by dashes; for example `'ctrl-c'` or `'alt-shift-escape'`.
@@ -228,25 +215,25 @@ as if it had been pressed with a mouse or touch interface.
 
 Setting this attribute re-registers the widget with its layout.
 
-@attrib key
+@attrib shortcut
 --]]--
-Attribute.key = {}
+Attribute.shortcut = {}
 
-function Attribute.key.set (widget, value)
+function Attribute.shortcut.set (widget, value)
     local layout = widget.layout.master or widget.layout
-    local oldValue = widget.attributes.key
+    local oldValue = widget.attributes.shortcut
 
     if oldValue then
         local mainKey, modifierFlags = parseKeyCombo(oldValue)
-        layout.accelerators[modifierFlags][mainKey] = nil
+        layout.shortcuts[modifierFlags][mainKey] = nil
     end
 
     if value then
         local mainKey, modifierFlags = parseKeyCombo(value)
-        layout.accelerators[modifierFlags][mainKey] = widget
+        layout.shortcuts[modifierFlags][mainKey] = widget
     end
 
-    widget.attributes.key = value
+    widget.attributes.shortcut = value
 end
 
 --[[--

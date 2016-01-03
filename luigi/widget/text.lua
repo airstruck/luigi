@@ -198,13 +198,10 @@ This color is used to indicate the selected range of text.
 --]]--
 
     self:defineAttribute('highlight')
-
+    local defaultHighlight = { 0x80, 0x80, 0x80, 0x80 }
 --[[--
 @section end
 --]]--
-    if not self.highlight then
-        self.highlight = { 0x80, 0x80, 0x80, 0x80 }
-    end
 
     self.scrollX = 0
 
@@ -286,7 +283,7 @@ This color is used to indicate the selected range of text.
 
         if self.focused then
             -- draw highlighted selection
-            Backend.setColor(self.highlight)
+            Backend.setColor(self.highlight or defaultHighlight)
             Backend.drawRectangle('fill', startX, y, width, height)
             -- draw cursor selection
             if Backend.getTime() % 2 < 1.75 then

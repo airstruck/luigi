@@ -147,12 +147,12 @@ function Input:handlePressedMove (layout, x, y)
                 })
                 self.passedWidgets[button] = widget
             end
-        end
-    end
+        end -- if originWidget
+    end -- mouse buttons
     return hit
 end
 
-function Input:handlePressStart (layout, button, x, y, widget, accelerator)
+function Input:handlePressStart (layout, button, x, y, widget, shortcut)
     local widget = widget or layout:getWidgetAt(x, y)
     local hit = true
     if not widget then
@@ -170,13 +170,13 @@ function Input:handlePressStart (layout, button, x, y, widget, accelerator)
     widget:bubbleEvent('PressStart', {
         hit = hit,
         button = button,
-        accelerator = accelerator,
+        shortcut = shortcut,
         x = x, y = y
     })
     return hit
 end
 
-function Input:handlePressEnd (layout, button, x, y, widget, accelerator)
+function Input:handlePressEnd (layout, button, x, y, widget, shortcut)
     local widget = widget or layout:getWidgetAt(x, y)
     local hit = true
     if not widget then
@@ -191,7 +191,7 @@ function Input:handlePressEnd (layout, button, x, y, widget, accelerator)
     widget:bubbleEvent('PressEnd', {
         hit = hit,
         origin = originWidget,
-        accelerator = accelerator,
+        shortcut = shortcut,
         button = button,
         x = x, y = y
     })
@@ -199,7 +199,7 @@ function Input:handlePressEnd (layout, button, x, y, widget, accelerator)
         widget:bubbleEvent('Press', {
             hit = hit,
             button = button,
-            accelerator = accelerator,
+            shortcut = shortcut,
             x = x, y = y
         })
     end

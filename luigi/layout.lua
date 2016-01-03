@@ -60,6 +60,25 @@ function Layout:constructor (data, master)
     self.isReady = true
 end
 
+--[[--
+Create a detached widget.
+
+Internal function used to create widgets that are associated with
+a layout, but "detached" from it.
+
+Used by context menus, which use their "owner" widget's layout
+for theme and style information but appear in a separate layout.
+
+@tparam table data
+A tree of widget data.
+
+@treturn Widget
+A widget instance.
+--]]--
+function Layout:createWidget (data)
+    return Widget(self, data)
+end
+
 local function clearWidget (widget)
     widget.textData = nil
     widget.fontData = nil
@@ -96,10 +115,6 @@ Master layout
 --]]--
 function Layout:setMaster (layout)
     self.master = layout
-
-    function self:addWidget (...)
-        return layout:addWidget(...)
-    end
 
     reset(self)
     return self
@@ -259,12 +274,12 @@ function Layout:getWidgetAt (x, y, root)
     if root:isAt(x, y) then return root end
 end
 
--- Add handlers for keyboard accelerators, tab focus, and mouse wheel scroll
+-- Add handlers for keyboard shortcuts, tab focus, and mouse wheel scroll
 function Layout:addDefaultHandlers ()
-    self.accelerators = {}
+    self.shortcuts = {}
 
     for i = 0, 8 do
-        self.accelerators[i] = {}
+        self.shortcuts[i] = {}
     end
 
     self:onPressStart(function (event)
@@ -299,8 +314,8 @@ function Layout:addDefaultHandlers ()
 
     self:onKeyPress(function (event)
 
-        -- keyboard accelerators
-        local entry = self.accelerators[event.modifierFlags]
+        -- keyboard shortcuts
+        local entry = self.shortcuts[event.modifierFlags]
         local acceleratedWidget = entry and entry[event.key]
         if acceleratedWidget then
             acceleratedWidget.hovered = true
@@ -331,8 +346,8 @@ function Layout:addDefaultHandlers ()
 
     self:onKeyRelease(function (event)
 
-        -- accelerators
-        local entry = self.accelerators[event.modifierFlags]
+        -- shortcuts
+        local entry = self.shortcuts[event.modifierFlags]
         local acceleratedWidget = entry and entry[event.key]
 
         if acceleratedWidget then
