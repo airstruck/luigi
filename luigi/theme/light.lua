@@ -192,6 +192,8 @@ return function (config)
         },
         status = {
             type = { 'Line', 'Control' },
+            background = backColor,
+            color = textColor,
         },
         stepper = {
             type = { 'Control' },

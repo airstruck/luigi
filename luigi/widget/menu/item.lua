@@ -168,16 +168,16 @@ local function initialize (self)
     local font = self:getFont()
     local pad = self.padding or 0
     local isSubmenu = self.parentMenu and self.parentMenu.parentMenu
-    local text, key, icon = self.text or '', self.key or '', self.icon
+    local text, shortcut, icon = self.text or '', self.shortcut or '', self.icon
     local textWidth = font:getAdvance(text) + pad * 2
 
     if isSubmenu then
         local edgeType
         if #self.items > 0 then
-            key = ' '
+            shortcut = ' '
             edgeType = 'menu.expander'
         else
-            key = key:gsub('%f[%w].', string.upper) -- :gsub('-', '+')
+            shortcut = shortcut:gsub('%f[%w].', string.upper) -- :gsub('-', '+')
         end
         self.height = font:getLineHeight() + pad * 2
         self.flow = 'x'
@@ -185,7 +185,7 @@ local function initialize (self)
         self:addChild { text = text, width = textWidth }
         self:addChild {
             type = edgeType,
-            text = key,
+            text = shortcut,
             align = 'middle right',
             minwidth = self.height,
             color = function ()
