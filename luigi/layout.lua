@@ -274,23 +274,41 @@ function Layout:getWidgetAt (x, y, root)
     if root:isAt(x, y) then return root end
 end
 
-function Layout:placeNear (left, top, w, h)
-    w, h = w or 0, h or 0
+--[[--
+Place a layout near a point or rectangle.
+
+@tparam number left
+Number of pixels from window's left edge.
+
+@tparam number top
+Number of pixels from window's top edge.
+
+@tparam[opt] number width
+Width of the rectangle to place layout outside of, defaults to 0.
+
+@tparam[opt] number height
+Height of the rectangle to place layout outside of, defaults to 0.
+
+@treturn Layout
+Return this layout for chaining.
+--]]--
+function Layout:placeNear (left, top, width, height)
+    width, height = width or 0, height or 0
     local root = self.root
-    -- place context menu left of cursor if there's no room to the right
+    -- place to the left if there's no room to the right
     local layoutWidth = root:getWidth()
     local windowWidth, windowHeight = Backend.getWindowSize()
-    if left + w + layoutWidth > windowWidth then
-        left = left - layoutWidth - w
+    if left + width + layoutWidth > windowWidth then
+        left = left - layoutWidth - width
     else
-        left = left + w
+        left = left + width
     end
-    -- place context menu above cursor if there's no room below
+    -- place above if there's no room below
     local layoutHeight = root:getHeight()
-    if top + h + layoutHeight > windowHeight then
-        top = top - layoutHeight - h
+    if top + height + layoutHeight > windowHeight then
+        top = top - layoutHeight - height
     else
-        top = top + h
+        top = top + height
     end
     root.left = left
     root.top = top
