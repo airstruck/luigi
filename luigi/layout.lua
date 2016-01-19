@@ -177,6 +177,9 @@ end
 Show the layout.
 
 Hooks all appropriate Love events and callbacks.
+
+@treturn Layout
+Return this layout for chaining.
 --]]--
 function Layout:show ()
     if self.isShown then
@@ -192,12 +195,17 @@ function Layout:show ()
 
     Backend.show(self)
     self.root:reshape()
+
+    return self
 end
 
 --[[--
 Hide the layout.
 
 Unhooks Love events and callbacks.
+
+@treturn Layout
+Return this layout for chaining.
 --]]--
 function Layout:hide ()
     if not self.isShown then
@@ -205,6 +213,8 @@ function Layout:hide ()
     end
     self.isShown = nil
     Backend.hide(self)
+
+    return self
 end
 
 --[[--
