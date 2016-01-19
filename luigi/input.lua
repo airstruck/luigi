@@ -170,7 +170,7 @@ end
 
 function Input:handlePressEnd (layout, button, x, y, widget, shortcut)
     local hit, widget = checkHit(widget or layout:getWidgetAt(x, y), layout)
-    local originWidget = self.pressedWidgets[button]
+    local originWidget = widget or self.pressedWidgets[button]
     if not originWidget then return end
     if hit then
         originWidget.pressed[button] = nil

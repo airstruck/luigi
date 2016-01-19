@@ -313,14 +313,13 @@ function Layout:addDefaultHandlers ()
     end)
 
     self:onKeyPress(function (event)
-
         -- keyboard shortcuts
         local entry = self.shortcuts[event.modifierFlags]
-        local acceleratedWidget = entry and entry[event.key]
-        if acceleratedWidget then
-            acceleratedWidget.hovered = true
+        local widget = entry and entry[event.key]
+        if widget then
+            widget.hovered = true
             self.input:handlePressStart(self, 'left', event.x, event.y,
-                acceleratedWidget, event.key)
+                widget, widget.shortcut)
             return false
         end
 
@@ -345,15 +344,13 @@ function Layout:addDefaultHandlers ()
     end)
 
     self:onKeyRelease(function (event)
-
         -- shortcuts
         local entry = self.shortcuts[event.modifierFlags]
-        local acceleratedWidget = entry and entry[event.key]
-
-        if acceleratedWidget then
-            acceleratedWidget.hovered = false
+        local widget = entry and entry[event.key]
+        if widget then
+            widget.hovered = false
             self.input:handlePressEnd(self, 'left', event.x, event.y,
-                acceleratedWidget, event.key)
+                widget, widget.shortcut)
             return false
         end
 
