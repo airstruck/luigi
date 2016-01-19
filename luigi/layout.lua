@@ -274,6 +274,28 @@ function Layout:getWidgetAt (x, y, root)
     if root:isAt(x, y) then return root end
 end
 
+function Layout:placeNear (left, top, w, h)
+    w, h = w or 0, h or 0
+    local root = self.root
+    -- place context menu left of cursor if there's no room to the right
+    local layoutWidth = root:getWidth()
+    local windowWidth, windowHeight = Backend.getWindowSize()
+    if left + w + layoutWidth > windowWidth then
+        left = left - layoutWidth - w
+    else
+        left = left + w
+    end
+    -- place context menu above cursor if there's no room below
+    local layoutHeight = root:getHeight()
+    if top + h + layoutHeight > windowHeight then
+        top = top - layoutHeight - h
+    else
+        top = top + h
+    end
+    root.left = left
+    root.top = top
+end
+
 -- Add handlers for keyboard shortcuts, tab focus, and mouse wheel scroll
 function Layout:addDefaultHandlers ()
     self.shortcuts = {}
@@ -290,25 +312,7 @@ function Layout:addDefaultHandlers ()
         menu:bubbleEvent('PressStart', event)
         -- make sure it fits in the window
         -- TODO: open in a new borderless window under SDL?
-        local windowWidth, windowHeight = Backend.getWindowSize()
-        local left, top = event.x, event.y
-        local root = menu.menuLayout.root
-        -- place context menu left of cursor if there's no room to the right
-        local layoutWidth = root:getWidth()
-        if left + layoutWidth > windowWidth then
-            left = left - layoutWidth - 1
-        else
-            left = left + 1
-        end
-        -- place context menu above cursor if there's no room below
-        local layoutHeight = root:getHeight()
-        if top + layoutHeight > windowHeight then
-            top = top - layoutHeight - 1
-        else
-            top = top + 1
-        end
-        root.left = left
-        root.top = top
+        menu.menuLayout:placeNear(event.x - 1, event.y - 1, 2, 2)
         return false
     end)
 

@@ -50,14 +50,13 @@ local function addLayoutChildren (self)
         end
     end
 
-    local isSubmenu = self.parentMenu and self.parentMenu.parentMenu
-    local x = isSubmenu and self:getWidth() or 0
-    local y = isSubmenu and 0 or self:getHeight()
-
-    root.left = self:getX() + x
-    root.top = self:getY() + y
     root.height = height
     root.width = textWidth + keyWidth + (root.padding or 0)
+
+    local isSubmenu = self.parentMenu and self.parentMenu.parentMenu
+    local w = isSubmenu and self:getWidth() or 0
+    local h = isSubmenu and 0 or self:getHeight()
+    self.menuLayout:placeNear(self:getX(), self:getY(), w, h)
 end
 
 local function show (self)
