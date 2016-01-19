@@ -118,6 +118,21 @@ function Attribute.value.set (widget, value)
 end
 
 --[[--
+Solidity.
+
+Should true or false.
+
+@attrib icon
+--]]--
+Attribute.solid = {}
+
+function Attribute.solid.set (widget, value)
+    widget.attributes.solid = value
+end
+
+Attribute.solid.get = cascade
+
+--[[--
 Context menu.
 
 - This attribute cascades.

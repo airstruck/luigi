@@ -35,6 +35,7 @@ function Input:handleKeyPress (layout, key, x, y)
         x = x, y = y
     })
     if result ~= nil then return result end
+    if layout.root.modal then return false end
 end
 
 function Input:handleKeyRelease (layout, key, x, y)
@@ -45,25 +46,26 @@ function Input:handleKeyRelease (layout, key, x, y)
         x = x, y = y
     })
     if result ~= nil then return result end
+    if layout.root.modal then return false end
 end
 
 function Input:handleTextInput (layout, text, x, y)
     local widget = layout.focusedWidget or layout.root
     local result = widget:bubbleEvent('TextInput', {
-        hit = hit,
         text = text,
         x = x, y = y
     })
     if result ~= nil then return result end
+    if layout.root.modal then return false end
+end
+
+local function checkHit (widget, layout)
+    local root = layout.root
+    return widget and widget.solid or root.modal, widget or root
 end
 
 function Input:handleMove (layout, x, y)
-    local widget = layout:getWidgetAt(x, y)
-    local hit = true
-    if not widget then
-        hit = nil
-        widget = layout.root
-    end
+    local hit, widget = checkHit(layout:getWidgetAt(x, y), layout)
     local previousWidget = self.previousMoveWidget
     if widget ~= previousWidget then
         if previousWidget then
@@ -104,12 +106,7 @@ function Input:handleMove (layout, x, y)
 end
 
 function Input:handlePressedMove (layout, x, y)
-    local widget = layout:getWidgetAt(x, y)
-    local hit = true
-    if not widget then
-        hit = nil
-        widget = layout.root
-    end
+    local hit, widget = checkHit(layout:getWidgetAt(x, y), layout)
     for _, button in ipairs { 'left', 'middle', 'right' } do
         local originWidget = self.pressedWidgets[button]
         if originWidget then
@@ -153,20 +150,15 @@ function Input:handlePressedMove (layout, x, y)
 end
 
 function Input:handlePressStart (layout, button, x, y, widget, shortcut)
-    local widget = widget or layout:getWidgetAt(x, y)
-    local hit = true
-    if not widget then
-        hit = nil
-        widget = layout.root
-    end
-    if hit then
+    local hit, widget = checkHit(widget or layout:getWidgetAt(x, y), layout)
+    -- if hit then
         self.pressedWidgets[button] = widget
         self.passedWidgets[button] = widget
         widget.pressed[button] = true
         if button == 'left' then
             widget:focus()
         end
-    end
+    -- end
     widget:bubbleEvent('PressStart', {
         hit = hit,
         button = button,
@@ -177,12 +169,7 @@ function Input:handlePressStart (layout, button, x, y, widget, shortcut)
 end
 
 function Input:handlePressEnd (layout, button, x, y, widget, shortcut)
-    local widget = widget or layout:getWidgetAt(x, y)
-    local hit = true
-    if not widget then
-        hit = nil
-        widget = layout.root
-    end
+    local hit, widget = checkHit(widget or layout:getWidgetAt(x, y), layout)
     local originWidget = self.pressedWidgets[button]
     if not originWidget then return end
     if hit then
@@ -233,13 +220,7 @@ end
 
 function Input:handleWheelMove (layout, x, y)
     local mx, my = Backend.getMousePosition()
-    local widget = layout:getWidgetAt(mx, my)
-    local hit = true
-
-    if not widget then
-        hit = nil
-        widget = layout.root
-    end
+    local hit, widget = checkHit(layout:getWidgetAt(x, y), layout)
 
     widget:bubbleEvent('WheelMove', { hit = hit, x = x, y = y })
 

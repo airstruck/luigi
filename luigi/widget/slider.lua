@@ -73,16 +73,14 @@ return function (self)
     self:onReshape(function (event)
         local x1, y1, w, h = self:getRectangle(true, true)
         local x2, y2 = x1 + w, y1 + h
+        local dim = math.min(w, h)
+        thumb.width, thumb.height = dim, dim
         if self.flow == 'x' then
-            thumb.width = 0
-            thumb.height = false
             local halfThumb = thumb:getWidth() / 2
             x1, x2 = x1 + halfThumb, x2 - halfThumb
             spacer.width = self.value * (x2 - x1)
             spacer.height = false
         else
-            thumb.width = false
-            thumb.height = 0
             local halfThumb = thumb:getHeight() / 2
             y1, y2 = y1 + halfThumb, y2 - halfThumb
             spacer.width = false

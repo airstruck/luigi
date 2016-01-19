@@ -55,11 +55,11 @@ return function (config)
     end
 
     local function getControlHeight (self)
-        return self.flow == 'x' and self.minheight
+        return self.flow == 'x' and self._defaultDimension
     end
 
     local function getControlWidth (self)
-        return self.flow ~= 'x' and self.minwidth
+        return self.flow ~= 'x' and self._defaultDimension
     end
 
     local function getMenuItemBackground (self)
@@ -111,18 +111,18 @@ return function (config)
             height = getControlHeight,
             width = getControlWidth,
             color = textColor,
-            minheight = 36,
-            minwidth = 36,
             align = 'center middle',
             margin = 2,
             color = textColor,
+            solid = true,
+            _defaultDimension = 36,
         },
 
         Line = {
-            minheight = 24,
             margin = 0,
             padding = 4,
             align = 'left middle',
+            _defaultDimension = 24,
         },
 
         -- widget types
@@ -159,6 +159,7 @@ return function (config)
             padding = 2,
             background = backColor,
             color = textColor,
+            solid = true,
         },
         progress = {
             type = { 'Control' },
@@ -187,8 +188,6 @@ return function (config)
             type = { 'button' },
             align = 'middle center',
             margin = 0,
-            minwidth = 32,
-            minheight = 32,
         },
         status = {
             type = { 'Line', 'Control' },
@@ -225,6 +224,7 @@ return function (config)
             margin = -10,
             slices = resources .. 'submenu.png',
             color = textColor,
+            solid = true,
         },
         text = {
             type = { 'Control' },
