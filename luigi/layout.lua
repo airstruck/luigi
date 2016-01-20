@@ -324,6 +324,7 @@ function Layout:placeNear (left, top, width, height)
     root.top = top
 end
 
+
 -- Add handlers for keyboard shortcuts, tab focus, and mouse wheel scroll
 function Layout:addDefaultHandlers ()
     self.shortcuts = {}
@@ -332,85 +333,107 @@ function Layout:addDefaultHandlers ()
         self.shortcuts[i] = {}
     end
 
-    self:onPressStart(function (event)
-        -- show context menu on right click
-        if event.button ~= 'right' then return end
-        local menu = event.target.context
-        if not menu then return end
-        menu:bubbleEvent('PressStart', event)
-        -- make sure it fits in the window
-        -- TODO: open in a new borderless window under SDL?
-        menu.menuLayout:placeNear(event.x - 1, event.y - 1, 2, 2)
-        return false
-    end)
+    self.behavior = {}
 
-    self:onKeyPress(function (event)
-        -- keyboard shortcuts
-        local entry = self.shortcuts[event.modifierFlags]
-        local widget = entry and entry[event.key]
-        if widget then
+    local function createBehavior (name, hooks)
+        self.behavior[name] = hooks
+        function hooks.destroy ()
+            for _, hook in ipairs(hooks) do
+                hook:unhook()
+            end
+            self.behavior[name] = nil
+        end
+    end
+
+    createBehavior('context', {
+        self:onPressStart(function (event)
+            -- show context menu on right click
+            if event.button ~= 'right' then return end
+            local menu = event.target.context
+            if not menu then return end
+            menu:bubbleEvent('PressStart', event)
+            -- make sure it fits in the window
+            -- TODO: open in a new borderless window under SDL?
+            menu.menuLayout:placeNear(event.x - 1, event.y - 1, 2, 2)
+            return false
+        end)
+    })
+
+    createBehavior('shortcut', {
+        self:onKeyPress(function (event)
+            local entry = self.shortcuts[event.modifierFlags]
+            local widget = entry and entry[event.key]
+            if not widget then return end
             widget.hovered = true
             self.input:handlePressStart(self, 'left', event.x, event.y,
                 widget, widget.shortcut)
             return false
-        end
+        end),
 
-        -- tab/shift-tab cycles focused widget
-        if event.key == 'tab' then
-            if Backend.isKeyDown('lshift', 'rshift') then
-                self:focusPreviousWidget()
-            else
-                self:focusNextWidget()
-            end
-            return false
-        end
-
-        -- space/enter presses focused widget
-        local widget = self.focusedWidget
-        if widget and event.key == 'space' or event.key == ' '
-        or event.key == 'return' then
-            self.input:handlePressStart(self, 'left', event.x, event.y,
-                widget, event.key)
-            return false
-        end
-    end)
-
-    self:onKeyRelease(function (event)
-        -- shortcuts
-        local entry = self.shortcuts[event.modifierFlags]
-        local widget = entry and entry[event.key]
-        if widget then
+        self:onKeyRelease(function (event)
+            local entry = self.shortcuts[event.modifierFlags]
+            local widget = entry and entry[event.key]
+            if not widget then return end
             widget.hovered = false
             self.input:handlePressEnd(self, 'left', event.x, event.y,
                 widget, widget.shortcut)
             return false
-        end
+        end)
+    })
 
-        -- space / enter presses focused widget
-        local widget = self.focusedWidget
-        if widget and event.key == 'space' or event.key == ' '
-        or event.key == 'return' then
-            self.input:handlePressEnd(self, 'left', event.x, event.y,
-                widget, event.key)
+    createBehavior('navigate', {
+        self:onKeyPress(function (event)
+            -- tab/shift-tab cycles focused widget
+            if event.key == 'tab' then
+                if Backend.isKeyDown('lshift', 'rshift') then
+                    self:focusPreviousWidget()
+                else
+                    self:focusNextWidget()
+                end
+                return false
+            end
+
+            -- space/enter presses focused widget
+            local widget = self.focusedWidget
+            if widget and event.key == 'space' or event.key == ' '
+            or event.key == 'return' then
+                self.input:handlePressStart(self, 'left', event.x, event.y,
+                    widget, event.key)
+                return false
+            end
+        end),
+
+        self:onKeyRelease(function (event)
+            -- space / enter presses focused widget
+            local widget = self.focusedWidget
+            if widget and event.key == 'space' or event.key == ' '
+            or event.key == 'return' then
+                self.input:handlePressEnd(self, 'left', event.x, event.y,
+                    widget, event.key)
+                return false
+            end
+        end)
+    })
+
+    createBehavior('scroll', {
+        self:onWheelMove(function (event)
+            if not event.hit then return end
+            for widget in event.target:eachAncestor(true) do
+                if widget:scrollBy(nil, event.y) then return false end
+            end -- ancestor loop
             return false
-        end
-    end)
+        end) -- wheel move
+    })
 
-    self:onWheelMove(function (event)
-        if not event.hit then return end
-        for widget in event.target:eachAncestor(true) do
-            if widget:scrollBy(nil, event.y) then return false end
-        end -- ancestor loop
-        return false
-    end) -- wheel move
+    createBehavior('status', {
+        self:onEnter(function (event)
+            local statusWidget = (self.master or self).statusWidget
+            if not statusWidget then return end
 
-    self:onEnter(function (event)
-        local statusWidget = (self.master or self).statusWidget
-        if not statusWidget then return end
-
-        statusWidget.text = event.target.status
-        return false
-    end)
+            statusWidget.text = event.target.status
+            return false
+        end)
+    })
 
 end
 
