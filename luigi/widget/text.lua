@@ -288,6 +288,10 @@ This color is used to indicate the selected range of text.
 
             pasteFromClipboard(self)
 
+        elseif event.key == 'a' and Backend.isKeyDown('lctrl', 'rctrl') then
+
+            selectRange(self, 0, #self.value)
+
         end
         return false
     end)
