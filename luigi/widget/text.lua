@@ -146,6 +146,24 @@ local function deleteCharacterLeft (self)
     selectRange(self, index, index)
 end
 
+local function deleteCharacterRight (self)
+    trimRange(self)
+    local text = self.value
+    local first, last = getRange(self)
+
+    -- if cursor is at end, do nothing
+    if first == #text then
+        return
+    end
+
+    -- delete character to the right
+    local offset = utf8.offset(text, 2, last + 1) or 0
+    local left = text:sub(1, first)
+    local index = #left
+    self.value = left .. text:sub(offset)
+    selectRange(self, index, index)
+end
+
 local function copyRangeToClipboard (self)
     trimRange(self)
     local text = self.value
@@ -226,21 +244,27 @@ This color is used to indicate the selected range of text.
 
         -- ignore tabs (keyboard navigation)
         if event.key == 'tab' then
+
             return
-        end
 
         -- focus next widget on enter (keyboard navigation)
-        if event.key == 'return' then
+        elseif event.key == 'return' then
+
             self.layout:focusNextWidget()
             -- if the next widget is a button, allow the event to propagate
             -- so that the button is pressed (TODO: is this a good idea?)
             return self.layout.focusedWidget.type ~= 'button' or nil
-        end
 
-        if event.key == 'backspace' then
+        elseif event.key == 'backspace' then
 
             if not deleteRange(self) then
                 deleteCharacterLeft(self)
+            end
+
+        elseif event.key == 'delete' then
+
+            if not deleteRange(self) then
+                deleteCharacterRight(self)
             end
 
         elseif event.key == 'left' then
