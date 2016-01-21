@@ -8,6 +8,13 @@ local ROOT = (...):gsub('[^.]*.[^.]*$', '')
 local utf8 = require(ROOT .. 'utf8')
 local Backend = require(ROOT .. 'backend')
 
+-- make sure selection range doesn't extend past EOT
+local function trimRange (self)
+    local max = #self.value
+    if self.startIndex > max then self.startIndex = max end
+    if self.endIndex > max then self.endIndex = max end
+end
+
 local function updateHighlight (self)
     local value = self.value
     local font = self:getFont()
@@ -34,6 +41,7 @@ end
 local function selectRange (self, startIndex, endIndex)
     if startIndex then self.startIndex = startIndex end
     if endIndex then self.endIndex = endIndex end
+    trimRange(self)
 
     scrollToCaret(self)
 end
@@ -72,6 +80,7 @@ end
 
 -- move the caret one character to the left
 local function moveCaretLeft (self, alterRange)
+    trimRange(self)
     local text, endIndex = self.value, self.endIndex
 
     -- clamp caret to beginning
@@ -84,6 +93,7 @@ end
 
 -- move the caret one character to the right
 local function moveCaretRight (self, alterRange)
+    trimRange(self)
     local text, endIndex = self.value, self.endIndex
 
     -- clamp caret to end
@@ -95,6 +105,7 @@ local function moveCaretRight (self, alterRange)
 end
 
 local function getRange (self)
+    trimRange(self)
     if self.startIndex <= self.endIndex then
         return self.startIndex, self.endIndex
     end
@@ -103,6 +114,7 @@ local function getRange (self)
 end
 
 local function deleteRange (self)
+    trimRange(self)
     local text = self.value
     local first, last = getRange(self)
 
@@ -117,6 +129,7 @@ local function deleteRange (self)
 end
 
 local function deleteCharacterLeft (self)
+    trimRange(self)
     local text = self.value
     local first, last = getRange(self)
 
@@ -134,6 +147,7 @@ local function deleteCharacterLeft (self)
 end
 
 local function copyRangeToClipboard (self)
+    trimRange(self)
     local text = self.value
     local first, last = getRange(self)
     if last >= first + 1 then
@@ -142,6 +156,7 @@ local function copyRangeToClipboard (self)
 end
 
 local function pasteFromClipboard (self)
+    trimRange(self)
     local text = self.value
     local pasted = Backend.getClipboardText() or ''
     local first, last = getRange(self)
@@ -152,6 +167,7 @@ local function pasteFromClipboard (self)
 end
 
 local function insertText (self, newText)
+    trimRange(self)
     local text = self.value
     local first, last = getRange(self)
     local left = text:sub(1, first) .. newText
