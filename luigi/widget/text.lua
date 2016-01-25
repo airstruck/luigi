@@ -275,20 +275,20 @@ This color is used to indicate the selected range of text.
 
             moveCaretRight(self, Backend.isKeyDown('lshift', 'rshift'))
 
-        elseif event.key == 'x' and Backend.isKeyDown('lctrl', 'rctrl') then
+        elseif event.key == 'x' and Backend.isKeyDown('lctrl', 'rctrl', 'lgui', 'rgui') then
 
             copyRangeToClipboard(self)
             deleteRange(self)
 
-        elseif event.key == 'c' and Backend.isKeyDown('lctrl', 'rctrl') then
+        elseif event.key == 'c' and Backend.isKeyDown('lctrl', 'rctrl', 'lgui', 'rgui') then
 
             copyRangeToClipboard(self)
 
-        elseif event.key == 'v' and Backend.isKeyDown('lctrl', 'rctrl') then
+        elseif event.key == 'v' and Backend.isKeyDown('lctrl', 'rctrl', 'lgui', 'rgui') then
 
             pasteFromClipboard(self)
 
-        elseif event.key == 'a' and Backend.isKeyDown('lctrl', 'rctrl') then
+        elseif event.key == 'a' and Backend.isKeyDown('lctrl', 'rctrl', 'lgui', 'rgui') then
 
             selectRange(self, 0, #self.value)
 
