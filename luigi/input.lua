@@ -21,7 +21,7 @@ end
 
 function Input:getModifierFlags ()
     local alt = Backend.isKeyDown('lalt', 'ralt') and 1 or 0
-    local ctrl = Backend.isKeyDown('lctrl', 'rctrl') and 2 or 0
+    local ctrl = Backend.isKeyDown('lctrl', 'rctrl', 'lgui', 'rgui') and 2 or 0
     local shift = Backend.isKeyDown('lshift', 'rshift') and 4 or 0
 
     return alt + ctrl + shift
