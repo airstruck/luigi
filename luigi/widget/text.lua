@@ -91,6 +91,12 @@ local function moveCaretLeft (self, alterRange)
     selectRange(self, not alterRange and index, index)
 end
 
+-- move the caret to the beginning of the line
+local function jumpCaretLeft (self, alterRange)
+    trimRange(self)
+    selectRange(self, not alterRange and 0, 0)
+end
+
 -- move the caret one character to the right
 local function moveCaretRight (self, alterRange)
     trimRange(self)
@@ -102,6 +108,13 @@ local function moveCaretRight (self, alterRange)
     -- move right
     local index = (utf8.offset(text, 2, endIndex + 1) or #text) - 1
     selectRange(self, not alterRange and index, index)
+end
+
+-- move the caret to the end of the line
+local function jumpCaretRight (self, alterRange)
+    trimRange(self)
+    local text = self.value
+    selectRange(self, not alterRange and #text, #text)
 end
 
 local function getRange (self)
@@ -269,11 +282,27 @@ This color is used to indicate the selected range of text.
 
         elseif event.key == 'left' then
 
-            moveCaretLeft(self, Backend.isKeyDown('lshift', 'rshift'))
+            if Backend.isKeyDown('lgui', 'rgui') then
+                jumpCaretLeft(self, Backend.isKeyDown('lshift', 'rshift'))
+            else
+                moveCaretLeft(self, Backend.isKeyDown('lshift', 'rshift'))
+            end
 
         elseif event.key == 'right' then
 
-            moveCaretRight(self, Backend.isKeyDown('lshift', 'rshift'))
+            if Backend.isKeyDown('lgui', 'rgui') then
+                jumpCaretRight(self, Backend.isKeyDown('lshift', 'rshift'))
+            else
+                moveCaretRight(self, Backend.isKeyDown('lshift', 'rshift'))
+            end
+
+        elseif event.key == 'home' then
+
+            jumpCaretLeft(self, Backend.isKeyDown('lshift', 'rshift'))
+
+        elseif event.key == 'end' then
+
+            jumpCaretRight(self, Backend.isKeyDown('lshift', 'rshift'))
 
         elseif event.key == 'x' and Backend.isKeyDown('lctrl', 'rctrl', 'lgui', 'rgui') then
 
