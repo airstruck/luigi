@@ -220,7 +220,7 @@ end
 
 function Input:handleWheelMove (layout, x, y)
     local mx, my = Backend.getMousePosition()
-    local hit, widget = checkHit(layout:getWidgetAt(x, y), layout)
+    local hit, widget = checkHit(layout:getWidgetAt(mx, my), layout)
 
     widget:bubbleEvent('WheelMove', { hit = hit, x = x, y = y })
 
