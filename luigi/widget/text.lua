@@ -78,8 +78,8 @@ local function findIndexFromPoint (self, x, y)
     return #self.value
 end
 
--- move the caret one character to the left
-local function moveCaretLeft (self, alterRange)
+-- move the caret or end of selection range one character to the left
+local function moveCharLeft (self, alterRange)
     trimRange(self)
     local text, endIndex = self.value, self.endIndex
 
@@ -91,14 +91,22 @@ local function moveCaretLeft (self, alterRange)
     selectRange(self, not alterRange and index, index)
 end
 
--- move the caret to the beginning of the line
-local function jumpCaretLeft (self, alterRange)
+-- move caret or end of selection range one word to the left
+local function moveWordLeft (self, alterRange)
+    trimRange(self)
+    local text = self.value:sub(1, self.endIndex)
+    local pos = text:find('%s[^%s]+%s*$') or 0
+    selectRange(self, not alterRange and pos, pos)
+end
+
+-- move the caret or end of selection range to the beginning of the line
+local function moveLineLeft (self, alterRange)
     trimRange(self)
     selectRange(self, not alterRange and 0, 0)
 end
 
--- move the caret one character to the right
-local function moveCaretRight (self, alterRange)
+-- move caret or end of selection range one character to the right
+local function moveCharRight (self, alterRange)
     trimRange(self)
     local text, endIndex = self.value, self.endIndex
 
@@ -110,8 +118,17 @@ local function moveCaretRight (self, alterRange)
     selectRange(self, not alterRange and index, index)
 end
 
--- move the caret to the end of the line
-local function jumpCaretRight (self, alterRange)
+-- move caret or end of selection range one word to the right
+local function moveWordRight (self, alterRange)
+    trimRange(self)
+    local text = self.value
+    local _, pos = text:find('^%s*[^%s]+', self.endIndex + 1)
+    pos = pos or #text + 1
+    selectRange(self, not alterRange and pos, pos)
+end
+
+-- move caret or end of selection range to the end of the line
+local function moveLineRight (self, alterRange)
     trimRange(self)
     local text = self.value
     selectRange(self, not alterRange and #text, #text)
@@ -298,27 +315,31 @@ This color is used to indicate the selected range of text.
 
         elseif event.key == 'left' then
 
-            if Backend.isKeyDown('lgui', 'rgui') then
-                jumpCaretLeft(self, isShiftPressed())
+            if Backend.isKeyDown('lctrl', 'rctrl') then
+                moveWordLeft(self, isShiftPressed())
+            elseif Backend.isKeyDown('lgui', 'rgui') then
+                moveLineLeft(self, isShiftPressed())
             else
-                moveCaretLeft(self, isShiftPressed())
+                moveCharLeft(self, isShiftPressed())
             end
 
         elseif event.key == 'right' then
 
-            if Backend.isKeyDown('lgui', 'rgui') then
-                jumpCaretRight(self, isShiftPressed())
+            if Backend.isKeyDown('lctrl', 'rctrl') then
+                moveWordRight(self, isShiftPressed())
+            elseif Backend.isKeyDown('lgui', 'rgui') then
+                moveLineRight(self, isShiftPressed())
             else
-                moveCaretRight(self, isShiftPressed())
+                moveCharRight(self, isShiftPressed())
             end
 
         elseif event.key == 'home' then
 
-            jumpCaretLeft(self, isShiftPressed())
+            moveLineLeft(self, isShiftPressed())
 
         elseif event.key == 'end' then
 
-            jumpCaretRight(self, isShiftPressed())
+            moveLineRight(self, isShiftPressed())
 
         elseif event.key == 'x' and isCommandPressed() then
 
