@@ -228,7 +228,7 @@ local function isShiftPressed ()
     return Backend.isKeyDown('lshift', 'rshift')
 end
 
--- "command" means the command key on Mac and the ctrl key everywhere else.
+-- check command (gui) key, only on Mac.
 local isCommandPressed
 if Backend.isMac() then
     isCommandPressed = function ()
@@ -236,6 +236,30 @@ if Backend.isMac() then
     end
 else
     isCommandPressed = function ()
+        return false
+    end
+end
+
+-- check command (gui) key on Mac and ctrl key everywhere else.
+local isCommandOrCtrlPressed
+if Backend.isMac() then
+    isCommandOrCtrlPressed = function ()
+        return Backend.isKeyDown('lgui', 'rgui')
+    end
+else
+    isCommandOrCtrlPressed = function ()
+        return Backend.isKeyDown('lctrl', 'rctrl')
+    end
+end
+
+-- check option (alt) key on Mac and ctrl key everywhere else.
+local isOptionOrCtrlPressed
+if Backend.isMac() then
+    isOptionOrCtrlPressed = function ()
+        return Backend.isKeyDown('lalt', 'ralt')
+    end
+else
+    isOptionOrCtrlPressed = function ()
         return Backend.isKeyDown('lctrl', 'rctrl')
     end
 end
@@ -315,9 +339,9 @@ This color is used to indicate the selected range of text.
 
         elseif event.key == 'left' then
 
-            if Backend.isKeyDown('lctrl', 'rctrl') then
+            if isOptionOrCtrlPressed() then
                 moveWordLeft(self, isShiftPressed())
-            elseif Backend.isKeyDown('lgui', 'rgui') then
+            elseif isCommandPressed() then
                 moveLineLeft(self, isShiftPressed())
             else
                 moveCharLeft(self, isShiftPressed())
@@ -325,9 +349,9 @@ This color is used to indicate the selected range of text.
 
         elseif event.key == 'right' then
 
-            if Backend.isKeyDown('lctrl', 'rctrl') then
+            if isOptionOrCtrlPressed() then
                 moveWordRight(self, isShiftPressed())
-            elseif Backend.isKeyDown('lgui', 'rgui') then
+            elseif isCommandPressed() then
                 moveLineRight(self, isShiftPressed())
             else
                 moveCharRight(self, isShiftPressed())
@@ -341,20 +365,20 @@ This color is used to indicate the selected range of text.
 
             moveLineRight(self, isShiftPressed())
 
-        elseif event.key == 'x' and isCommandPressed() then
+        elseif event.key == 'x' and isCommandOrCtrlPressed() then
 
             copyRangeToClipboard(self)
             deleteRange(self)
 
-        elseif event.key == 'c' and isCommandPressed() then
+        elseif event.key == 'c' and isCommandOrCtrlPressed() then
 
             copyRangeToClipboard(self)
 
-        elseif event.key == 'v' and isCommandPressed() then
+        elseif event.key == 'v' and isCommandOrCtrlPressed() then
 
             pasteFromClipboard(self)
 
-        elseif event.key == 'a' and isCommandPressed() then
+        elseif event.key == 'a' and isCommandOrCtrlPressed() then
 
             selectRange(self, 0, #self.value)
 
