@@ -264,12 +264,77 @@ else
     end
 end
 
+-- Special keys.
+local function createDefaultKeyActions (self)
+    return {
+        ['return'] = function ()
+            -- just a dummy function to trap event
+        end,
+        ['backspace'] = function ()
+            if not deleteRange(self) then
+                deleteCharacterLeft(self)
+            end
+        end,
+        ['delete'] = function ()
+            if not deleteRange(self) then
+                deleteCharacterRight(self)
+            end
+        end,
+        ['left'] = function ()
+            if isOptionOrCtrlPressed() then
+                moveWordLeft(self, isShiftPressed())
+            elseif isCommandPressed() then
+                moveLineLeft(self, isShiftPressed())
+            else
+                moveCharLeft(self, isShiftPressed())
+            end
+        end,
+        ['right'] = function ()
+            if isOptionOrCtrlPressed() then
+                moveWordRight(self, isShiftPressed())
+            elseif isCommandPressed() then
+                moveLineRight(self, isShiftPressed())
+            else
+                moveCharRight(self, isShiftPressed())
+            end
+        end,
+        ['home'] = function ()
+            moveLineLeft(self, isShiftPressed())
+        end,
+        ['end'] = function ()
+            moveLineRight(self, isShiftPressed())
+        end,
+        ['x'] = function ()
+            if isCommandOrCtrlPressed() then
+                copyRangeToClipboard(self)
+                deleteRange(self)
+            end
+        end,
+        ['c'] = function ()
+            if isCommandOrCtrlPressed() then
+                copyRangeToClipboard(self)
+            end
+        end,
+        ['v'] = function ()
+            if isCommandOrCtrlPressed() then
+                pasteFromClipboard(self)
+            end
+        end,
+        ['a'] = function ()
+            if isCommandOrCtrlPressed() then
+                selectRange(self, 0, #self.value)
+            end
+        end,
+    }
+end
+
 return function (self)
     self.startIndex, self.endIndex = 0, 0
     self.startX, self.endX = -1, -1
     self.scrollX = 0
     self.value = tostring(self.value or self.text or '')
     self.text = ''
+    self.keyActions = createDefaultKeyActions(self)
 
 --[[--
 Special Attributes
@@ -311,79 +376,11 @@ This color is used to indicate the selected range of text.
     end)
 
     self:onKeyPress(function (event)
-
-        -- ignore tabs (keyboard navigation)
-        if event.key == 'tab' then
-
-            return
-
-        -- focus next widget on enter (keyboard navigation)
-        elseif event.key == 'return' then
-
-            self.layout:focusNextWidget()
-            -- if the next widget is a button, allow the event to propagate
-            -- so that the button is pressed (TODO: is this a good idea?)
-            return self.layout.focusedWidget.type ~= 'button' or nil
-
-        elseif event.key == 'backspace' then
-
-            if not deleteRange(self) then
-                deleteCharacterLeft(self)
-            end
-
-        elseif event.key == 'delete' then
-
-            if not deleteRange(self) then
-                deleteCharacterRight(self)
-            end
-
-        elseif event.key == 'left' then
-
-            if isOptionOrCtrlPressed() then
-                moveWordLeft(self, isShiftPressed())
-            elseif isCommandPressed() then
-                moveLineLeft(self, isShiftPressed())
-            else
-                moveCharLeft(self, isShiftPressed())
-            end
-
-        elseif event.key == 'right' then
-
-            if isOptionOrCtrlPressed() then
-                moveWordRight(self, isShiftPressed())
-            elseif isCommandPressed() then
-                moveLineRight(self, isShiftPressed())
-            else
-                moveCharRight(self, isShiftPressed())
-            end
-
-        elseif event.key == 'home' then
-
-            moveLineLeft(self, isShiftPressed())
-
-        elseif event.key == 'end' then
-
-            moveLineRight(self, isShiftPressed())
-
-        elseif event.key == 'x' and isCommandOrCtrlPressed() then
-
-            copyRangeToClipboard(self)
-            deleteRange(self)
-
-        elseif event.key == 'c' and isCommandOrCtrlPressed() then
-
-            copyRangeToClipboard(self)
-
-        elseif event.key == 'v' and isCommandOrCtrlPressed() then
-
-            pasteFromClipboard(self)
-
-        elseif event.key == 'a' and isCommandOrCtrlPressed() then
-
-            selectRange(self, 0, #self.value)
-
+        local act = self.keyActions[event.key]
+        if act then
+            act()
+            return false
         end
-        return false
     end)
 
     self:onDisplay(function (event)
