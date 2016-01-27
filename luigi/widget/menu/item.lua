@@ -176,6 +176,8 @@ local function initialize (self)
             shortcut = ' '
             edgeType = 'menu.expander'
         else
+            --TODO: only displays first of multiple shortcuts, change this?
+            if type(shortcut) == 'table' then shortcut = shortcut[1] end
             shortcut = shortcut:gsub('%f[%w].', string.upper) -- :gsub('-', '+')
         end
         self.height = font:getLineHeight() + pad * 2

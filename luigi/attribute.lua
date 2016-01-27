@@ -86,17 +86,6 @@ function Attribute.id.set (widget, value)
     widget.attributes.id = value
 end
 
--- TODO: formalize this bitfield somewhere
-local function parseKeyCombo (value)
-    local mainKey = (value):match '[^%-]+$'
-    local alt = (value):match 'alt%-' and 1 or 0
-    local ctrl = (value):match 'ctrl%-' and 2 or 0
-    local shift = (value):match 'shift%-' and 4 or 0
-    local modifierFlags = alt + ctrl + shift
-
-    return mainKey, modifierFlags
-end
-
 --[[--
 Widget value.
 
@@ -234,18 +223,43 @@ Setting this attribute re-registers the widget with its layout.
 --]]--
 Attribute.shortcut = {}
 
+-- TODO: formalize this bitfield somewhere
+local function parseKeyCombo (value)
+    local mainKey = (value):match '[^%-]+$'
+    local alt = (value):match 'alt%-' and 1 or 0
+    local ctrl = (value):match 'ctrl%-' and 2 or 0
+    local shift = (value):match 'shift%-' and 4 or 0
+    local modifierFlags = alt + ctrl + shift
+
+    return mainKey, modifierFlags
+end
+
 function Attribute.shortcut.set (widget, value)
     local layout = widget.layout.master or widget.layout
     local oldValue = widget.attributes.shortcut
 
     if oldValue then
-        local mainKey, modifierFlags = parseKeyCombo(oldValue)
-        layout.shortcuts[modifierFlags][mainKey] = nil
+        if type(oldValue) == 'table' then
+            for _, v in ipairs(oldValue) do
+                local mainKey, modifierFlags = parseKeyCombo(v)
+                layout.shortcuts[modifierFlags][mainKey] = nil
+            end
+        else
+            local mainKey, modifierFlags = parseKeyCombo(oldValue)
+            layout.shortcuts[modifierFlags][mainKey] = nil
+        end
     end
 
     if value then
-        local mainKey, modifierFlags = parseKeyCombo(value)
-        layout.shortcuts[modifierFlags][mainKey] = widget
+        if type(value) == 'table' then
+            for _, v in ipairs(value) do
+                local mainKey, modifierFlags = parseKeyCombo(v)
+                layout.shortcuts[modifierFlags][mainKey] = widget
+            end
+        else
+            local mainKey, modifierFlags = parseKeyCombo(value)
+            layout.shortcuts[modifierFlags][mainKey] = widget
+        end
     end
 
     widget.attributes.shortcut = value
