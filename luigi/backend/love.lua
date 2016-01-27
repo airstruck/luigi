@@ -5,6 +5,10 @@ local Hooker = require(ROOT .. 'hooker')
 
 local Backend = {}
 
+Backend.isMac = function ()
+    return love.system.getOS() == 'OS X'
+end
+
 Backend.run = function () end
 
 Backend.Cursor = love.mouse.newCursor

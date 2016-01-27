@@ -42,6 +42,10 @@ local Backend = {}
 
 Backend.sdl = sdl
 
+Backend.isMac = function ()
+    return sdl.getPlatform() == 'Mac OS X'
+end
+
 local callback = {
     draw = function () end,
     resize = function () end,

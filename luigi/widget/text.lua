@@ -207,6 +207,22 @@ local function insertText (self, newText)
     selectRange(self, index, index)
 end
 
+local function isShiftPressed ()
+    return Backend.isKeyDown('lshift', 'rshift')
+end
+
+-- "command" means the command key on Mac and the ctrl key everywhere else.
+local isCommandPressed
+if Backend.isMac() then
+    isCommandPressed = function ()
+        return Backend.isKeyDown('lgui', 'rgui')
+    end
+else
+    isCommandPressed = function ()
+        return Backend.isKeyDown('lctrl', 'rctrl')
+    end
+end
+
 return function (self)
     self.startIndex, self.endIndex = 0, 0
     self.startX, self.endX = -1, -1
@@ -283,41 +299,41 @@ This color is used to indicate the selected range of text.
         elseif event.key == 'left' then
 
             if Backend.isKeyDown('lgui', 'rgui') then
-                jumpCaretLeft(self, Backend.isKeyDown('lshift', 'rshift'))
+                jumpCaretLeft(self, isShiftPressed())
             else
-                moveCaretLeft(self, Backend.isKeyDown('lshift', 'rshift'))
+                moveCaretLeft(self, isShiftPressed())
             end
 
         elseif event.key == 'right' then
 
             if Backend.isKeyDown('lgui', 'rgui') then
-                jumpCaretRight(self, Backend.isKeyDown('lshift', 'rshift'))
+                jumpCaretRight(self, isShiftPressed())
             else
-                moveCaretRight(self, Backend.isKeyDown('lshift', 'rshift'))
+                moveCaretRight(self, isShiftPressed())
             end
 
         elseif event.key == 'home' then
 
-            jumpCaretLeft(self, Backend.isKeyDown('lshift', 'rshift'))
+            jumpCaretLeft(self, isShiftPressed())
 
         elseif event.key == 'end' then
 
-            jumpCaretRight(self, Backend.isKeyDown('lshift', 'rshift'))
+            jumpCaretRight(self, isShiftPressed())
 
-        elseif event.key == 'x' and Backend.isKeyDown('lctrl', 'rctrl', 'lgui', 'rgui') then
+        elseif event.key == 'x' and isCommandPressed() then
 
             copyRangeToClipboard(self)
             deleteRange(self)
 
-        elseif event.key == 'c' and Backend.isKeyDown('lctrl', 'rctrl', 'lgui', 'rgui') then
+        elseif event.key == 'c' and isCommandPressed() then
 
             copyRangeToClipboard(self)
 
-        elseif event.key == 'v' and Backend.isKeyDown('lctrl', 'rctrl', 'lgui', 'rgui') then
+        elseif event.key == 'v' and isCommandPressed() then
 
             pasteFromClipboard(self)
 
-        elseif event.key == 'a' and Backend.isKeyDown('lctrl', 'rctrl', 'lgui', 'rgui') then
+        elseif event.key == 'a' and isCommandPressed() then
 
             selectRange(self, 0, #self.value)
 
