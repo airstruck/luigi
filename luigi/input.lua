@@ -211,11 +211,15 @@ function Input:handleReshape (layout, width, height)
     })
 end
 
-function Input:handleWheelMove (layout, x, y)
-    local mx, my = Backend.getMousePosition()
-    local hit, widget = checkHit(layout:getWidgetAt(mx, my), layout)
+function Input:handleWheelMove (layout, scrollX, scrollY)
+    local x, y = Backend.getMousePosition()
+    local hit, widget = checkHit(layout:getWidgetAt(x, y), layout)
 
-    widget:bubbleEvent('WheelMove', { hit = hit, x = x, y = y })
+    widget:bubbleEvent('WheelMove', {
+        hit = hit,
+        x = x, y = y,
+        scrollX = scrollX, scrollY = scrollY
+    })
 
     return hit
 end

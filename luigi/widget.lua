@@ -787,18 +787,33 @@ function Widget:reshape ()
     self.isReshaping = nil
 end
 
-function Widget:scrollBy (x, y)
+function Widget:scrollBy (amount)
     if not self.scroll then return end
-    if not self.scrollY then self.scrollY = 0 end
-    local scrollY = self.scrollY - y * 10
-    local inner = math.max(self:getContentHeight(), self.innerHeight or 0)
-    local maxY = inner - self:getHeight()
-        + (self.padding or 0) * 2 + (self.margin or 0) * 2
-    scrollY = math.max(math.min(scrollY, maxY), 0)
-    if scrollY ~= self.scrollY then
-        self.scrollY = scrollY
-        self:reshape()
-        return true
+    --TODO: eliminate redundancy
+    if self.flow == 'x' then
+        if not self.scrollX then self.scrollX = 0 end
+        local scrollX = self.scrollX - amount * 10
+        local inner = math.max(self:getContentWidth(), self.innerWidth or 0)
+        local maxX = inner - self:getWidth()
+            + (self.padding or 0) * 2 + (self.margin or 0) * 2
+        scrollX = math.max(math.min(scrollX, maxX), 0)
+        if scrollX ~= self.scrollX then
+            self.scrollX = scrollX
+            self:reshape()
+            return true
+        end
+    else
+        if not self.scrollY then self.scrollY = 0 end
+        local scrollY = self.scrollY - amount * 10
+        local inner = math.max(self:getContentHeight(), self.innerHeight or 0)
+        local maxY = inner - self:getHeight()
+            + (self.padding or 0) * 2 + (self.margin or 0) * 2
+        scrollY = math.max(math.min(scrollY, maxY), 0)
+        if scrollY ~= self.scrollY then
+            self.scrollY = scrollY
+            self:reshape()
+            return true
+        end
     end
 end
 

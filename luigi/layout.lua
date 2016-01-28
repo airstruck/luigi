@@ -417,8 +417,9 @@ function Layout:addDefaultHandlers ()
     createBehavior('scroll', {
         self:onWheelMove(function (event)
             if not event.hit then return end
+            local amount = event.scrollY ~= 0 and event.scrollY or event.scrollX
             for widget in event.target:eachAncestor(true) do
-                if widget:scrollBy(nil, event.y) then return false end
+                if widget:scrollBy(amount) then return false end
             end -- ancestor loop
             return false
         end) -- wheel move
