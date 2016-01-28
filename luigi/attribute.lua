@@ -13,6 +13,8 @@ to recalculate their size and position.
 
 local ROOT = (...):gsub('[^.]*$', '')
 
+local Shortcut = require(ROOT .. 'shortcut')
+
 local Attribute = {}
 
 local function cascade (widget, attribute)
@@ -223,15 +225,11 @@ Setting this attribute re-registers the widget with its layout.
 --]]--
 Attribute.shortcut = {}
 
--- TODO: formalize this bitfield somewhere
-local function parseKeyCombo (value)
-    local mainKey = (value):match '[^%-]+$'
-    local alt = (value):match 'alt%-' and 1 or 0
-    local ctrl = (value):match 'ctrl%-' and 2 or 0
-    local shift = (value):match 'shift%-' and 4 or 0
-    local modifierFlags = alt + ctrl + shift
-
-    return mainKey, modifierFlags
+local function setShortcut (layout, shortcut, value)
+    local mainKey, modifierFlags = Shortcut.parseKeyCombo(shortcut)
+    if mainKey then
+        layout.shortcuts[modifierFlags][mainKey] = value
+    end
 end
 
 function Attribute.shortcut.set (widget, value)
@@ -241,24 +239,20 @@ function Attribute.shortcut.set (widget, value)
     if oldValue then
         if type(oldValue) == 'table' then
             for _, v in ipairs(oldValue) do
-                local mainKey, modifierFlags = parseKeyCombo(v)
-                layout.shortcuts[modifierFlags][mainKey] = nil
+                setShortcut(layout, v, nil)
             end
         else
-            local mainKey, modifierFlags = parseKeyCombo(oldValue)
-            layout.shortcuts[modifierFlags][mainKey] = nil
+            setShortcut(layout, oldValue, nil)
         end
     end
 
     if value then
         if type(value) == 'table' then
             for _, v in ipairs(value) do
-                local mainKey, modifierFlags = parseKeyCombo(v)
-                layout.shortcuts[modifierFlags][mainKey] = widget
+                setShortcut(layout, v, widget)
             end
         else
-            local mainKey, modifierFlags = parseKeyCombo(value)
-            layout.shortcuts[modifierFlags][mainKey] = widget
+            setShortcut(layout, value, widget)
         end
     end
 

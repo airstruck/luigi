@@ -22,7 +22,6 @@ local Event = require(ROOT .. 'event')
 local Widget = require(ROOT .. 'widget')
 local Input = require(ROOT .. 'input')
 local Style = require(ROOT .. 'style')
-local Backend = require(ROOT .. 'backend')
 
 local Layout = Base:extend()
 
@@ -329,7 +328,7 @@ end
 function Layout:addDefaultHandlers ()
     self.shortcuts = {}
 
-    for i = 0, 8 do
+    for i = 0, 15 do
         self.shortcuts[i] = {}
     end
 

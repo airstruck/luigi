@@ -3,6 +3,7 @@ local ROOT = (...):gsub('[^.]*$', '')
 local Backend = require(ROOT .. 'backend')
 local Base = require(ROOT .. 'base')
 local Event = require(ROOT .. 'event')
+local Shortcut = require(ROOT .. 'shortcut')
 
 local Input = Base:extend()
 
@@ -19,19 +20,11 @@ function Input:handleDisplay (layout)
     Event.Display:emit(layout)
 end
 
-function Input:getModifierFlags ()
-    local alt = Backend.isKeyDown('lalt', 'ralt') and 1 or 0
-    local ctrl = Backend.isKeyDown('lctrl', 'rctrl', 'lgui', 'rgui') and 2 or 0
-    local shift = Backend.isKeyDown('lshift', 'rshift') and 4 or 0
-
-    return alt + ctrl + shift
-end
-
 function Input:handleKeyPress (layout, key, x, y)
     local widget = layout.focusedWidget or layout.root
     local result = widget:bubbleEvent('KeyPress', {
         key = key,
-        modifierFlags = self:getModifierFlags(),
+        modifierFlags = Shortcut.getModifierFlags(),
         x = x, y = y
     })
     if result ~= nil then return result end
@@ -42,7 +35,7 @@ function Input:handleKeyRelease (layout, key, x, y)
     local widget = layout.focusedWidget or layout.root
     local result = widget:bubbleEvent('KeyRelease', {
         key = key,
-        modifierFlags = self:getModifierFlags(),
+        modifierFlags = Shortcut.getModifierFlags(),
         x = x, y = y
     })
     if result ~= nil then return result end
