@@ -51,12 +51,11 @@ local function findIndexFromPoint (self, x, y)
     local x1 = self:getRectangle(true, true)
 
     local font = self.fontData
-    local width, lastWidth = 0
+    local width = 0
     local lastPosition = 0
 
     local function checkPosition (position)
         local text = self.value:sub(1, position - 1)
-        lastWidth = width
         width = font:getAdvance(text)
         if width > x + self.scrollX - x1 then
             if position == 1 then
