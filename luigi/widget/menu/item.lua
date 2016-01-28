@@ -10,6 +10,7 @@ not be explicitly created.
 local ROOT = (...):gsub('[^.]*.[^.]*.[^.]*$', '')
 
 local Backend = require(ROOT .. 'backend')
+local Shortcut = require(ROOT .. 'shortcut')
 
 local Layout, Event
 
@@ -176,9 +177,7 @@ local function initialize (self)
             shortcut = ' '
             edgeType = 'menu.expander'
         else
-            --TODO: only displays first of multiple shortcuts, change this?
-            if type(shortcut) == 'table' then shortcut = shortcut[1] end
-            shortcut = shortcut:gsub('%f[%w].', string.upper) -- :gsub('-', '+')
+            shortcut = Shortcut.stringify(shortcut)
         end
         self.height = font:getLineHeight() + pad * 2
         self.flow = 'x'

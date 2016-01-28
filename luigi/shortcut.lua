@@ -15,18 +15,28 @@ local CTRL = 2
 local SHIFT = 4
 local GUI = 8
 
-function Shortcut.parseKeyCombo (value)
-    -- expand command- and option- aliases
-    value = value
+function Shortcut.appliesToPlatform (value)
+    if isMac and value:match '%f[%a]win%-'
+    or not isMac and value:match '%f[%a]mac%-' then
+        return false
+    end
+    return true
+end
+
+function Shortcut.expandAliases (value)
+    return value
         :gsub('%f[%a]command%-', 'mac-gui-')
         :gsub('%f[%a]option%-', 'mac-alt-')
+end
+
+function Shortcut.parseKeyCombo (value)
+    -- expand command- and option- aliases
+    value = Shortcut.expandAliases(value)
 
     -- exit early if shortcut is for different platform
-    if isMac and value:match 'win%-' or not isMac and value:match 'mac%-' then
-        return
-    end
+    if not Shortcut.appliesToPlatform(value) then return end
 
-    -- expand c- alias
+    -- expand c- special modifier
     if isMac then
         value = value:gsub('%f[%a]c%-', 'gui-')
     else
@@ -51,6 +61,30 @@ function Shortcut.getModifierFlags ()
     local shift = Backend.isKeyDown('lshift', 'rshift') and SHIFT or 0
     local gui = Backend.isKeyDown('lgui', 'rgui') and GUI or 0
     return alt + ctrl + shift + gui
+end
+
+function Shortcut.stringify (shortcut)
+    if type(shortcut) ~= 'table' then
+        shortcut = { shortcut }
+    end
+    for _, value in ipairs(shortcut) do
+        value = Shortcut.expandAliases(value)
+        if Shortcut.appliesToPlatform(value) then
+            if isMac then
+                value = value
+                    :gsub('%f[%a]c%-', 'command-')
+                    :gsub('%f[%a]gui%-', 'command-')
+                    :gsub('%f[%a]alt%-', 'option-')
+            else
+                value = value
+                    :gsub('%f[%a]c%-', 'ctrl-')
+                    :gsub('%f[%a]gui%-', 'windows-')
+            end
+            value = value:gsub('%f[%a]win%-', ''):gsub('%f[%a]mac%-', '')
+            value = value:gsub('%f[%w].', string.upper)
+            return value
+        end
+    end
 end
 
 return Shortcut
