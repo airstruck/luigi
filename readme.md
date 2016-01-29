@@ -18,3 +18,7 @@ LUIGI can also run under LuaJIT when
 
 View the generated [API docs](http://airstruck.github.io/luigi/doc/).
 Probably not up to date.
+
+## FAQ
+
+Check the issue tracker for tickets with the [FAQ](../../issues?q=label:faq) label.
