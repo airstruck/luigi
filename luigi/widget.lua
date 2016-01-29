@@ -236,6 +236,10 @@ local function metaCall (Widget, layout, self)
     return self
 end
 
+function Widget:getMasterLayout ()
+    return self.layout.master or self.layout
+end
+
 --[[--
 Define a custom attribute for this widget.
 

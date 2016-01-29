@@ -27,21 +27,26 @@ local function setGroup (self, value)
     local oldGroup = oldValue and groups[oldValue]
     if oldGroup then
         remove(oldGroup, self)
-        if #oldGroup < 1 then
-            groups[oldValue] = nil
-        end
+        -- TODO: is it safe to remove these?
+        if #oldGroup < 1 then groups[oldValue] = nil end
     end
-    -- add the widget to the new group, or 'default' if no group specified
-    value = value or 'default'
+    -- add the widget to the new group, or 'defaultGroup' if no group specified
+    value = value or 'defaultGroup'
     if not groups[value] then
         groups[value] = {}
     end
     local group = groups[value]
     group[#group + 1] = self
     self.attributes.group = value
+    local layout = self:getMasterLayout()
+    if not layout[value] then
+        layout:createWidget { id = value, items = group }
+    end
+    self.groupWidget = layout[value]
 end
 
 return function (self)
+
 --[[--
 Special Attributes
 
@@ -64,11 +69,25 @@ in the same group change to `false`.
 @section end
 --]]--
 
+    -- when we bubble events, send them to the group widget
+    local bubbleEvent = self.bubbleEvent
+    function self:bubbleEvent (...)
+        local result = bubbleEvent(self, ...)
+        if result ~= nil then return result end
+        return self.groupWidget:bubbleEvent(...)
+    end
+
     self:onPress(function (event)
         if event.button ~= 'left' then return end
         for _, widget in ipairs(groups[self.group]) do
             widget.value = widget == self
         end
+    end)
+
+    self:onChange(function (event)
+         -- change event is only sent to group widget once.
+        if not self.value then return false end
+        self.groupWidget.selected = self
     end)
 
     self.value = not not self.value

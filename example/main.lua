@@ -96,6 +96,10 @@ layout.sans2:onPress(function()
     layout.stepper.font = false
 end)
 
+layout.fish:onChange(function()
+    layout.fishStatus.text = 'Selected: ' .. layout.fish.selected.text
+end)
+
 -- show the main layout
 layout:show()
 
