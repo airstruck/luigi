@@ -266,9 +266,9 @@ end
 -- Special keys.
 local function createDefaultKeyActions (self)
     return {
-        ['return'] = function ()
-            -- just a dummy function to trap event
-        end,
+        -- dummy functions to trap events
+        ['return'] = function () end,
+        ['space'] = function () end,
         ['backspace'] = function ()
             if not deleteRange(self) then
                 deleteCharacterLeft(self)
