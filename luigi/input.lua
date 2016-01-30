@@ -162,9 +162,10 @@ function Input:handlePressStart (layout, button, x, y, widget, shortcut)
 end
 
 function Input:handlePressEnd (layout, button, x, y, widget, shortcut)
-    local hit, widget = checkHit(widget or layout:getWidgetAt(x, y), layout)
     local originWidget = widget or self.pressedWidgets[button]
     if not originWidget then return end
+    local hit, widget = checkHit(widget or layout:getWidgetAt(x, y), layout)
+    local wasPressed = originWidget.pressed[button]
     if hit then
         originWidget.pressed[button] = nil
     end
@@ -175,7 +176,7 @@ function Input:handlePressEnd (layout, button, x, y, widget, shortcut)
         button = button,
         x = x, y = y
     })
-    if (widget == originWidget) then
+    if (widget == originWidget and wasPressed) then
         widget:bubbleEvent('Press', {
             hit = hit,
             button = button,
