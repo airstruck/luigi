@@ -76,6 +76,14 @@ function Shortcut.stringify (shortcut)
                     :gsub('%f[%a]c%-', 'cmd-')
                     :gsub('%f[%a]gui%-', 'cmd-')
                     :gsub('%f[%a]alt%-', 'option-')
+                    -- Have Love backend default to DejaVuSans
+                    -- so we can use these instead of the above
+                    --[[
+                    :gsub('%f[%a]c%-', '⌘')
+                    :gsub('%f[%a]gui%-', '⌘')
+                    :gsub('%f[%a]alt%-', '⌥')
+                    :gsub('%f[%a]shift%-', '⇧')
+                    ]]
             else
                 value = value
                     :gsub('%f[%a]c%-', 'ctrl-')
