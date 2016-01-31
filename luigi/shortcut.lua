@@ -25,7 +25,7 @@ end
 
 function Shortcut.expandAliases (value)
     return value
-        :gsub('%f[%a]command%-', 'mac-gui-')
+        :gsub('%f[%a]cmd%-', 'mac-gui-')
         :gsub('%f[%a]option%-', 'mac-alt-')
 end
 
@@ -72,8 +72,9 @@ function Shortcut.stringify (shortcut)
         if Shortcut.appliesToPlatform(value) then
             if isMac then
                 value = value
-                    :gsub('%f[%a]c%-', 'command-')
-                    :gsub('%f[%a]gui%-', 'command-')
+                    :gsub('%f[%a]c%-', 'cmd-')
+                    :gsub('%f[%a]gui%-', 'cmd-')
+                    :gsub('%f[%a]command%-', 'cmd-')
                     :gsub('%f[%a]alt%-', 'option-')
             else
                 value = value
