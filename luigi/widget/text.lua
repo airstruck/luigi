@@ -266,6 +266,8 @@ end
 -- Special keys.
 local function createDefaultKeyActions (self)
     return {
+        -- let tab press propagate
+        ['tab'] = function () return true end,
         -- dummy functions to trap events
         ['return'] = function () end,
         ['space'] = function () end,
@@ -377,9 +379,10 @@ This color is used to indicate the selected range of text.
     self:onKeyPress(function (event)
         local act = self.keyActions[event.key]
         if act then
-            act()
-            return false
+            local result = act()
+            if result then return true end
         end
+        return false
     end)
 
     self:onDisplay(function (event)
