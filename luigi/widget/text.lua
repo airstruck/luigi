@@ -25,17 +25,18 @@ local function updateHighlight (self)
 end
 
 local function scrollToCaret (self)
+    updateHighlight(self)
     local x1, y1, w, h = self:getRectangle(true, true)
     local x2, y2 = x1 + w, y1 + h
     local oldX = self.endX or x1
 
     if oldX <= x1 then
         self.scrollX = self.scrollX - (x1 - oldX)
+        updateHighlight(self)
     elseif oldX >= x2 then
         self.scrollX = self.scrollX + (oldX - x2 + 1)
+        updateHighlight(self)
     end
-
-    updateHighlight(self)
 end
 
 local function selectRange (self, startIndex, endIndex)
