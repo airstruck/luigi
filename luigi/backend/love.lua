@@ -143,9 +143,11 @@ function Backend.show (layout)
         end
     end)
     hook(layout, 'keypressed', function (key, isRepeat)
+        if key == ' ' then key = 'space' end
         return input:handleKeyPress(layout, key, Backend.getMousePosition())
     end)
     hook(layout, 'keyreleased', function (key)
+        if key == ' ' then key = 'space' end
         return input:handleKeyRelease(layout, key, Backend.getMousePosition())
     end)
     hook(layout, 'textinput', function (text)
