@@ -269,9 +269,6 @@ local function createDefaultKeyActions (self)
     return {
         -- let tab press propagate
         ['tab'] = function () return true end,
-        -- dummy functions to trap events
-        ['return'] = function () end,
-        ['space'] = function () end,
         ['backspace'] = function ()
             if not deleteRange(self) then
                 deleteCharacterLeft(self)
@@ -330,6 +327,24 @@ local function createDefaultKeyActions (self)
     }
 end
 
+local textInputKeys = {
+    ['space'] = true,
+    ['return'] = true,
+    ['kp00'] = true,
+    ['kp000'] = true,
+    ['kp&&'] = true,
+    ['kp||'] = true,
+}
+
+local function isKeyTextInput (key)
+    if textInputKeys[key] or #key == 1
+    or (#key == 3 and key:sub(1, 2) == "kp") then
+        return not Backend.isKeyDown(
+            'lalt', 'ralt', 'lctrl', 'rctrl', 'lgui', 'rgui')
+    end
+    return false
+end
+
 return function (self)
     self.startIndex, self.endIndex = 0, 0
     self.startX, self.endX = -1, -1
@@ -378,11 +393,12 @@ This color is used to indicate the selected range of text.
     end)
 
     self:onKeyPress(function (event)
-        local act = self.keyActions[event.key]
+        local key = event.key
+        local act = self.keyActions[key]
         if act then
             if act() then return end
         end
-        return false
+        return isKeyTextInput(key) or nil
     end)
 
     self:onDisplay(function (event)
