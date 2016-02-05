@@ -380,8 +380,7 @@ This color is used to indicate the selected range of text.
     self:onKeyPress(function (event)
         local act = self.keyActions[event.key]
         if act then
-            local result = act()
-            if result then return true end
+            if act() then return end
         end
         return false
     end)
