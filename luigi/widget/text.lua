@@ -410,7 +410,7 @@ This color is used to indicate the selected range of text.
         local textTop = math.floor(y + (h - font:getLineHeight()) / 2)
 
         Backend.push()
-        Backend.setScissor(x, y, w, h)
+        Backend.intersectScissor(x, y, w, h)
         Backend.setFont(font)
 
         if self.focused then

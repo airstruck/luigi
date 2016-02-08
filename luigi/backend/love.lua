@@ -43,7 +43,7 @@ Backend.setClipboardText = love.system.setClipboardText
 
 Backend.getMousePosition = love.mouse.getPosition
 
-Backend.getMousePosition = love.mouse.getPosition
+Backend.setMousePosition = love.mouse.setPosition
 
 Backend.getSystemCursor = love.mouse.getSystemCursor
 
@@ -78,6 +78,8 @@ end
 Backend.setScissor = love.graphics.setScissor
 
 Backend.getScissor = love.graphics.getScissor
+
+Backend.intersectScissor = love.graphics.intersectScissor
 
 function Backend.hide (layout)
     for _, item in ipairs(layout.hooks) do
