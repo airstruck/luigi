@@ -1,3 +1,8 @@
+--[[--
+Mosiac, drawable class for 9-slice images.
+
+@classmod Mosiac
+--]]--
 local ROOT = (...):gsub('[^.]*$', '')
 
 local Backend = require(ROOT .. 'backend')
@@ -61,11 +66,9 @@ function Mosaic:loadSlices (path)
         slices.topLeft = Quad(0, 0, w, h, iw, ih)
         slices.topCenter = Quad(w, 0, w, h, iw, ih)
         slices.topRight = Quad(iw - w, 0, w, h, iw, ih)
-
         slices.middleLeft = Quad(0, h, w, h, iw, ih)
         slices.middleCenter = Quad(w, h, w, h, iw, ih)
         slices.middleRight = Quad(iw - w, h, w, h, iw, ih)
-
         slices.bottomLeft = Quad(0, ih - h, w, h, iw, ih)
         slices.bottomCenter = Quad(w, ih - h, w, h, iw, ih)
         slices.bottomRight = Quad(iw - w, ih - h, w, h, iw, ih)
@@ -81,35 +84,25 @@ function Mosaic:draw ()
         Backend.draw(batch)
         return
     end
-
     self.needsRefresh = false
 
     local x, y, w, h = self.x, self.y, self.width, self.height
     local slices = self.slices
-    local sliceWidth, sliceHeight = slices.width, slices.height
-
-    local xScale = (w - sliceWidth * 2) / sliceWidth
-    local yScale = (h - sliceHeight * 2) / sliceHeight
+    local sw, sh = slices.width, slices.height
+    local xs = (w - sw * 2) / sw -- x scale
+    local ys = (h - sh * 2) / sh -- y scale
 
     batch:clear()
 
-    batch:add(slices.middleCenter, x + sliceWidth, y + sliceHeight, 0,
-    xScale, yScale)
-
-    batch:add(slices.topCenter, x + sliceWidth, y, 0,
-        xScale, 1)
-    batch:add(slices.bottomCenter, x + sliceWidth, y + h - sliceHeight, 0,
-        xScale, 1)
-
-    batch:add(slices.middleLeft, x, y + sliceHeight, 0,
-        1, yScale)
-    batch:add(slices.middleRight, x + w - sliceWidth, y + sliceHeight, 0,
-        1, yScale)
-
+    batch:add(slices.middleCenter, x + sw, y + sh, 0, xs, ys)
+    batch:add(slices.topCenter, x + sw, y, 0, xs, 1)
+    batch:add(slices.bottomCenter, x + sw, y + h - sh, 0, xs, 1)
+    batch:add(slices.middleLeft, x, y + sh, 0, 1, ys)
+    batch:add(slices.middleRight, x + w - sw, y + sh, 0, 1, ys)
     batch:add(slices.topLeft, x, y)
-    batch:add(slices.topRight, x + w - sliceWidth, y)
-    batch:add(slices.bottomLeft, x, y + h - sliceHeight)
-    batch:add(slices.bottomRight, x + w - sliceWidth, y + h - sliceHeight)
+    batch:add(slices.topRight, x + w - sw, y)
+    batch:add(slices.bottomLeft, x, y + h - sh)
+    batch:add(slices.bottomRight, x + w - sw, y + h - sh)
 
     Backend.draw(batch)
 end
