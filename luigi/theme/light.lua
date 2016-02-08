@@ -90,6 +90,14 @@ return function (config)
         return self.parent and self.parent.flow == 'x' and 4
     end
 
+    local function getSliderThumbWidth (self)
+        return self.parent.flow == 'x' and 32 or false
+    end
+    
+    local function getSliderThumbHeight (self)
+        return self.parent.flow ~= 'x' and 32 or false
+    end
+    
     local function getStepperBeforeIcon (self)
         return self.parent.flow == 'x' and triangle_left or triangle_up
     end
@@ -188,6 +196,8 @@ return function (config)
             type = { 'button' },
             align = 'middle center',
             margin = 0,
+            width = getSliderThumbWidth,
+            height = getSliderThumbHeight,
         },
         status = {
             type = { 'Line', 'Control' },

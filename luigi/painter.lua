@@ -138,10 +138,8 @@ function Painter:paintIconAndText ()
     if w < 1 or h < 1 then return end
 
     -- calculate position for icon and text based on alignment and padding
-    local iconX, iconY, x1, y1, x2, y2 = self:positionIcon(
-        x, y, x + w, y + h)
-    local font, textX, textY = self:positionText(
-        x1, y1, x2, y2)
+    local iconX, iconY, x1, y1, x2, y2 = self:positionIcon(x, y, x + w, y + h)
+    local font, textX, textY = self:positionText(x1, y1, x2, y2)
 
     local icon = widget.icon and self:loadImage(widget.icon)
     local text = widget.text
@@ -208,14 +206,12 @@ end
 
 function Painter:paint ()
     local widget = self.widget
+    local x, y, w, h = widget:getRectangle()
+
+    -- if the drawable area has no width or height, don't paint
+    if w < 1 or h < 1 then return end
+    
     Event.PreDisplay:emit(widget, { target = widget }, function()
-
-        local x, y, w, h = widget:getRectangle()
-
-        -- if the drawable area has no width or height, don't paint
-        if w < 1 or h < 1 then
-            return
-        end
 
         Backend.push()
 
