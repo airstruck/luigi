@@ -184,8 +184,6 @@ Backend.print = function (text, x, y)
     sdl.renderCopy(renderer, texture, nil, sdl.Rect(x, y, surface.w, surface.h))
 end
 
-Backend.printf = Backend.print
-
 Backend.getClipboardText = function ()
     return ffi.string(sdl.getClipboardText())
 end

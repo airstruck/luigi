@@ -35,8 +35,6 @@ Backend.drawRectangle = love.graphics.rectangle
 
 Backend.print = love.graphics.print
 
-Backend.printf = love.graphics.printf
-
 Backend.getClipboardText = love.system.getClipboardText
 
 Backend.setClipboardText = love.system.setClipboardText
