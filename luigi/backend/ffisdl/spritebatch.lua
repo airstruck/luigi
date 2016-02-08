@@ -27,6 +27,10 @@ function SpriteBatch:constructor (image)
     self.sprites = {}
 end
 
+function SpriteBatch:clear ()
+    self.sprites = {}
+end
+
 --[[
 id = SpriteBatch:add( quad, x, y, r, sx, sy )
 
