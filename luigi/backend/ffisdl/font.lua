@@ -1,4 +1,5 @@
 local REL = (...):gsub('[^.]*$', '')
+local APP_ROOT = rawget(_G, 'LUIGI_APP_ROOT') or ''
 
 local ffi = require 'ffi'
 local sdl = require(REL .. 'sdl')
@@ -207,7 +208,7 @@ function Font:constructor (path, size)
     local key = path .. '_' .. size
 
     if not fontCache[key] then
-        local font = SDL2_ttf.TTF_OpenFont(path, size)
+        local font = SDL2_ttf.TTF_OpenFont(APP_ROOT .. path, size)
 
         if font == nil then
             error(ffi.string(sdl.getError()))

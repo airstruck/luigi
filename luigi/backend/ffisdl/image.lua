@@ -1,4 +1,5 @@
 local REL = (...):gsub('[^.]*$', '')
+local APP_ROOT = rawget(_G, 'LUIGI_APP_ROOT') or ''
 
 local ffi = require 'ffi'
 local sdl = require(REL .. 'sdl')
@@ -15,7 +16,7 @@ end })
 function Image:constructor (renderer, path)
     self.sdlRenderer = renderer
     self.sdlSurface = ffi.gc(
-        SDL2_image.IMG_Load(path),
+        SDL2_image.IMG_Load(APP_ROOT .. path),
         sdl.freeSurface)
 
     if self.sdlSurface == nil then

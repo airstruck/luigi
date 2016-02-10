@@ -103,5 +103,5 @@ end)
 -- show the main layout
 layout:show()
 
--- only needed when using LuaJIT/SDL
-Backend.run()
+-- only needed when using LuaJIT/SDL and not using launch.lua
+-- Backend.run()
