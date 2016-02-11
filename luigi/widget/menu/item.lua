@@ -179,7 +179,6 @@ local function initialize (self)
         else
             shortcut = Shortcut.stringify(shortcut)
         end
-        self.height = font:getLineHeight() + pad * 2
         self.flow = 'x'
         self:addChild { icon = icon, width = self.height }
         self:addChild { text = text, width = textWidth }
@@ -197,7 +196,9 @@ local function initialize (self)
         self.icon = nil
         self.text = nil
     else
-        self.width = textWidth
+        -- top level menu
+        self.width = textWidth + pad * 2
+        self.align = 'middle center'
     end
 end
 

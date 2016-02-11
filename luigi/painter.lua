@@ -190,6 +190,7 @@ function Painter:paintIconAndText ()
     -- draw the text
     if text and textX and textY and w > 1 then
         widget.innerHeight = textY - y + widget.textData:getHeight()
+        widget.innerWidth = textX - x + widget.textData:getWidth()
         textX = math.floor(textX - (widget.scrollX or 0))
         textY = math.floor(textY - (widget.scrollY or 0))
         Backend.draw(widget.textData, textX, textY)
@@ -210,7 +211,7 @@ function Painter:paint ()
 
     -- if the drawable area has no width or height, don't paint
     if w < 1 or h < 1 then return end
-    
+
     Event.PreDisplay:emit(widget, { target = widget }, function()
 
         Backend.push()

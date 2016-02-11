@@ -1,5 +1,5 @@
 local RESOURCE = (...):gsub('%.', '/') .. '/'
-local REL = (...):gsub('[^.]*$', '')
+local ROOT = (...):gsub('[^.]*.[^.]*$', '')
 
 return function (config)
     config = config or {}
@@ -8,5 +8,5 @@ return function (config)
     config.lineColor = config.lineColor or { 60, 60, 60 }
     config.textColor = config.textColor or { 240, 240, 240 }
     config.highlight = config.highlight or { 0x00, 0x5c, 0x94 }
-    return require(REL .. 'light')(config)
+    return require(ROOT .. 'engine.alpha')(config)
 end
