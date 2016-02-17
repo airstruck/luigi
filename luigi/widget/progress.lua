@@ -8,8 +8,6 @@ between 0 and 1 (inclusive) to change the width of the bar.
 --]]--
 
 return function (self)
-    self.value = self.value or 0
-
     local pad = self:addChild {
         width = 0,
     }
@@ -24,10 +22,11 @@ return function (self)
     self:onReshape(function ()
         local x1, y1, w, h = self:getRectangle(true, true)
         local x2, y2 = x1 + w, y1 + h
+        local value = self.value or 0
         if self.flow == 'x' then
             local min = bar.minwidth or 0
             x1 = x1 + min
-            bar.width = self.value * (x2 - x1) + min
+            bar.width = value * (x2 - x1) + min
             bar.height = false
             pad.height = 0
         else
@@ -35,7 +34,7 @@ return function (self)
             y1 = y1 + min
             bar.width = false
             bar.height = false
-            pad.height = math.ceil(h - (self.value * (y2 - y1) + min))
+            pad.height = math.ceil(h - (value * (y2 - y1) + min))
         end
     end)
 end

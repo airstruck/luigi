@@ -346,6 +346,8 @@ local function isKeyTextInput (key)
 end
 
 return function (self)
+    self:init()
+    
     self.startIndex, self.endIndex = 0, 0
     self.startX, self.endX = -1, -1
     self.scrollX = 0

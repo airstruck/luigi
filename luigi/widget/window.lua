@@ -26,7 +26,7 @@ end)
 
 -- show the window
 window:show()
-
+z
 @widget window
 --]]--
 

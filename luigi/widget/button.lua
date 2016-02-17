@@ -26,5 +26,4 @@ layout:show()
 --]]--
 
 return function (self)
-
 end

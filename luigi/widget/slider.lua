@@ -8,11 +8,11 @@ number between 0 and 1, inclusive.
 --]]--
 
 return function (self)
+
     local function clamp (value)
         return value < 0 and 0 or value > 1 and 1 or value
     end
 
-    self.value = clamp(self.value or 0)
     self.step = self.step or 0.01
 
     local spacer = self:addChild()
@@ -73,16 +73,17 @@ return function (self)
     self:onReshape(function (event)
         local x1, y1, w, h = self:getRectangle(true, true)
         local x2, y2 = x1 + w, y1 + h
+        local value = self.value or 0
         if self.flow == 'x' then
             local halfThumb = thumb:getWidth() / 2
             x1, x2 = x1 + halfThumb, x2 - halfThumb
-            spacer.width = self.value * (x2 - x1)
+            spacer.width = value * (x2 - x1)
             spacer.height = false
         else
             local halfThumb = thumb:getHeight() / 2
             y1, y2 = y1 + halfThumb, y2 - halfThumb
             spacer.width = false
-            spacer.height = (1 - self.value) * (y2 - y1)
+            spacer.height = (1 - value) * (y2 - y1)
         end
     end)
 end

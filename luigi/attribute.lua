@@ -43,6 +43,7 @@ type initializer function will run once when the widget is constructed.
 --]]--
 Attribute.type = {}
 
+--[[
 function Attribute.type.set (widget, value)
     local oldType = widget.attributes.type
 
@@ -58,6 +59,7 @@ function Attribute.type.set (widget, value)
         end
     end
 end
+--]]
 
 --[[--
 Widget identifier.

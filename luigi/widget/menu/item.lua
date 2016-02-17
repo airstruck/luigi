@@ -232,6 +232,7 @@ local function createLayout (self)
 end
 
 return function (self)
+    self:init()
     extractChildren(self)
     initialize(self)
     registerEvents(self)

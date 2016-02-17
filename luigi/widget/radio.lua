@@ -46,7 +46,6 @@ local function setGroup (self, value)
 end
 
 return function (self)
-
 --[[--
 Special Attributes
 
@@ -89,6 +88,8 @@ in the same group change to `false`.
         if not self.value then return false end
         self.groupWidget.selected = self
     end)
+    
+    self:init()
 
     self.value = not not self.value
 end

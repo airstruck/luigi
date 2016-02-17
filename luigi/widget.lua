@@ -191,7 +191,7 @@ for name in pairs(Attribute) do
     end
 end
 
-attributeNames[#attributeNames + 1] = 'type'
+-- attributeNames[#attributeNames + 1] = 'type'
 
 --[[--
 Widget pseudo-constructor.
@@ -221,19 +221,44 @@ local function metaCall (Widget, layout, self)
     self.painter = Painter(self)
 
     setmetatable(self, { __index = metaIndex, __newindex = metaNewIndex })
+    
+    local decorate = Widget.typeDecorators[self.type]
 
-    for _, property in ipairs(attributeNames) do
-        local value = rawget(self, property)
-        rawset(self, property, nil)
-        self[property] = value
+    if decorate then
+        decorate(self)
     end
-
+    if not self.initted then
+        self:init()
+    end 
+    
     for k, v in ipairs(self) do
         self[k] = v.isWidget and v or metaCall(Widget, self.layout, v)
         self[k].parent = self
     end
 
     return self
+end
+
+function Widget:init ()
+    self.initted = true
+-- [[
+    for _, property in ipairs(attributeNames) do
+        if not self.attributeDescriptors[key] then
+            local value = rawget(self, property)
+            rawset(self, property, nil)
+            self[property] = value
+        end
+    end
+    for property in pairs(self.attributeDescriptors) do
+        local value = rawget(self, property)
+        rawset(self, property, nil)
+        self[property] = value
+    end
+    
+    local value = rawget(self, 'type')
+    rawset(self, 'type', nil)
+    self.type = value
+--]]
 end
 
 function Widget:getMasterLayout ()
@@ -260,9 +285,11 @@ function Widget:defineAttribute (name, descriptor)
     local value = rawget(self, name)
     if value == nil then value = self.attributes[name] end
     self.attributeDescriptors[name] = descriptor or {}
+    --[[
     rawset(self, name, nil)
     self.attributes[name] = nil
     self[name] = value
+    --]]
     return self
 end
 
