@@ -1,5 +1,3 @@
-local RESOURCE = (...):gsub('%.', '/') .. '/'
-
 return function (config)
     config = config or {}
     local resources = assert(config.resources, 'missing config.resources')

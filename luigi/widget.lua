@@ -101,6 +101,7 @@ Widget.textData = nil
 @section end
 --]]--
 
+
 Widget.typeDecorators = {
     button = require(ROOT .. 'widget.button'),
     check = require(ROOT .. 'widget.check'),
@@ -167,7 +168,7 @@ end
 
 -- setting attributes triggers special behavior
 local function metaNewIndex (self, property, value)
-    local A = self.attributeDescriptors[property] or Attribute[property]
+    local A = self.attributeDescriptors[property]
     if A then
         if A.set then
             A.set(self, value, property)
@@ -186,9 +187,9 @@ end
 local attributeNames = {}
 
 for name in pairs(Attribute) do
-    if name ~= 'type' then -- type must be handled last
+    --if name ~= 'type' then -- type must be handled last
         attributeNames[#attributeNames + 1] = name
-    end
+    --end
 end
 
 -- attributeNames[#attributeNames + 1] = 'type'
@@ -241,7 +242,12 @@ end
 
 function Widget:init ()
     self.initted = true
--- [[
+    for _, name in pairs(attributeNames) do
+        if not self.attributeDescriptors[name] then
+            self:defineAttribute(name, Attribute[name])
+        end
+    end
+--[[
     for _, property in ipairs(attributeNames) do
         if not self.attributeDescriptors[key] then
             local value = rawget(self, property)
@@ -282,14 +288,12 @@ A table, optionally containing `get` and `set` functions (see `Attribute`).
 Return this widget for chaining.
 --]]--
 function Widget:defineAttribute (name, descriptor)
+    local descriptors = self.attributeDescriptors
+    assert(not descriptors[name], 'attribute already defined')
     local value = rawget(self, name)
-    if value == nil then value = self.attributes[name] end
-    self.attributeDescriptors[name] = descriptor or {}
-    --[[
     rawset(self, name, nil)
-    self.attributes[name] = nil
+    descriptors[name] = descriptor
     self[name] = value
-    --]]
     return self
 end
 
@@ -449,8 +453,9 @@ end
 
 function Widget:calculateDimension (name)
     -- If dimensions are already calculated, return them.
-    if self.dimensions[name] then
-        return self.dimensions[name]
+    local dim = self.dimensions
+    if dim[name] then
+        return dim[name]
     end
 
     -- Get minimum width/height from attributes.
@@ -461,13 +466,13 @@ function Widget:calculateDimension (name)
     if self[name] then
         -- and if width/height is "auto" then shrink to fit content
         if self[name] == 'auto' then
-            self.dimensions[name] = self:calculateDimensionMinimum(name)
-            return self.dimensions[name]
+            dim[name] = self:calculateDimensionMinimum(name)
+            return dim[name]
         end
         -- else width/height should be a number; use that value,
         -- clamped to minimum.
-        self.dimensions[name] = math.max(self[name], min)
-        return self.dimensions[name]
+        dim[name] = math.max(self[name], min)
+        return dim[name]
     end
 
     -- If the widget is a layout root (and has no width/height),
@@ -476,8 +481,8 @@ function Widget:calculateDimension (name)
     if not parent then
         local windowWidth, windowHeight = Backend.getWindowSize()
         local size = name == 'width' and windowWidth or windowHeight
-        self.dimensions[name] = size
-        return self.dimensions[name]
+        dim[name] = size
+        return dim[name]
     end
 
     -- Widgets expand to fit their parents when no width/height is specified.
@@ -491,8 +496,8 @@ function Widget:calculateDimension (name)
     local parentFlow = parent.flow or 'y'
     if (parentFlow ~= 'x' and name == 'width')
     or (parentFlow == 'x' and name == 'height') then
-        self.dimensions[name] = math.max(parentDimension, min)
-        return self.dimensions[name]
+        dim[name] = math.max(parentDimension, min)
+        return dim[name]
     end
 
     -- If the dimension is in the same direction as the parent flow
@@ -520,7 +525,7 @@ function Widget:calculateDimension (name)
     local size = (parentDimension - claimed) / unsized
 
     size = math.max(size, min)
-    self.dimensions[name] = size
+    dim[name] = size
     return size
 end
 
@@ -826,7 +831,8 @@ function Widget:scrollBy (amount)
         local scrollX = self.scrollX - amount * 10
         local inner = math.max(self:getContentWidth(), self.innerWidth or 0)
         local maxX = inner - self:getWidth()
-            + (self.padding or 0) * 2 + (self.margin or 0) * 2
+            + (self.padding or 0) * 2
+            + (self.margin or 0) * 2
         scrollX = math.max(math.min(scrollX, maxX), 0)
         if scrollX ~= self.scrollX then
             self.scrollX = scrollX
@@ -838,7 +844,8 @@ function Widget:scrollBy (amount)
         local scrollY = self.scrollY - amount * 10
         local inner = math.max(self:getContentHeight(), self.innerHeight or 0)
         local maxY = inner - self:getHeight()
-            + (self.padding or 0) * 2 + (self.margin or 0) * 2
+            + (self.padding or 0) * 2
+            + (self.margin or 0) * 2
         scrollY = math.max(math.min(scrollY, maxY), 0)
         if scrollY ~= self.scrollY then
             self.scrollY = scrollY

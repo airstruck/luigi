@@ -43,24 +43,6 @@ type initializer function will run once when the widget is constructed.
 --]]--
 Attribute.type = {}
 
---[[
-function Attribute.type.set (widget, value)
-    local oldType = widget.attributes.type
-
-    widget.attributes.type = value
-
-    if value and not widget.hasType then
-        widget.hasType = true
-        local Widget = require(ROOT .. 'widget')
-        local decorate = Widget.typeDecorators[value]
-
-        if decorate then
-            decorate(widget)
-        end
-    end
-end
---]]
-
 --[[--
 Widget identifier.
 
