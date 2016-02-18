@@ -51,6 +51,7 @@ body {
     color: #333;
     line-height: 150%;
     font-size: 12px;
+    background-color: white;
 }
 ul, ol { margin: 0; padding: 0; }
 
