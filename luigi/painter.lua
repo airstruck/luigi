@@ -8,7 +8,7 @@ local Text = Backend.Text
 
 local Painter = Base:extend()
 
-local imageCache = {}
+local imageCache = setmetatable({}, { __mode = 'v' })
 -- local sliceCache = {}
 
 function Painter:constructor (widget)
@@ -199,8 +199,70 @@ function Painter:paintIconAndText ()
     Backend.pop()
 end
 
+
+function Painter:paintText ()
+    local widget = self.widget
+    if not widget.text then return end
+
+    local align = widget.align
+    local text = widget:getText()
+    local x, y, w, h = widget:getRectangle(true, true)
+    local offset = widget.textOffset
+    local ox, oy = 0, 0
+    if offset then
+        ox, oy = offset[1] or 0, offset[2] or 0
+    end
+
+    -- horizontal alignment for non-wrapped text
+    if align:find 'right' then
+        x = x + (w - text:getWidth())
+    elseif align:find 'center' then
+        x = x + (w - text:getWidth()) * 0.5
+    end
+
+    if align:find 'middle' then
+        local textHeight = text:getHeight()
+        y = y + (h - textHeight) * 0.5
+    elseif align:find 'bottom' then
+        local textHeight = text:getHeight()
+        y = y + h - textHeight
+    end
+
+    local sx, sy = widget.scrollX or 0, widget.scrollY or 0
+    Backend.draw(text, x + ox - sx, y + oy - sy)
+
+        -- widget.innerHeight = text:getHeight()
+        -- widget.innerWidth = text:getWidth()
+end
+
+function Painter:paintIcon ()
+    local widget = self.widget
+    if not widget.icon then return end
+
+    local align = widget.align
+    local icon = widget:getIcon()
+    local x, y, w, h = widget:getRectangle(true, true)
+
+    if align:find 'right' then
+        x = x + (w - icon:getWidth())
+    elseif align:find 'center' then
+        x = x + (w - icon:getWidth()) * 0.5
+    end
+
+    if align:find 'middle' then
+        local iconHeight = icon:getHeight()
+        y = y + (h - iconHeight) * 0.5
+    elseif align:find 'bottom' then
+        local iconHeight = icon:getHeight()
+        y = y + h - iconHeight
+    end
+
+    Backend.draw(icon, x, y)
+end
+
 function Painter:paintChildren ()
-    for i, child in ipairs(self.widget) do
+    local widget = self.widget
+    for i, child in ipairs(widget) do
         child:paint()
     end
 end
@@ -225,7 +287,9 @@ function Painter:paint ()
         self:paintBackground()
         self:paintOutline()
         self:paintSlices()
-        self:paintIconAndText()
+        -- self:paintIconAndText()
+        self:paintIcon()
+        self:paintText()
         self:paintChildren()
 
         Backend.pop()

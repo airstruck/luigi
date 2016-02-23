@@ -37,22 +37,10 @@ local function addLayoutChildren (self)
     for index, child in ipairs(self.items) do
         child.type = child.type or 'menu.item'
         root:addChild(child)
-        local childHeight = child:getHeight()
-        height = height + childHeight
-        if child.type == 'menu.item' then
-            local font = child:getFont()
-            local pad = child.padding or 0
-            local tw = font:getAdvance(child[2].text)
-                + pad * 2 + childHeight
-            local kw = font:getAdvance(child[3].text)
-                + pad * 2 + childHeight
-            textWidth = math.max(textWidth, tw)
-            keyWidth = math.max(keyWidth, kw)
-        end
     end
 
-    root.height = height
-    root.width = textWidth + keyWidth + (root.padding or 0)
+    root.height = 'auto'
+    root.width = 'auto'
 
     local isSubmenu = self.parentMenu and self.parentMenu.parentMenu
     local w = isSubmenu and self:getWidth() or 0
@@ -141,22 +129,20 @@ local function registerLayoutEvents (self)
     menuLayout:onPress(function (event)
         -- if event.button ~= 'left' then return end
         if not checkMouseButton(self, event) then return end
-        for widget in event.target:eachAncestor(true) do
-            if widget.type == 'menu.item' and #widget.items == 0 then
-                menuLayout:hide()
-                deactivateSiblings(self.rootMenu[1])
-            end
+        local widget = event.target
+        if widget.type == 'menu.item' and #widget.items == 0 then
+            menuLayout:hide()
+            deactivateSiblings(self.rootMenu[1])
         end
     end)
 
     menuLayout:onPressEnd(function (event)
         -- if event.button ~= 'left' then return end
         if not checkMouseButton(self, event) then return end
-        for widget in event.target:eachAncestor(true) do
-            if widget.type == 'menu.item' and #widget.items == 0
-            and event.target ~= event.origin then
-                widget:bubbleEvent('Press', event)
-            end
+        local widget = event.target
+        if widget.type == 'menu.item' and #widget.items == 0
+        and event.target ~= event.origin then
+            widget:bubbleEvent('Press', event)
         end
     end)
 
@@ -164,12 +150,12 @@ local function registerLayoutEvents (self)
     menuLayout:onPressEnter(activate)
 end
 
+local function nothing () end
+
 local function initialize (self)
-    local font = self:getFont()
-    local pad = self.padding or 0
     local isSubmenu = self.parentMenu and self.parentMenu.parentMenu
     local text, shortcut, icon = self.text or '', self.shortcut or '', self.icon
-    local textWidth = font:getAdvance(text) + pad * 2
+    -- local textWidth = font:getAdvance(text) + pad * 2
 
     if isSubmenu then
         local edgeType
@@ -177,27 +163,36 @@ local function initialize (self)
             shortcut = ' '
             edgeType = 'menu.expander'
         else
-            shortcut = Shortcut.stringify(shortcut)
+            shortcut = '    ' .. Shortcut.stringify(shortcut)
         end
+        self.unified = true
+        self.height = 'auto' -- font:getLineHeight() + pad * 2
         self.flow = 'x'
-        self:addChild { icon = icon, width = self.height }
-        self:addChild { text = text, width = textWidth }
+        self:addChild {
+            width = function () return self:getHeight() end,
+            icon = function () return self.icon end,
+            align = 'middle left',
+        }
+        self:addChild {
+            width = 'auto',
+            text = function () return self.text end
+        }
         self:addChild {
             type = edgeType,
             text = shortcut,
             align = 'middle right',
-            minwidth = self.height,
+            minwidth = function () return self:getHeight() end,
             color = function ()
                 local c = self.color or { 0, 0, 0 }
                 return { c[1], c[2], c[3], (c[4] or 256) / 2 }
             end
         }
 
-        self.icon = nil
-        self.text = nil
+        self.painter.paintText = nothing
+        self.painter.paintIcon = nothing
     else
-        -- top level menu
-        self.width = textWidth + pad * 2
+        -- self.width = textWidth
+        self.width = 'auto'
         self.align = 'middle center'
     end
 end

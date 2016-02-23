@@ -22,6 +22,7 @@ local Event = require(ROOT .. 'event')
 local Widget = require(ROOT .. 'widget')
 local Input = require(ROOT .. 'input')
 local Style = require(ROOT .. 'style')
+local Cleaner = require(ROOT .. 'cleaner')
 
 local Layout = Base:extend()
 
@@ -79,7 +80,7 @@ function Layout:createWidget (data)
 end
 
 local function clearWidget (widget)
-    widget.textData = nil
+    Cleaner.mark(widget, 'textData')
     widget.fontData = nil
     widget.position = {}
     widget.dimensions = {}

@@ -4,6 +4,7 @@ local Backend = require(ROOT .. 'backend')
 local Base = require(ROOT .. 'base')
 local Event = require(ROOT .. 'event')
 local Shortcut = require(ROOT .. 'shortcut')
+local Cleaner = require(ROOT .. 'cleaner')
 
 local Input = Base:extend()
 
@@ -18,6 +19,7 @@ function Input:handleDisplay (layout)
     local root = layout.root
     if root then root:paint() end
     Event.Display:emit(layout)
+    Cleaner.clean()
 end
 
 function Input:handleKeyPress (layout, key, x, y)
@@ -147,7 +149,10 @@ function Input:handlePressStart (layout, button, x, y, widget, shortcut)
     -- if hit then
         self.pressedWidgets[button] = widget
         self.passedWidgets[button] = widget
-        widget.pressed[button] = true
+        -- widget.pressed[button] = true
+        for ancestor in widget:eachAncestor(true) do
+            ancestor.pressed[button] = true
+        end
         if button == 'left' then
             widget:focus()
         end
@@ -167,7 +172,10 @@ function Input:handlePressEnd (layout, button, x, y, widget, shortcut)
     local hit, widget = checkHit(widget or layout:getWidgetAt(x, y), layout)
     local wasPressed = originWidget.pressed[button]
     if hit then
-        originWidget.pressed[button] = nil
+        -- originWidget.pressed[button] = nil
+        for ancestor in originWidget:eachAncestor(true) do
+            ancestor.pressed[button] = nil
+        end
     end
     widget:bubbleEvent('PressEnd', {
         hit = hit,

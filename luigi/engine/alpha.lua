@@ -7,6 +7,7 @@ return function (config)
     local lineColor = config.lineColor or { 220, 220, 220 }
     local textColor = config.textColor or { 0, 0, 0 }
     local highlight = config.highlight or { 0x19, 0xAE, 0xFF }
+    local spacing = config.spacing or 2
 
     local button_pressed = resources .. 'button_pressed.png'
     local button_focused = resources .. 'button_focused.png'
@@ -52,6 +53,14 @@ return function (config)
                 or check_unchecked_focused
         end
         return self.value and check_checked or check_unchecked
+    end
+
+    local function getCheckTextOffset (self)
+        local align = self.align or ''
+        local icon = self:getIcon()
+        if not icon then return { 0, 0 } end
+        local width = icon:getWidth() + spacing * 2
+        return { align:find 'right' and -width or width, 0 }
     end
 
     local function getControlHeight (self)
@@ -120,15 +129,14 @@ return function (config)
             width = getControlWidth,
             color = textColor,
             align = 'center middle',
-            margin = 2,
+            margin = spacing,
             color = textColor,
             solid = true,
             _defaultDimension = 36,
         },
 
         Line = {
-            margin = 0,
-            padding = 4,
+            margin = spacing + 2,
             align = 'left middle',
             _defaultDimension = 24,
         },
@@ -145,6 +153,7 @@ return function (config)
             type = { 'Line', 'Control' },
             focusable = true,
             icon = getCheckIcon,
+            textOffset = getCheckTextOffset,
         },
         label = {
             type = { 'Line', 'Control' },
@@ -159,13 +168,13 @@ return function (config)
             icon = resources .. 'triangle_right.png',
         },
         ['menu.item'] = {
-            padding = 4,
+            padding = spacing * 2,
             height = 24,
             align = 'left middle',
             background = getMenuItemBackground,
         },
         panel = {
-            padding = 2,
+            padding = spacing,
             background = backColor,
             color = textColor,
             solid = true,
@@ -183,6 +192,7 @@ return function (config)
             type = { 'Line', 'Control' },
             focusable = true,
             icon = getRadioIcon,
+            textOffset = getCheckTextOffset,
         },
         sash = {
             background = getSashBackground,

@@ -11,7 +11,9 @@ local Backend = require(ROOT .. 'backend')
 local Event = require(ROOT .. 'event')
 local Attribute = require(ROOT .. 'attribute')
 local Painter = require(ROOT .. 'painter')
+local Cleaner = require(ROOT .. 'cleaner')
 local Font = Backend.Font
+local Text = Backend.Text
 
 local Widget = {}
 
@@ -230,7 +232,7 @@ local function metaCall (Widget, layout, self)
 
     for k, v in ipairs(self) do
         self[k] = v.isWidget and v or metaCall(Widget, self.layout, v)
-        self[k].parent = self
+        v.parent = self
     end
 
     return self
@@ -285,6 +287,10 @@ function Widget:bubbleEvent (eventName, data)
     data = data or {}
     data.target = self
     for ancestor in self:eachAncestor(true) do
+        if ancestor ~= self and ancestor.unified then
+            data.innerTarget = self
+            return ancestor:bubbleEvent(eventName, data)
+        end
         local result = event:emit(ancestor, data)
         if result ~= nil then return result end
     end
@@ -400,6 +406,16 @@ function Widget:getPreviousNeighbor ()
     return layout.root
 end
 
+function Widget:registerChild (data)
+    local layout = self.layout
+    local child = data and data.isWidget and data or Widget(layout, data or {})
+
+    child.parent = self
+    child.layout = self.layout
+
+    return child
+end
+
 --[[--
 Add a child to this widget.
 
@@ -410,12 +426,8 @@ A widget or definition table representing a widget.
 The newly added child widget.
 --]]--
 function Widget:addChild (data)
-    local layout = self.layout
-    local child = data and data.isWidget and data or Widget(layout, data or {})
-
+    local child = self:registerChild(data)
     self[#self + 1] = child
-    child.parent = self
-    child.layout = self.layout
 
     return child
 end
@@ -491,7 +503,6 @@ function Widget:calculateDimension (name)
         end
     end
     local size = (parentDimension - claimed) / unsized
-
     size = math.max(size, min)
     self.dimensions[name] = size
     return size
@@ -568,6 +579,14 @@ function Widget:calculateDimensionMinimum (name)
         end
     end
 
+    if not self.wrap then
+        if name == 'width' then
+            value = math.max(value, self:getText():getWidth())
+        else
+            value = math.max(value, self:getText():getHeight())
+        end
+    end
+
     if value > 0 then
         local space = (self.margin or 0) * 2 + (self.padding or 0) * 2
         value = value + space
@@ -636,7 +655,8 @@ function Widget:getContentWidth ()
             width = math.max(width, child:getWidth())
         end
     end
-    return width
+    -- return width
+    return math.max(width, self:getText():getWidth())
 end
 
 --[[--
@@ -659,14 +679,63 @@ function Widget:getContentHeight ()
             height = math.max(height, child:getHeight())
         end
     end
-    return height
+    -- return height
+    return math.max(height, self:getText():getHeight())
+end
+
+local imageCache = setmetatable({}, { __mode = 'v' })
+
+local function loadImage (path)
+    local cached = imageCache[path]
+    if not cached then
+        cached = Backend.Image(path)
+        imageCache[path] = cached
+    end
+
+    return cached
+end
+
+function Widget:getIcon ()
+    if self.lastIcon ~= self.icon or not self.iconData then
+        self.lastIcon = self.icon
+        self.iconData = loadImage(self.icon)
+    end
+    return self.iconData
 end
 
 function Widget:getFont ()
-    if not self.fontData then
-        self.fontData = Font(self.font, self.size)
-    end
+    if self.fontData then return self.fontData end
+    self.fontData = Font(self.font, self.size)
     return self.fontData
+end
+
+function Widget:getText ()
+    if self.textData then return self.textData end
+
+    local font = self:getFont()
+
+    if self.wrap then
+        -- horizontal alignment
+        local align = self.align
+        if align:find 'right' then
+            align = 'right'
+        elseif align:find 'center' then
+            align = 'center'
+        elseif align:find 'justify' then
+            align = 'justify'
+        else
+            align = 'left'
+        end
+        -- wrap limit
+        local x, y, w, h = self:getRectangle(true, true)
+        local offset = self.textOffset and self.textOffset[1] or 0
+        local limit = w - math.abs(offset)
+        self.textData = Text(font, self.text or '', self.color, align, limit)
+    else
+        self.textData = Text(font, self.text or '', self.color)
+    end
+
+    return self.textData
 end
 
 --[[--
@@ -772,7 +841,7 @@ function Widget:reshape ()
     self.position = {}
     self.dimensions = {}
 
-    self.textData = nil
+    Cleaner.mark(self, 'textData')
 
     Event.Reshape:emit(self, { target = self })
     for _, child in ipairs(self) do

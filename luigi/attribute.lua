@@ -14,6 +14,7 @@ to recalculate their size and position.
 local ROOT = (...):gsub('[^.]*$', '')
 
 local Shortcut = require(ROOT .. 'shortcut')
+local Cleaner = require(ROOT .. 'cleaner')
 
 local Attribute = {}
 
@@ -161,8 +162,10 @@ Attribute.style = {}
 
 function Attribute.style.set (widget, value)
     widget.attributes.style = value
-    widget.fontData = nil
-    widget.textData = nil
+    -- Cleaner.mark(widget, 'fontData')
+    -- Cleaner.mark(widget, 'textData')
+    Cleaner.mark(widget, 'fontData')
+    Cleaner.mark(widget, 'textData')
     widget.reshape(widget.parent or widget)
 end
 
@@ -291,7 +294,7 @@ Attribute.flow = {}
 
 function Attribute.flow.set (widget, value)
     widget.attributes.flow = value
-    widget.textData = nil
+    Cleaner.mark(widget, 'textData')
     widget.reshape(widget.parent or widget)
 end
 
@@ -310,12 +313,13 @@ with this widget.
 Attribute.width = {}
 
 function Attribute.width.set (widget, value)
-    if value ~= 'auto' then
+    -- value ~= 'auto' then
+    if type(value) == 'number' then
         value = value and math.max(value, widget.minwidth or 0)
     end
     widget.attributes.width = value
     if widget.wrap then
-        widget.textData = nil
+        Cleaner.mark(widget, 'textData')
     end
     widget.reshape(widget.parent or widget)
 end
@@ -398,8 +402,10 @@ this widget's `text`.
 Attribute.font = {}
 
 local function resetFont (widget)
-    rawset(widget, 'fontData', nil)
-    rawset(widget, 'textData', nil)
+    -- rawset(widget, 'fontData', nil)
+    -- rawset(widget, 'textData', nil)
+    Cleaner.mark(widget, 'fontData')
+    Cleaner.mark(widget, 'textData')
     for _, child in ipairs(widget) do
         resetFont(child)
     end
@@ -432,8 +438,8 @@ Attribute.size = {}
 
 function Attribute.size.set (widget, value)
     widget.attributes.size = value
-    widget.fontData = nil
-    widget.textData = nil
+    Cleaner.mark(widget, 'fontData')
+    Cleaner.mark(widget, 'textData')
 end
 
 Attribute.size.get = cascade
@@ -456,7 +462,7 @@ Attribute.text = {}
 
 function Attribute.text.set (widget, value)
     widget.attributes.text = value
-    widget.textData = nil
+    Cleaner.mark(widget, 'textData')
 end
 
 --[[--
@@ -472,7 +478,7 @@ Attribute.color = {}
 
 function Attribute.color.set (widget, value)
     widget.attributes.color = value
-    widget.textData = nil
+    Cleaner.mark(widget, 'textData')
 end
 
 Attribute.color.get = cascade
@@ -494,7 +500,7 @@ Attribute.align = {}
 
 function Attribute.align.set (widget, value)
     widget.attributes.align = value
-    widget.textData = nil
+    Cleaner.mark(widget, 'textData')
 end
 
 Attribute.align.get = cascade
@@ -514,10 +520,33 @@ Attribute.wrap = {}
 
 function Attribute.wrap.set (widget, value)
     widget.attributes.wrap = value
-    widget.textData = nil
+    Cleaner.mark(widget, 'textData')
 end
 
 Attribute.wrap.get = cascade
+
+--[[--
+Text offset.
+
+@attrib textOffset
+--]]--
+Attribute.textOffset = {}
+
+function Attribute.textOffset.set (widget, value)
+    widget.attributes.textOffset = value
+end
+
+--[[--
+Icon offset.
+
+@attrib iconOffset
+--]]--
+Attribute.iconOffset = {}
+
+function Attribute.iconOffset.set (widget, value)
+    widget.attributes.iconOffset = value
+end
+
 
 --[[--
 Visual Attributes.
@@ -563,7 +592,7 @@ Attribute.margin = {}
 
 function Attribute.margin.set (widget, value)
     widget.attributes.margin = value
-    widget.textData = nil
+    Cleaner.mark(widget, 'textData')
     widget:reshape()
 end
 
@@ -580,7 +609,7 @@ Attribute.padding = {}
 
 function Attribute.padding.set (widget, value)
     widget.attributes.padding = value
-    widget.textData = nil
+    Cleaner.mark(widget, 'textData')
     widget:reshape()
 end
 
@@ -595,7 +624,8 @@ Attribute.icon = {}
 
 function Attribute.icon.set (widget, value)
     widget.attributes.icon = value
-    widget.textData = nil
+    Cleaner.mark(widget, 'textData')
+    widget.iconData = nil
 end
 
 
