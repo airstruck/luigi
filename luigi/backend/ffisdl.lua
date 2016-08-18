@@ -85,10 +85,10 @@ Backend.run = function ()
                 local motion = event.motion
                 callback.mousemoved(motion.x, motion.y)
             elseif event.type == sdl.KEYDOWN then
-                local key = Keyboard.stringByKeycode[event.key.keysym.sym]
+                local key = Keyboard.stringByKeycode[event.key.keysym.sym] or 'unknown'
                 callback.keypressed(key, event.key['repeat'])
             elseif event.type == sdl.KEYUP then
-                local key = Keyboard.stringByKeycode[event.key.keysym.sym]
+                local key = Keyboard.stringByKeycode[event.key.keysym.sym] or 'unknown'
                 callback.keyreleased(key, event.key['repeat'])
             elseif event.type == sdl.TEXTINPUT then
                 callback.textinput(ffi.string(event.text.text))
