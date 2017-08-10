@@ -142,13 +142,13 @@ function Backend.show (layout)
             return input:handleMove(layout, x, y)
         end
     end)
-    hook(layout, 'keypressed', function (key, isRepeat)
+    hook(layout, 'keypressed', function (key, sc, isRepeat)
         if key == ' ' then key = 'space' end
-        return input:handleKeyPress(layout, key, Backend.getMousePosition())
+        return input:handleKeyPress(layout, key, sc, Backend.getMousePosition())
     end)
-    hook(layout, 'keyreleased', function (key)
+    hook(layout, 'keyreleased', function (key, sc)
         if key == ' ' then key = 'space' end
-        return input:handleKeyRelease(layout, key, Backend.getMousePosition())
+        return input:handleKeyRelease(layout, key, sc, Backend.getMousePosition())
     end)
     hook(layout, 'textinput', function (text)
         return input:handleTextInput(layout, text, Backend.getMousePosition())

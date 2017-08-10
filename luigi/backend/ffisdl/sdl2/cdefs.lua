@@ -907,7 +907,8 @@ int SDL_GL_SetSwapInterval(int interval);
 int SDL_GL_GetSwapInterval(void);
 void SDL_GL_SwapWindow(SDL_Window * window);
 void SDL_GL_DeleteContext(SDL_GLContext context);
-typedef enum
+typedef Sint32 SDL_Scancode;
+enum
 {
     SDL_SCANCODE_UNKNOWN = 0,
     SDL_SCANCODE_A = 4,
@@ -1151,7 +1152,7 @@ typedef enum
     SDL_SCANCODE_APP1 = 283,
     SDL_SCANCODE_APP2 = 284,
     SDL_NUM_SCANCODES = 512
-} SDL_Scancode;
+};
 typedef Sint32 SDL_Keycode;
 enum
 {

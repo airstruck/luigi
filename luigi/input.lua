@@ -20,10 +20,11 @@ function Input:handleDisplay (layout)
     Event.Display:emit(layout)
 end
 
-function Input:handleKeyPress (layout, key, x, y)
+function Input:handleKeyPress (layout, key, sc, x, y)
     local widget = layout.focusedWidget or layout.root
     local result = widget:bubbleEvent('KeyPress', {
         key = key,
+        scanCode = sc,
         modifierFlags = Shortcut.getModifierFlags(),
         x = x, y = y
     })
@@ -31,10 +32,11 @@ function Input:handleKeyPress (layout, key, x, y)
     if layout.root.modal then return false end
 end
 
-function Input:handleKeyRelease (layout, key, x, y)
+function Input:handleKeyRelease (layout, key, sc, x, y)
     local widget = layout.focusedWidget or layout.root
     local result = widget:bubbleEvent('KeyRelease', {
         key = key,
+        scanCode = sc,
         modifierFlags = Shortcut.getModifierFlags(),
         x = x, y = y
     })
