@@ -63,7 +63,9 @@ Backend.push = function ()
      return push 'all'
 end
 
-Backend.quit = love.event.quit
+Backend.quit = function ()
+     love.event.quit()
+end
 
 Backend.setColor = love.graphics.setColor
 
