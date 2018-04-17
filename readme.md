@@ -3,7 +3,7 @@
 
 ## LÖVE backend
 
-LUIGI is compatible with LÖVE 0.10.0 and 0.9.2.
+LUIGI is compatible with LÖVE versions 0.9.2 through 11.1.
 
 ## SDL backend
 
