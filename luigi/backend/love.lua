@@ -70,7 +70,7 @@ end
 if _G.love._version_major >= 11 then
     Backend.setColor = function(r, g, b, a)
         if type(r) == "table" then
-            r, g, b, a = unpack(r)
+            r, g, b, a = r[1], r[2], r[3], r[4]
         end
         if a == nil then
             a = 255
