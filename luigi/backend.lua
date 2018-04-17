@@ -1,7 +1,7 @@
 local ROOT = (...):gsub('[^.]*$', '')
 local Backend
 
-if _G.love and _G.love._version_minor > 8 then
+if _G.love and (_G.love._version_major or _G.love._version_minor) then
     Backend = require(ROOT .. 'backend.love')
 else
     Backend = require(ROOT .. 'backend.ffisdl')

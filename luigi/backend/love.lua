@@ -67,7 +67,19 @@ Backend.quit = function ()
      love.event.quit()
 end
 
-Backend.setColor = love.graphics.setColor
+if _G.love._version_major >= 11 then
+    Backend.setColor = function(r, g, b, a)
+        if type(r) == "table" then
+            r, g, b, a = unpack(r)
+        end
+        if a == nil then
+            a = 255
+        end
+        love.graphics.setColor(r / 255, g / 255, b / 255, a / 255)
+    end
+else
+    Backend.setColor = love.graphics.setColor
+end
 
 Backend.setCursor = love.mouse.setCursor
 
@@ -94,7 +106,7 @@ end
 
 local getMouseButtonId, isMouseDown
 
-if love._version_minor < 10 then
+if love._version_major == 0 and love._version_minor < 10 then
     getMouseButtonId = function (value)
         return value == 'l' and 'left'
             or value == 'r' and 'right'
@@ -155,7 +167,7 @@ function Backend.show (layout)
     hook(layout, 'textinput', function (text)
         return input:handleTextInput(layout, text, Backend.getMousePosition())
     end)
-    if love._version_minor > 9 then
+    if (love._version_major == 0 and love._version_minor > 9) or love._version_major >= 11 then
         hook(layout, 'wheelmoved', function (x, y)
             return input:handleWheelMove(layout, x, y)
         end)
