@@ -34,6 +34,8 @@ Event.names = {
     'KeyRelease', -- A keyboard key was released.
     'TextInput', -- Text was entered.
     'Move', -- The cursor moved, and no button was pressed.
+    'Focus', -- A widget received focus.
+    'Blur', -- A widget lost focus.
     'Enter', -- The cursor entered a widget, and no button was pressed.
     'Leave', -- The cursor left a widget, and no button was pressed.
     'PressEnter', -- The cursor entered a widget, and a button was pressed.

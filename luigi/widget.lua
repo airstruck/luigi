@@ -330,14 +330,20 @@ true if this widget was focused, else false.
 function Widget:focus ()
     local layout = self.layout
 
+    if layout.focusedWidget == self then
+        return true
+    end
+
     if layout.focusedWidget then
         layout.focusedWidget.focused = nil
+        Event.Blur:emit(self.layout, layout.focusedWidget)
         layout.focusedWidget = nil
     end
 
     if self.focusable then
         self.focused = true
         layout.focusedWidget = self
+        Event.Focus:emit(self.layout, self)
         return true
     end
 
