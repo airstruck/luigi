@@ -47,6 +47,8 @@ Event.names = {
     'Press', -- A pointer button was pressed and released on the same widget.
     'Change', -- A widget's value changed.
     'WheelMove', -- The scroll wheel on the mouse moved.
+    'Show', -- A layout is shown.
+    'Hide', -- A layout is hidden.
 }
 
 local weakKeyMeta = { __mode = 'k' }

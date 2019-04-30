@@ -195,6 +195,7 @@ function Layout:show ()
     Backend.show(self)
     self.root:reshape()
 
+    Event.Show:emit(self, self)
     return self
 end
 
@@ -213,6 +214,7 @@ function Layout:hide ()
     self.isShown = nil
     Backend.hide(self)
 
+    Event.Hide:emit(self, self)
     return self
 end
 
